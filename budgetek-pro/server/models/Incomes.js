@@ -16,6 +16,7 @@ const IncomeSchema = new Schema ({
     primaryIncome: {
         type: Boolean,
         required: true,
+        default: false
     },
     payDay: {
         type: Date,
