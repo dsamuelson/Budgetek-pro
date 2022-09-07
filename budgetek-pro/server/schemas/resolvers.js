@@ -58,7 +58,7 @@ const resolvers = {
               const updatedUser = await User.findOneAndUpdate(
                 { _id: context.user._id },
                 {
-                  $push: {
+                  $addToSet: {
                     incomes: {
                       incomeTitle: args.incomeTitle,
                       incomeValue: args.incomeValue,
@@ -83,7 +83,7 @@ const resolvers = {
               const updatedUser = await User.findOneAndUpdate(
                 { _id: context.user._id },
                 {
-                  $push: {
+                  $addToSet: {
                     expenses: {
                       expenseTitle: args.expenseTitle,
                       expenseValue: args.expenseValue,
