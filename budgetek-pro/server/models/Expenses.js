@@ -26,6 +26,12 @@ const ExpenseSchema = new Schema({
         required: false,
         default: Date.now
     }
+    
+},
+{
+    toJSON: {
+        virtuals: true,
+    }
 })
 
 module.exports = ExpenseSchema;
