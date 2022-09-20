@@ -21,6 +21,10 @@ const typeDefs = gql`
 
     }
 
+    input LoginCred {
+        username: String
+    }
+
     type User {
         _id: ID
         username: String
@@ -40,7 +44,7 @@ const typeDefs = gql`
     }
     type Mutation {
         createUser(email: String!, username: String!, password: String!): Auth
-        login(email: String!, password: String!): Auth
+        login(username: String! password: String!): Auth
         addIncome(incomeTitle: String!, incomeValue: String!, incomeFrequency: String!, primaryIncome: Boolean!, payDay: String): Incomes
         addExpense(expenseTitle: String!, expenseValue: String!, expenseFrequency: String!, vitalExpense: Boolean, expenseCategory: String, dueDate: String): Expenses
     }

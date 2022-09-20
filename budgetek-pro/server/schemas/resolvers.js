@@ -4,12 +4,19 @@ const { signToken } = require('../utils/auth');
 
 const resolvers = {
     Query: {
-        getSingleUser: async (parent, { username }) => {
-            const userData = await User.findOne({ username })
+        getSingleUser: async (parent, {username}) => {
+          console.log(username)
+            const userData = await User.findOne({username})
                 .select('-__v -password')
                 .populate('incomes')
                 .populate('expenses');
-      
+            if (!userData) {
+              const userDataEmail = await User.findOne({email: username})
+                .select('-__v -password')
+                .populate('incomes')
+                .populate('expenses');
+              return userDataEmail
+            }
             return userData;
           },
           getAllUsers: async () => {
@@ -37,11 +44,16 @@ const resolvers = {
           const token = signToken(user);
           return { token, user };
         },
-        login: async (parent, { email, password }) => {
-          const user = await User.findOne({ email });
-    
+        login: async (parent, { username, password}) => {
+          // const loginCred = username || email
+          // console.log(loginCred)
+          let user = await User.findOne({ username });
+          
           if (!user) {
-            throw new AuthenticationError('Incorrect Credentials');
+              user = await User.findOne({ email: username })
+              if(!user) {
+                throw new AuthenticationError('Incorrect Credentials');
+              }
           }
     
           const correctPw = await user.isCorrectPassword(password);
