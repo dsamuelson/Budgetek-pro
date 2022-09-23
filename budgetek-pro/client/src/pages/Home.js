@@ -1,10 +1,9 @@
 import React from "react";
-import CategoryMenu from "../components/CategoryMenu";
 
 const Home = () => {
   return (
     <div className="container">
-      <CategoryMenu />
+      <h1>Budgetek</h1>
     </div>
   );
 };

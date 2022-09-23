@@ -1,7 +1,6 @@
 import {
     UPDATE_CATEGORIES,
-    UPDATE_CURRENT_CATEGORY
-  } from "../../utils/actions";
+  } from "../utils/actions";
 
 const initialState = {
     categories: [],
@@ -15,12 +14,6 @@ const initialState = {
               ...state,
               categories: [...action.categories],
             };
-      
-          case UPDATE_CURRENT_CATEGORY:
-            return {
-              ...state,
-              currentCategory: action.currentCategory
-            }
 
         default:
             return state;
