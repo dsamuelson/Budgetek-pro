@@ -27,6 +27,7 @@ const resolvers = {
             return userArray;
           },
           me: async (parent, args, context) => {
+            console.log(context.user)
             if (context.user) {
               const userData = await User.findOne({ _id: context.user._id })
                 .select('-__v -password')
@@ -45,8 +46,6 @@ const resolvers = {
           return { token, user };
         },
         login: async (parent, { username, password}) => {
-          // const loginCred = username || email
-          // console.log(loginCred)
           let user = await User.findOne({ username });
           
           if (!user) {

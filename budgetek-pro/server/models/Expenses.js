@@ -32,6 +32,6 @@ const ExpenseSchema = new Schema({
     toJSON: {
         virtuals: true,
     }
-})
+});
 
 module.exports = ExpenseSchema;

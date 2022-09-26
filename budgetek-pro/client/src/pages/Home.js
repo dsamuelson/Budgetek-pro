@@ -1,9 +1,15 @@
-import React from "react";
+import React, {useState} from "react";
+import Calendar from 'react-calendar';
+
 
 const Home = () => {
+  const [date, setDate] = useState(new Date())
   return (
-    <div className="container">
-      <h1>Budgetek</h1>
+    <div className="homeCont">
+      <ul className="elementsCont"></ul>
+      <div className="calendarCont">
+     <Calendar onChange={setDate} value={date}/>
+      </div>
     </div>
   );
 };
