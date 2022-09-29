@@ -70,6 +70,15 @@ export const QUERY_ME = gql`
             expenseCategory
             dueDate
           }
+          bankAccounts {
+            _id
+            bankName
+            accountIdentifier
+            checkingValue
+            savingsAccount
+            savingsValue
+          }
+          totalExpense
       }
     }
 `;

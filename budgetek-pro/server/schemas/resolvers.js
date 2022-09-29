@@ -9,12 +9,14 @@ const resolvers = {
             const userData = await User.findOne({username})
                 .select('-__v -password')
                 .populate('incomes')
-                .populate('expenses');
+                .populate('expenses')
+                .populate('bankAccounts');
             if (!userData) {
               const userDataEmail = await User.findOne({email: username})
                 .select('-__v -password')
                 .populate('incomes')
-                .populate('expenses');
+                .populate('expenses')
+                .populate('bankAccounts');
               return userDataEmail
             }
             return userData;
@@ -23,16 +25,17 @@ const resolvers = {
             const userArray = await User.find({})
                 .select('-__v -password')
                 .populate('incomes')
-                .populate('expenses');
+                .populate('expenses')
+                .populate('bankAccounts');
             return userArray;
           },
           me: async (parent, args, context) => {
-            console.log(context.user)
             if (context.user) {
               const userData = await User.findOne({ _id: context.user._id })
                 .select('-__v -password')
                 .populate('incomes')
-                .populate('expenses');
+                .populate('expenses')
+                .populate('bankAccounts');
       
               return userData;
             }
@@ -115,6 +118,30 @@ const resolvers = {
       
             throw new AuthenticationError('You must be logged in');
           },
+          addBankAccount: async (parent, args, context) => {
+            if (context.user) {
+              const updatedAccount = await user.findOneAndUpdate(
+                {_id: context.user._id},
+                {
+                  $addToSet: {
+                    bankAccounts: {
+                      bankName: args.bankName,
+                      accountIdentifier: args.accountIdentifier,
+                      checkingValue: args.checkingValue,
+                      savingsAccount: args.savingsAccount,
+                      savingsValue: args.savingsValue
+                    }
+                  }
+                },
+                { new: true }
+              )
+                .select('-__v')
+                .populate('bankAccounts');
+
+              return updatedAccount;
+            }
+            throw new AuthenticationError('You Must be logged in')
+          }
     }
 }
 

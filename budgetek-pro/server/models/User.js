@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 
 const ExpenseSchema = require('./Expenses')
 const IncomeSchema = require('./Incomes')
+const BankSchema = require('./Banks')
 
 const userSchema = new Schema(
     {
@@ -22,7 +23,8 @@ const userSchema = new Schema(
             required: true,
         },
         incomes: [IncomeSchema],
-        expenses: [ExpenseSchema]
+        expenses: [ExpenseSchema],
+        bankAccounts: [BankSchema]
     },
     {
         toJSON: {
@@ -46,10 +48,6 @@ userSchema.methods.isCorrectPassword = async function (password) {
 userSchema.virtual('totalExpense').get(function() {
     return this.expenses.length;
 });
-
-userSchema.virtual('totalIncome').get(function() {
-    return this.incomes.length;
-})
 
 const User = model('User', userSchema);
 

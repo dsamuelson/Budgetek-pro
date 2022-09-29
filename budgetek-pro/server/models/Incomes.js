@@ -6,7 +6,7 @@ const IncomeSchema = new Schema ({
         required: true
     },
     incomeValue: {
-        type: String,
+        type: Number,
         required: true
     },
     incomeFrequency: {

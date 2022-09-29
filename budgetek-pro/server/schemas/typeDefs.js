@@ -21,8 +21,13 @@ const typeDefs = gql`
 
     }
 
-    input LoginCred {
-        username: String
+    type BankAccounts {
+        _id: ID
+        bankName: String
+        accountIdentifier: String
+        checkingValue: String
+        savingsAccount: Boolean
+        savingsValue: String
     }
 
     type User {
@@ -31,6 +36,7 @@ const typeDefs = gql`
         email: String
         incomes: [Incomes]
         expenses: [Expenses]
+        bankAccounts: [BankAccounts]
     }
     type Auth {
         token: ID!
@@ -47,6 +53,7 @@ const typeDefs = gql`
         login(username: String! password: String!): Auth
         addIncome(incomeTitle: String!, incomeValue: String!, incomeFrequency: String!, primaryIncome: Boolean!, payDay: String): Incomes
         addExpense(expenseTitle: String!, expenseValue: String!, expenseFrequency: String!, vitalExpense: Boolean, expenseCategory: String, dueDate: String): Expenses
+        addBankAccount(bankName: String!, accountIdentifier: String!, checkingValue: String!, savingsAccount: Boolean, savingsValue:String): BankAccounts
     }
 `;
 
