@@ -1,34 +1,22 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from '@apollo/client';
-import { QUERY_ME, QUERY_EXPENSES, QUERY_INCOMES} from '../../utils/queries';
+import { QUERY_EXPENSES, QUERY_INCOMES} from '../../utils/queries';
+import { useSelector, useDispatch } from 'react-redux';
 import Auth from '../../utils/auth'
+
 function OverviewBar() {
 
-    const {loading, data} = useQuery(QUERY_ME)
     const {loading: expenseLoading, data: expenseData} = useQuery(QUERY_EXPENSES)
     const {loading: incomeLoading, data: incomeData} = useQuery(QUERY_INCOMES)
     const loggedIn = Auth.loggedIn();
-
-    function totalIncome() {
-        let incomeCount = 0;
-        for (let i = 0; i < incomeData.me.incomes.length; i++) {
-            incomeCount += parseFloat(incomeData.me.incomes[i].incomeValue)
-        }
-        return incomeCount.toFixed(2);
-    }
-
-    function totalExpense() {
-        let expenseCount = 0;
-        for (let i = 0; i< expenseData.me.expenses.length; i++) {
-            expenseCount += parseFloat(expenseData.me.expenses[i].expenseValue)
-        }
-        return expenseCount.toFixed(2);
-    }
-
+    const IandEtoggleStore = useSelector((state) => state.iande);
+    const IandEtoggle = IandEtoggleStore.iande;
+    const dispatch = useDispatch();
+    
     function budgetTotal() {
-        let expenses = totalExpense();
-        let incomes = totalIncome();
+        let expenses = expenseData.me.totalExpense;
+        let incomes = incomeData.me.totalIncome;
         let budgetValue = parseFloat(incomes - expenses).toFixed(2);
 
         if (budgetValue <= 0) {
@@ -38,22 +26,42 @@ function OverviewBar() {
         return budgetValue
     }
 
+    function viewExpenses() {
+        if (IandEtoggle) {
+            dispatch({
+                type: 'TOGGLE_IANDE',
+                iande: false
+            })
+        }
+    }
+
+    function viewIncome() {
+        if (!IandEtoggle) {
+            dispatch({
+                type: 'TOGGLE_IANDE',
+                iande: true
+            })
+        }
+    }
+
     return (
         <div>
         {loggedIn && (
         <div className="OBCont">
             
-            <h2 className="incomeTitle">Incomes</h2>
+            <h2 className="incomeTitle"
+                onClick={viewIncome}>Incomes</h2>
             { incomeLoading ? (
                 <p className="incomeValue">Loading...</p>
             ) : (
-            <p className="incomeValue">{totalIncome()}</p>
+            <p className="incomeValue">{incomeData.me.totalIncome}</p>
             )}
-            <h2 className="expenseTitle">Expenses</h2>
+            <h2 className="expenseTitle"
+                onClick={viewExpenses}>Expenses</h2>
             { expenseLoading ? (
                 <p className="expenseValue">Loading...</p>
             ) : ( 
-            <p className="expenseValue">{totalExpense()}</p>
+            <p className="expenseValue">{expenseData.me.totalExpense}</p>
             )}
             <h2 className="totalsTitle">Totals</h2>
             { incomeLoading || expenseLoading ? (

@@ -22,12 +22,14 @@ export const QUERY_INCOMES = gql`
   {
     me {
       incomes {
+        _id
         incomeTitle
         incomeValue
         incomeFrequency
         primaryIncome
         payDay
       }
+      totalIncome
     }
   }
 `;
@@ -36,6 +38,7 @@ export const QUERY_EXPENSES = gql`
   {
     me {
       expenses {
+        _id
         expenseTitle
         expenseValue
         expenseFrequency
@@ -43,6 +46,7 @@ export const QUERY_EXPENSES = gql`
         expenseCategory
         dueDate
       }
+      totalExpense
     }
   }
 `;

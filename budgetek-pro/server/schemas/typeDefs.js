@@ -37,6 +37,8 @@ const typeDefs = gql`
         incomes: [Incomes]
         expenses: [Expenses]
         bankAccounts: [BankAccounts]
+        totalExpense: String
+        totalIncome: String
     }
     type Auth {
         token: ID!

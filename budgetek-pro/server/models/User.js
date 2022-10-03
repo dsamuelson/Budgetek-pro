@@ -46,7 +46,19 @@ userSchema.methods.isCorrectPassword = async function (password) {
 };
 
 userSchema.virtual('totalExpense').get(function() {
-    return this.expenses.length;
+    let tExpense = 0;
+    for (let i = 0; i < this.expenses.length; i ++) {
+        tExpense += parseFloat(this.expenses[i].expenseValue)
+    }
+    return tExpense.toFixed(2);
+});
+
+userSchema.virtual('totalIncome').get(function() {
+    let tIncome = 0;
+    for (let i = 0; i < this.incomes.length; i ++) {
+        tIncome += parseFloat(this.incomes[i].incomeValue)
+    }
+    return tIncome.toFixed(2);
 });
 
 const User = model('User', userSchema);
