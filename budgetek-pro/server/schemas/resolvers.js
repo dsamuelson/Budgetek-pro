@@ -92,6 +92,21 @@ const resolvers = {
       
             throw new AuthenticationError('You must be logged in');
           },
+          removeIncome: async (parent, args, context) => {
+            if (context.user) {
+              const updatedUser = await User.findOneAndUpdate(
+                { _id: context.user._id},
+                {
+                  $pull: {incomes: { _id: args._id }}
+                },
+                { new: true }
+              )
+              .select('-__v')
+              .populate('incomes')
+              return updatedUser
+            }
+            throw new AuthenticationError('You must be logged in')
+          },
           addExpense: async (parent, args, context) => {
             if (context.user) {
               const updatedUser = await User.findOneAndUpdate(
@@ -117,6 +132,22 @@ const resolvers = {
             }
       
             throw new AuthenticationError('You must be logged in');
+          },
+          removeExpense: async (parent, args, context) => {
+            console.log(args)
+            if (context.user) {
+              const updatedUser = await User.findOneAndUpdate(
+                { _id: context.user._id},
+                {
+                  $pull: { expenses: { _id: args._id }}
+                },
+                { new: true }
+              )
+              .select('-__v')
+              .populate('expenses')
+              return updatedUser
+            }
+            throw new AuthenticationError('You must be logged in')
           },
           addBankAccount: async (parent, args, context) => {
             if (context.user) {

@@ -6,8 +6,7 @@ import TogglesReducer from "./features/toggleSlice";
 const rootReducer = combineReducers({
     categories: catagoriesReducer,
     iande: TogglesReducer,
-    incomeModal: TogglesReducer,
-    expenseModal: TogglesReducer
+    modalValue: TogglesReducer
     
 })
 

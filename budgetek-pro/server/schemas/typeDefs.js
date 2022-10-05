@@ -54,7 +54,9 @@ const typeDefs = gql`
         createUser(email: String!, username: String!, password: String!): Auth
         login(username: String! password: String!): Auth
         addIncome(incomeTitle: String!, incomeValue: String!, incomeFrequency: String!, primaryIncome: Boolean!, payDay: String): Incomes
+        removeIncome(_id: String!): User
         addExpense(expenseTitle: String!, expenseValue: String!, expenseFrequency: String!, vitalExpense: Boolean, expenseCategory: String, dueDate: String): Expenses
+        removeExpense(_id: String!): User
         addBankAccount(bankName: String!, accountIdentifier: String!, checkingValue: String!, savingsAccount: Boolean, savingsValue:String): BankAccounts
     }
 `;

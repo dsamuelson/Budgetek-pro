@@ -8,7 +8,6 @@ import NoMatch from './pages/NoMatch';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Nav from './components/Nav';
-import { StoreProvider } from './utils/GlobalState';
 import OverviewBar from './components/OverviewBar';
 import Footer from './components/Footer';
 
@@ -36,7 +35,6 @@ function App() {
     <ApolloProvider client={client}>
       <Router>
         <div>
-          <StoreProvider>
             <Nav />
             <OverviewBar />
             <Routes>
@@ -57,7 +55,6 @@ function App() {
                 element={<NoMatch />} 
               />
             </Routes>
-          </StoreProvider>
           <Footer />
         </div>
       </Router>

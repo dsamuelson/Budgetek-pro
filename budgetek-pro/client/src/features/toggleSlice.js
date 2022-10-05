@@ -1,13 +1,11 @@
 import {
     TOGGLE_IANDE,
-    TOGGLE_EXPENSE_MODAL,
-    TOGGLE_INCOME_MODAL
+    TOGGLE_MODAL
   } from "../utils/actions";
 
 const initialState = {
     iande: true,
-    incomeModal: false,
-    expenseModal: false,
+    modalValue: 'None'
   }
 
   export default function TogglesReducer(state = initialState, action) {
@@ -17,15 +15,10 @@ const initialState = {
               ...state,
               iande: action.iande
             };
-        case TOGGLE_EXPENSE_MODAL:
+        case TOGGLE_MODAL:
             return {
                 ...state,
-                expenseModal: action.expenseModal
-            };
-        case TOGGLE_INCOME_MODAL:
-            return {
-                ...state,
-                incomeModal: action.incomeModal
+                modalValue: action.modalValue
             };
         default:
             return state;
