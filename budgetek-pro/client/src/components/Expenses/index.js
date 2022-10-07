@@ -2,24 +2,41 @@ import React, { useState, useEffect } from "react";
 import Auth from '../../utils/auth';
 import { useQuery, useMutation } from '@apollo/client';
 import { QUERY_EXPENSES} from '../../utils/queries';
-import { formatDate } from "../../utils/helpers";
+import { formatDate, idbPromise } from "../../utils/helpers";
 import { REMOVE_EXPENSE } from "../../utils/mutations";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 function ExpensesList() {
 
     const dispatch = useDispatch()
-    const {loading: expenseLoading, data: expenseData} = useQuery(QUERY_EXPENSES)
-    const [expensesList, setExpensesList] = useState([])
+    const {loading: expenseLoading, data: expenseData, refetch: expenseDataRefetch} = useQuery(QUERY_EXPENSES)
+    const iandEMToggleStore = useSelector((state) => state.modalValue);
+    const iandEMValue = iandEMToggleStore.modalValue;
+    const expensesListStore = useSelector((state) => state.expenses);
+    const expensesList = expensesListStore.expenses;
     const loggedIn = Auth.loggedIn();
 
     const [removeExpense] = useMutation(REMOVE_EXPENSE)
-
+        
     useEffect(() => {
-        if (!expenseLoading) {
-            setExpensesList(expenseData.me.expenses)
+        expenseDataRefetch()
+        if (expenseData) {
+            dispatch({
+                type: 'ADD_EXPENSES',
+                expenses: expenseData.me.expenses
+            })
+            expenseData.me.expenses.forEach((idbExpense) => {
+                idbPromise('expenses', 'put', idbExpense)
+            })
+        } else if (!expenseLoading) {
+            idbPromise('expenses', 'get').then((idbExpenses) => {
+                dispatch({
+                    type: "ADD_EXPENSES",
+                    expnenses: idbExpenses
+                })
+            })
         }
-    },[expenseLoading, expenseData, expensesList.length, removeExpense])
+    },[expenseLoading, expenseData, iandEMValue, dispatch])
 
     function EModalToggle() {
         dispatch({
@@ -39,6 +56,8 @@ function ExpensesList() {
         } catch (error) {
             console.log(error);
         }
+        idbPromise('expenses', 'delete', { _id: ident})
+        expenseDataRefetch()
     }
 
     return (

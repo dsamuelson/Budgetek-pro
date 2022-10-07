@@ -1,6 +1,4 @@
 import {ADD_EXPENSES, ADD_INCOMES, REMOVE_EXPENSES, REMOVE_INCOMES} from '../utils/actions'
-import { useQuery } from '@apollo/client';
-import { QUERY_INCOMES } from '../utils/queries';
 
 const initialState = {
     incomes: [],

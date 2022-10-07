@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Auth from '../../utils/auth';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { ADD_INCOME, ADD_EXPENSE } from '../../utils/mutations';
-import { QUERY_INCOMES } from "../../utils/queries";
 import { useDispatch, useSelector } from 'react-redux'
 
 function IandEModal() {
