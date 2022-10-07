@@ -36,9 +36,6 @@ function ExpensesList() {
                 _id: ident
             }
         });
-        if (!expenseLoading) {
-            setExpensesList(expenseData.me.expenses)
-        }
         } catch (error) {
             console.log(error);
         }

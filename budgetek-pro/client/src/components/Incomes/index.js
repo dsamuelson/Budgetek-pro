@@ -1,27 +1,42 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import Auth from '../../utils/auth';
 import { useQuery, useMutation } from '@apollo/client';
 import { QUERY_INCOMES} from '../../utils/queries';
 import { REMOVE_INCOME } from "../../utils/mutations";
-import { formatDate } from "../../utils/helpers";
-import { useDispatch } from 'react-redux'
+import { formatDate, idbPromise } from "../../utils/helpers";
+import { useDispatch, useSelector } from 'react-redux'
 
 function IncomesList() {
 
     const dispatch = useDispatch();
-    const {loading: incomeLoading, data: incomeData} = useQuery(QUERY_INCOMES)
-    const [incomesList, setIncomesList] = useState([])
+    const {loading: incomeLoading, data: incomeData, refetch: incomeDataRefetch } = useQuery(QUERY_INCOMES)
+    const iandEMToggleStore = useSelector((state) => state.modalValue);
+    const iandEMValue = iandEMToggleStore.modalValue;
+    const incomesListStore = useSelector((state) => state.incomes);
+    const incomesList = incomesListStore.incomes;
     const loggedIn = Auth.loggedIn();
-
     const [removeIncome] = useMutation(REMOVE_INCOME);
     
 
     useEffect(() => {
+        incomeDataRefetch()
         if (incomeData) {
-            setIncomesList(incomeData.me.incomes)
+            dispatch({
+                type: 'ADD_INCOMES',
+                incomes: incomeData.me.incomes
+            })
+            incomeData.me.incomes.forEach((idbIncome) => {
+                idbPromise('incomes', 'put', idbIncome)
+            })
+        } else if (!incomeLoading) {
+            idbPromise('incomes', 'get').then((idbIncomes) => {
+                dispatch({
+                    type: 'ADD_INCOMES',
+                    incomes: idbIncomes
+                })
+            })
         }
-        
-    },[incomeLoading, incomeData, incomesList.length])
+    },[incomeLoading, incomeData, iandEMValue, dispatch])
 
     function iModalToggle() {
         dispatch({
@@ -40,6 +55,8 @@ function IncomesList() {
         })} catch (error) {
             console.log(error);
         }
+        idbPromise('incomes', 'delete', {_id: ident})
+        incomeDataRefetch()
     }
 
     return (

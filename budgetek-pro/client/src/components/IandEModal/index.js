@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import Auth from '../../utils/auth';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { ADD_INCOME, ADD_EXPENSE } from '../../utils/mutations';
+import { QUERY_INCOMES } from "../../utils/queries";
 import { useDispatch, useSelector } from 'react-redux'
 
 function IandEModal() {
@@ -50,10 +51,16 @@ function IandEModal() {
                     primaryIncome: iModalPrimary,
                     payDay: payDayDate,
                 }
+                
             });
         } catch (error) {
             console.log(error);
         }
+
+        dispatch({
+            type: "TOGGLE_MODAL",
+            modalValue: 'None'
+        })
     }
 
     async function submitExpenseModal(e) {
@@ -72,6 +79,12 @@ function IandEModal() {
         } catch (error) {
             console.log(error);
         }
+
+        dispatch({
+            type: "TOGGLE_MODAL",
+            modalValue: 'None'
+        })
+
     }
 
     return (
