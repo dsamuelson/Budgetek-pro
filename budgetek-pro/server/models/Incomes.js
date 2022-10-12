@@ -1,4 +1,5 @@
 const { Schema } = require('mongoose');
+const UOMESchema = require('./Uoweme');
 
 const IncomeSchema = new Schema ({
     incomeTitle: {
@@ -18,6 +19,7 @@ const IncomeSchema = new Schema ({
         required: true,
         default: false
     },
+    uomePayInfo: [UOMESchema],
     payDay: {
         type: Date,
         required: false,

@@ -1,4 +1,5 @@
 const { Schema } = require('mongoose');
+const IOWEUSchema = require('./Ioweyou');
 
 const ExpenseSchema = new Schema({
     expenseTitle: {
@@ -21,6 +22,7 @@ const ExpenseSchema = new Schema({
         type: String,
         required: false
     },
+    iouInfo: [IOWEUSchema],
     dueDate: {
         type: Date,
         required: false,

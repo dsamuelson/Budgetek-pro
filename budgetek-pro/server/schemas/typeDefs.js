@@ -1,6 +1,19 @@
 const { gql } = require('apollo-server-express')
 
 const typeDefs = gql`
+    type UOME {
+        _id: ID
+        uomeTitle: String
+        uomeValue: String
+        uomePaid: Boolean
+    }
+
+    input UOMEi {
+        uomeTitle: String!
+        uomeValue: String!
+        uomePaid: Boolean
+    }
+
     type Incomes {
         _id: ID
         incomeTitle: String
@@ -8,6 +21,7 @@ const typeDefs = gql`
         incomeFrequency: String
         primaryIncome: Boolean
         payDay: String
+        uomePayInfo: [UOME]
     }
 
     type Expenses {
@@ -53,8 +67,9 @@ const typeDefs = gql`
     type Mutation {
         createUser(email: String!, username: String!, password: String!): Auth
         login(username: String! password: String!): Auth
-        addIncome(incomeTitle: String!, incomeValue: String!, incomeFrequency: String!, primaryIncome: Boolean!, payDay: String): Incomes
+        addIncome(incomeTitle: String!, incomeValue: String!, incomeFrequency: String!, primaryIncome: Boolean!, payDay: String, uomePayInfo: [UOMEi!]): Incomes
         removeIncome(_id: String!): User
+        addUOMe(uomeId: String!, uomePayInfo: [UOMEi!]!): Incomes
         addExpense(expenseTitle: String!, expenseValue: String!, expenseFrequency: String!, vitalExpense: Boolean, expenseCategory: String, dueDate: String): Expenses
         removeExpense(_id: String!): User
         addBankAccount(bankName: String!, accountIdentifier: String!, checkingValue: String!, savingsAccount: Boolean, savingsValue:String): BankAccounts

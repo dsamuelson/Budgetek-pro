@@ -80,33 +80,29 @@ const Home = () => {
         value={date}
         tileContent={({ date, view }) => {
           let iandeContent = []
-          // let expenseContent = []
           if (view === 'month') {
             for (let i = 0; i < incomes.length; i ++) {
               if (date.toLocaleDateString() === new Date(parseInt(incomes[i].payDay)).toLocaleDateString()) {
-                iandeContent.push({id: incomes[i]._id, iandeEvent: `${incomes[i].incomeTitle} for ${incomes[i].incomeValue}`})
+                iandeContent.push({id: incomes[i]._id, iandeEvent: `${incomes[i].incomeTitle} for ${incomes[i].incomeValue}`, eventClass: 'incomeLI'})
               }
             }
             for (let i = 0; i < expenses.length; i ++) {
               if (date.toLocaleDateString() === new Date(parseInt(expenses[i].dueDate)).toLocaleDateString()) {
-                iandeContent.push({id: expenses[i]._id, iandeEvent: `${expenses[i].expenseTitle} for ${expenses[i].expenseValue}`})
+                iandeContent.push({id: expenses[i]._id, iandeEvent: `${expenses[i].expenseTitle} for ${expenses[i].expenseValue}`, eventClass: 'expenseLI'})
               }
             }
           }
           if (iandeContent) {
-            console.log(iandeContent)
             return (
               <div>
                 <ul className="calendarViewUL">
                 {iandeContent.map((iandeUnit) => {
                   return (
                     <li
-                    key={iandeUnit.id}>{iandeUnit.iandeEvent}</li>
+                    key={iandeUnit.id} className={iandeUnit.eventClass}>{iandeUnit.iandeEvent}</li>
                   )
                 })}
                 </ul>
-                {/* // {incomeContent && (<p className="incomeDate">income: {incomeContent}</p>)}
-                // {expenseContent && (<p className="expenseDate">Expense: {expenseContent}</p>)} */}
               </div>
             )
           } 
