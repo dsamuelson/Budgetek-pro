@@ -14,6 +14,19 @@ const typeDefs = gql`
         uomePaid: Boolean
     }
 
+    type IOU {
+        _id: ID
+        iouTitle: String
+        iouValue: String
+        iouPaid: Boolean
+    }
+
+    input IOUi {
+        iouTitle: String!
+        iouValue: String!
+        iouPaid: Boolean
+    }
+
     type Incomes {
         _id: ID
         incomeTitle: String
@@ -32,6 +45,7 @@ const typeDefs = gql`
         vitalExpense: Boolean
         expenseCategory: String
         dueDate: String
+        iouInfo: [IOU]
 
     }
 
@@ -70,8 +84,11 @@ const typeDefs = gql`
         addIncome(incomeTitle: String!, incomeValue: String!, incomeFrequency: String!, primaryIncome: Boolean!, payDay: String, uomePayInfo: [UOMEi!]): Incomes
         removeIncome(_id: String!): User
         addUOMe(uomeId: String!, uomePayInfo: [UOMEi!]!): Incomes
-        addExpense(expenseTitle: String!, expenseValue: String!, expenseFrequency: String!, vitalExpense: Boolean, expenseCategory: String, dueDate: String): Expenses
+        removeUOMe(_id: String!, incomeId: String!): User
+        addExpense(expenseTitle: String!, expenseValue: String!, expenseFrequency: String!, vitalExpense: Boolean, expenseCategory: String, dueDate: String, iouInfo: [IOUi!]): Expenses
         removeExpense(_id: String!): User
+        addIOU(iouId: String!, iouInfo: [IOUi!]!): Expenses
+        removeIOU(_id: String!, expenseId: String!): User
         addBankAccount(bankName: String!, accountIdentifier: String!, checkingValue: String!, savingsAccount: Boolean, savingsValue:String): BankAccounts
     }
 `;

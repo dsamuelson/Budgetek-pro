@@ -93,7 +93,6 @@ const resolvers = {
             throw new AuthenticationError('You must be logged in');
           },
           addUOMe: async (parent, args, context) => {
-            console.log([...args.uomePayInfo])
             if (context.user) {
               const updatedUser = await User.findOneAndUpdate(
                 { _id: context.user._id, "incomes._id": args.uomeId},
@@ -111,6 +110,22 @@ const resolvers = {
             }
       
             throw new AuthenticationError('You must be logged in');
+          },
+          removeUOMe: async (parent, args, context) => {
+            if (context.user) {
+              const updatedUser = await User.findOneAndUpdate(
+                {_id: context.user._id, 'incomes._id': args.incomeId},
+                {
+                  $pull: { "incomes.$.uomePayInfo": {_id: args._id}}
+                },
+                { new: true }
+              )
+              .select('-__v')
+              .populate('incomes')
+
+              return updatedUser;
+            }
+            throw new AuthenticationError('You must be logged in')
           },
           removeIncome: async (parent, args, context) => {
             if (context.user) {
@@ -152,6 +167,42 @@ const resolvers = {
             }
       
             throw new AuthenticationError('You must be logged in');
+          },
+          addIOU: async (parent, args, context) => {
+            console.log(args)
+            if (context.user) {
+              const updatedUser = await User.findOneAndUpdate(
+                { _id: context.user._id, "expenses._id": args.iouId},
+                {
+                  $addToSet: {
+                    "expenses.$.iouInfo": [...args.iouInfo]
+                  }
+                },
+                { new: true },
+              )
+                .select('-__v -password')
+                .populate('expenses');
+      
+              return updatedUser;
+            }
+      
+            throw new AuthenticationError('You must be logged in');
+          },
+          removeIOU: async (parent, args, context) => {
+            if (context.user) {
+              const updatedUser = await User.findOneAndUpdate(
+                {_id: context.user._id, 'expenses._id': args.expenseId},
+                {
+                  $pull: { "expenses.$.iouInfo": {_id: args._id}}
+                },
+                { new: true }
+              )
+              .select('-__v')
+              .populate('expenses')
+
+              return updatedUser;
+            }
+            throw new AuthenticationError('You must be logged in')
           },
           removeExpense: async (parent, args, context) => {
             if (context.user) {
