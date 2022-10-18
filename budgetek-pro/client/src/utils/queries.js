@@ -28,6 +28,12 @@ export const QUERY_INCOMES = gql`
         incomeFrequency
         primaryIncome
         payDay
+        uomePayInfo {
+          _id
+          uomeTitle
+          uomeValue
+          uomePaid
+        }
       }
       totalIncome
     }
@@ -45,6 +51,12 @@ export const QUERY_EXPENSES = gql`
         vitalExpense
         expenseCategory
         dueDate
+        iouInfo {
+          _id
+          iouTitle
+          iouValue
+          iouPaid
+        }
       }
       totalExpense
     }

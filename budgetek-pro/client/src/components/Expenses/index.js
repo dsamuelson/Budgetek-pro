@@ -61,7 +61,7 @@ function ExpensesList() {
     }
 
     return (
-        <div>
+        <div className="expensesTable">
             {loggedIn && expensesList && (
                 <div>
                 <table className="expenseTable">

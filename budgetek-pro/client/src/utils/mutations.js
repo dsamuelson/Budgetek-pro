@@ -55,14 +55,9 @@ export const REMOVE_EXPENSE = gql`
 `;
 
 export const ADD_INCOME = gql`
-mutation addIncome($incomeTitle: String!, $incomeValue: String!, $incomeFrequency: String!, $primaryIncome: Boolean!, $payDay: String) {
-  addIncome(incomeTitle: $incomeTitle, incomeValue: $incomeValue, incomeFrequency: $incomeFrequency, primaryIncome: $primaryIncome, payDay: $payDay) {
+mutation addIncome($incomeTitle: String!, $incomeValue: String!, $incomeFrequency: String!, $primaryIncome: Boolean!, $payDay: String, $uomePayInfo: [UOMEi!]) {
+  addIncome(incomeTitle: $incomeTitle, incomeValue: $incomeValue, incomeFrequency: $incomeFrequency, primaryIncome: $primaryIncome, payDay: $payDay, uomePayInfo: $uomePayInfo) {
     _id
-    incomeTitle
-    incomeValue
-    incomeFrequency
-    primaryIncome
-    payDay
   }
 }
 `;
@@ -71,6 +66,35 @@ export const REMOVE_INCOME = gql`
   mutation removeIncome($_id: String!) {
     removeIncome(_id: $_id) {
       _id
+    }
+  }
+`;
+
+export const ADD_UOME = gql`
+mutation addUOME($uomeId: String!, $uomePayInfo: [UOMEi!]!) {
+  addUOMe(uomeId: $uomeId, uomePayInfo: $uomePayInfo) {
+    _id
+    incomeTitle
+    uomePayInfo {
+      _id
+      uomeTitle
+      uomeValue
+      uomePaid
+    }
+  }
+}
+`;
+
+export const REMOVE_UOME = gql`
+  mutation removeUOMe($id: String!, $incomeId: String!) {
+    removeUOMe(_id: $id, incomeId: $incomeId) {
+      _id
+      incomes {
+        _id
+        uomePayInfo {
+          _id
+        }
+      }
     }
   }
 `;

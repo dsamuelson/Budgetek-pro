@@ -78,7 +78,8 @@ const resolvers = {
                       incomeValue: args.incomeValue,
                       incomeFrequency: args.incomeFrequency,
                       primaryIncome: args.primaryIncome,
-                      payDay: args.payDay
+                      payDay: args.payDay,
+                      uomePayInfo: [...args.uomePayInfo]
                     },
                   },
                 },

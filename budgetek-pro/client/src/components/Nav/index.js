@@ -9,7 +9,6 @@ function Nav() {
       return (
         <ul className="flex-row">
           <li className="mx-1">
-            {/* this is not using the Link component to logout or user and then refresh the application to the start */}
             <a href="/" onClick={() => Auth.logout()}>
               Logout
             </a>
@@ -35,15 +34,15 @@ function Nav() {
   }
 
   return (
-    <header className="flex-row px-1">
-      <nav>
-        {showNavigation()}
-      </nav>
+    <header className="headerBar">
       <h1 className="Budgetek-Title">
         <Link to="/">
           Budgetek
         </Link>
       </h1>
+      <nav>
+        {showNavigation()}
+      </nav>
     </header>
   );
 }

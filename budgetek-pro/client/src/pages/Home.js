@@ -8,11 +8,14 @@ import { useQuery } from "@apollo/client";
 import { QUERY_EXPENSES, QUERY_INCOMES } from "../utils/queries";
 import { idbPromise } from "../utils/helpers";
 import { useSelector, useDispatch } from 'react-redux';
+import Auth from "../utils/auth";
+
+
 
 const Home = () => {
-
   const [date, setDate] = useState(new Date())
   const dispatch = useDispatch();
+  const loggedIn = Auth.loggedIn()
   const {loading: incomeLoading, data: incomeData, refetch: incomeDataRefetch } = useQuery(QUERY_INCOMES)
   const {loading: expenseLoading, data: expenseData, refetch: expenseDataRefetch} = useQuery(QUERY_EXPENSES)
   const IandEtoggleStore = useSelector((state) => state.iande);
@@ -25,7 +28,8 @@ const Home = () => {
   const expenses = expensesStore.expenses;
   
     useEffect(() => {
-      expenseDataRefetch()
+      if (loggedIn) {
+        expenseDataRefetch()
       if (expenseData) {
           dispatch({
               type: 'ADD_EXPENSES',
@@ -42,9 +46,11 @@ const Home = () => {
               })
           })
       }
+    }
   },[expenseLoading, expenseData, IandEtoggle, dispatch])
 
   useEffect(() => {
+    if (loggedIn) {
     incomeDataRefetch()
     if (incomeData) {
         dispatch({
@@ -62,8 +68,10 @@ const Home = () => {
             })
         })
     }
+  }
   },[incomeLoading, incomeData, IandEtoggle, dispatch])
-
+  
+  if (loggedIn) {
   return (
     <div className="homeCont">
       {IandEtoggle ? (
@@ -83,12 +91,12 @@ const Home = () => {
           if (view === 'month') {
             for (let i = 0; i < incomes.length; i ++) {
               if (date.toLocaleDateString() === new Date(parseInt(incomes[i].payDay)).toLocaleDateString()) {
-                iandeContent.push({id: incomes[i]._id, iandeEvent: `${incomes[i].incomeTitle} for ${incomes[i].incomeValue}`, eventClass: 'incomeLI'})
+                iandeContent.push({id: incomes[i]._id, iandeEvent: `${incomes[i].incomeTitle}: +$${incomes[i].incomeValue}`, eventClass: 'incomeLI'})
               }
             }
             for (let i = 0; i < expenses.length; i ++) {
               if (date.toLocaleDateString() === new Date(parseInt(expenses[i].dueDate)).toLocaleDateString()) {
-                iandeContent.push({id: expenses[i]._id, iandeEvent: `${expenses[i].expenseTitle} for ${expenses[i].expenseValue}`, eventClass: 'expenseLI'})
+                iandeContent.push({id: expenses[i]._id, iandeEvent: `${expenses[i].expenseTitle}: -$${expenses[i].expenseValue}`, eventClass: 'expenseLI'})
               }
             }
           }
@@ -106,11 +114,19 @@ const Home = () => {
               </div>
             )
           } 
-        } }
+        }}
+        calendarType={"US"}
       />
       </div>
     </div>
   );
+} else {
+  return (
+    <div>
+      You Must be logged in first!
+    </div>
+  )
+}
 };
 
 export default Home;

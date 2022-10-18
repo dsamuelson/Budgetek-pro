@@ -11,3 +11,136 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.OBCont {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.homeCont {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+.incomesTable {
+  width: 45%;
+}
+
+.calendarCont {
+  width: 50%!important;
+}
+
+.react-calendar {
+  width: 100%!important;
+}
+
+.react-calendar__tile--active {
+  background-color: azure!important;
+  color: black!important;
+  border: 1px black dotted!important;
+}
+
+.react-calendar__tile--now{
+  background-color: beige!important;
+  border: 1px black solid!important;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: black!important;
+}
+
+.calendarViewUL {
+  list-style: none;
+  padding: 0;
+}
+
+.incomeTitle {
+  border-bottom: 2px green solid;
+}
+
+.expenseTitle {
+  padding-right: 5px;
+  border-bottom: 2px red solid;
+}
+
+.totalsTitle {
+  border-bottom: 2px black solid;
+}
+
+.incomeValue {
+  color: green;
+  -webkit-text-stroke: 1px darkgreen;
+  font-size: 25px;
+}
+
+.expenseValue{
+  color: red;
+  -webkit-text-stroke: 1px darkred;
+  font-size: 25px;
+}
+
+.totalsValue {
+  font-size: 25px;
+}
+
+.ieModal{
+  padding: 10px;
+  position: absolute;
+  background-color: white;
+  border-radius: 15px;
+  border: 1px black solid;
+  width: 50%;
+}
+
+.incomeForm {
+  display: flex;
+  flex-direction: column;
+
+}
+
+.expenseForm {
+  display: flex;
+  flex-direction: column;
+  
+}
+
+.headerBar {
+  display: flex;
+  flex-wrap: wrap-reverse;
+  justify-content: space-between;
+}
+
+.subTableItemized {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: center;
+  border: 1px black solid;
+}
+
+.subTableItemized h4 {
+  padding: 0;
+  margin: 0;
+}
+
+.subTableItemized thead {
+  width: 100%;
+}
+.subTableItemized tr{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.subTableItemized tr th {
+  width: 30%;
+}
+
+.subTableItemized tr td {
+  width: 30%;
+}

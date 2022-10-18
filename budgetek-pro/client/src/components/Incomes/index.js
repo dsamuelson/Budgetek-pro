@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Auth from '../../utils/auth';
 import { useQuery, useMutation } from '@apollo/client';
 import { QUERY_INCOMES} from '../../utils/queries';
@@ -15,6 +15,7 @@ function IncomesList() {
     const incomesListStore = useSelector((state) => state.incomes);
     const incomesList = incomesListStore.incomes;
     const loggedIn = Auth.loggedIn();
+    const [showItemizedList, setShowItemizedList] = useState([{id: "", open: false}])
     const [removeIncome] = useMutation(REMOVE_INCOME);
     
 
@@ -60,7 +61,7 @@ function IncomesList() {
     }
 
     return (
-        <div>
+        <div className="incomesTable">
             {loggedIn && incomesList && (
                 <div>
                 <table className="incomeTable">
@@ -70,20 +71,53 @@ function IncomesList() {
                             <th title="How much will/do you get paid?">Value</th>
                             <th title="How often does this pay?">Frequency</th>
                             <th title="When do you get paid?">Pay Date</th>
+                            <th title="Has this been Itemized">Itemized</th>
                             <th title="Remove Income">Delete</th>
                         </tr>
                     </thead>
                     <tbody>                        
                             {incomesList.map((income) => {
                                 return (
-                                    <tr 
-                                    key={income._id}>
-                                        <td>{income.incomeTitle}</td>
-                                        <td>{income.incomeValue}</td>
-                                        <td>{income.incomeFrequency}</td>
-                                        <td>{`${formatDate(income.payDay)}`}</td>
-                                        <td><button onClick={(e) => removeIncomeHandler(e, income._id)}>x</button></td>
-                                    </tr>
+                                    <React.Fragment key={income._id}>
+                                        <tr 
+                                        >
+                                            <td>{income.incomeTitle}</td>
+                                            <td>{income.incomeValue}</td>
+                                            <td>{income.incomeFrequency}</td>
+                                            <td>{`${formatDate(income.payDay)}`}</td>
+                                            <td onClick={() => setShowItemizedList([{id: income._id, open: !showItemizedList[0].open}])}>{income.uomePayInfo.length ? income.uomePayInfo.length : ``}</td>
+                                            <td><button onClick={(e) => removeIncomeHandler(e, income._id)}>x</button></td>
+                                        </tr>
+                                        {showItemizedList[0].id === income._id && showItemizedList[0].open && income.uomePayInfo.length > 0 && (
+                                            <tr>
+                                                <td colSpan={5}>
+                                                <table className="subTableItemized">
+                                                    <thead>
+                                                            <tr>
+                                                                <th><h4>Title</h4></th>
+                                                                <th><h4>Value</h4></th>
+                                                                <th><h4>Paid</h4></th>
+                                                            </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {income.uomePayInfo.map((itemizedEntry) => {
+                                                            return (
+                                                                <tr
+                                                                key={itemizedEntry._id}>
+                                                                        <td>{itemizedEntry.uomeTitle}</td>
+                                                                        <td>{itemizedEntry.uomeValue}</td>
+                                                                        <td><input type='checkbox' checked={itemizedEntry.uomePaid} disabled={true}/></td>
+                                                                    </tr>
+                                                            )
+                                                        })}   
+                                                    </tbody>                                                  
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                                    
+                                        )}
+                                    </React.Fragment>
+                                    
                                 )
                             })}
                     </tbody>     

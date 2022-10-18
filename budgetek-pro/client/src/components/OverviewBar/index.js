@@ -48,28 +48,32 @@ function OverviewBar() {
         <div>
         {loggedIn && (
         <div className="OBCont">
-            
-            <h2 className="incomeTitle"
-                onClick={viewIncome}>Incomes</h2>
-            { incomeLoading ? (
-                <p className="incomeValue">Loading...</p>
-            ) : (
-            <p className="incomeValue">{incomeData.me.totalIncome}</p>
-            )}
-            <h2 className="expenseTitle"
-                onClick={viewExpenses}>Expenses</h2>
-            { expenseLoading ? (
-                <p className="expenseValue">Loading...</p>
-            ) : ( 
-            <p className="expenseValue">{expenseData.me.totalExpense}</p>
-            )}
-            <h2 className="totalsTitle">Totals</h2>
-            { incomeLoading || expenseLoading ? (
-                <p className="totalsValue">Loading</p>
-            ) : (
-                <p className="totalsValue">{budgetTotal()}</p>
-            )}
-            
+            <div className="incomeBox">
+                <h2 className="incomeTitle"
+                    onClick={viewIncome}>Incomes</h2>
+                { incomeLoading ? (
+                    <p className="incomeValue">Loading...</p>
+                ) : (
+                <p className="incomeValue">{incomeData.me.totalIncome}</p>
+                )}
+            </div>
+            <div className="expenseBox">
+                <h2 className="expenseTitle"
+                    onClick={viewExpenses}>Expenses</h2>
+                { expenseLoading ? (
+                    <p className="expenseValue">Loading...</p>
+                ) : ( 
+                <p className="expenseValue">{expenseData.me.totalExpense}</p>
+                )}
+            </div>
+            <div className="totalsBox">
+                <h2 className="totalsTitle">Totals</h2>
+                { incomeLoading || expenseLoading ? (
+                    <p className="totalsValue">Loading...</p>
+                ) : (
+                    <p className="totalsValue">{budgetTotal()}</p>
+                )}
+            </div>            
             <div className="savResTitle">
                 <h3>Residuals</h3>
                 <p className="resValue">$$$</p>

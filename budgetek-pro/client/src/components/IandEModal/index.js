@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Auth from '../../utils/auth';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'
 import { useMutation } from '@apollo/client';
-import { ADD_INCOME, ADD_EXPENSE } from '../../utils/mutations';
+import { ADD_INCOME, ADD_EXPENSE, ADD_UOME } from '../../utils/mutations';
 import { useDispatch, useSelector } from 'react-redux'
 
 function IandEModal() {
@@ -14,23 +14,40 @@ function IandEModal() {
 
     const [iModalTitle, setIModalTitle] = useState('');
     const [iModalValue, setIModalValue] = useState('');
+    const [iiItemize, setiItemize] = useState(false);
     const [iModalFrequency, setIModalFrequency] = useState('');
-    const [iModalPrimary, setIModalPrimary] = useState();
+    const [iModalPrimary, setIModalPrimary] = useState(false);
     const [payDayDate, setPayDayDate] = useState(new Date())
+
+    const [itemizeMTitle, setItemizeMTitle] = useState('')
+    const [itemizeMValue, setItemizeMValue] = useState('')
+    const [itemizeMPaid, setItemizeMPaid] = useState(false)
+    const [itemizeMPresubmit, setItemizeMPresubmit] = useState([]);
+    const [itemizeMSubmit, setItemizeMSubmit] = useState([]);
 
     const [eModalTitle, setEModalTitle] = useState('');
     const [eModalValue, setEModalValue] = useState('');
     const [eModalFrequency, setEModalFrequency] = useState('');
     const [eModalCategory, setEModalCategory] = useState('');
-    const [eModalVital, setEModalVital] = useState();
+    const [eModalVital, setEModalVital] = useState(false);
     const [dueDateDate, setDueDateDate] = useState(new Date())
 
     const [ addIncome ] = useMutation(ADD_INCOME)
     const [ addExpense ] = useMutation(ADD_EXPENSE)
-
-
+    const [addUOMe] = useMutation(ADD_UOME)
 
     const loggedIn = Auth.loggedIn();
+
+    useEffect(() => {
+        if (itemizeMPresubmit.length){
+            let oldValue = 0.00
+                for (let i = 0; i < itemizeMPresubmit.length; i ++) {
+                    if (!itemizeMPresubmit[i].iPaid){
+                        setIModalValue( oldValue += parseFloat(itemizeMPresubmit[i].iValue))
+                    }
+                }
+            };
+    },[itemizeMPresubmit, setItemizeMPresubmit])
 
     function iandEMToggle() {
             dispatch({
@@ -40,15 +57,17 @@ function IandEModal() {
     }
 
     async function submitIncomeModal(e) {
+        
         e.preventDefault();
         try {
             await addIncome({
                 variables: {
                     incomeTitle: iModalTitle,
-                    incomeValue: iModalValue,
+                    incomeValue: iModalValue.toString(),
                     incomeFrequency: iModalFrequency,
                     primaryIncome: iModalPrimary,
                     payDay: payDayDate,
+                    uomePayInfo: [...itemizeMSubmit]
                 }
                 
             });
@@ -86,17 +105,63 @@ function IandEModal() {
 
     }
 
+    async function submitItemizeLI(e) {
+        e.preventDefault();
+        let tempId = Math.floor(Math.random() * parseInt(new Date().valueOf()))
+        let iPaid = itemizeMPaid
+        let iValue = itemizeMValue
+        let iTitle = itemizeMTitle
+        let forDisplayI = [{tempId, iPaid, iValue, iTitle}]
+        let currentI = [{uomePaid: iPaid, uomeValue: iValue, uomeTitle: iTitle}]
+        setItemizeMPresubmit((prev) => [...prev, ...forDisplayI])
+        setItemizeMSubmit((prev) => [...prev, ...currentI]);
+    }
+
     return (
-        <div>
+        <div className="ieModal">
+            <h2>ADD</h2>
             {loggedIn && modalValue === "Income" && (
-                <form>
-                    <label>Income Title:
+                <form className="incomeForm">
+                    <label>Income Title: 
                         <input type='text' id="ITitle" name="ITitle" onChange={(e) => setIModalTitle(e.target.value)}/>
                     </label>
-                    <label>Pay Amount:
-                        <input type='text' id='IValue' name="IValue" onChange={(e) => setIModalValue(e.target.value)}/>
+                    <label>Pay Amount: 
+                        <input type='text' id='IValue' name="IValue" value={iModalValue} onChange={(e) => setIModalValue(e.target.value)} disabled={iiItemize}/>
+                        (or is this itemized?
+                        <input type='checkbox' id='Iitemize' onChange={(e) => setiItemize(e.target.checked)}/>
+                        )
                     </label>
-                    <label>Frequency
+                    {iiItemize && (
+                        <div className="iItemizeTableCont">
+                        <table className="iItemizeTable">
+                            <thead>
+                                <tr>
+                                    <th>Item Title</th>
+                                    <th>Item Value</th>
+                                    <th>Item Paid</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {itemizeMPresubmit.length >= 1 && itemizeMPresubmit.map((lineItem) => {
+                                return (
+                                    <tr
+                                    key={lineItem.tempId}>
+                                        <td>{lineItem.iTitle}</td>
+                                        <td>{lineItem.iValue}</td>
+                                        <td><input type='checkbox' id='itemizePaid' name='itemizePaid' checked={lineItem.iPaid} disabled={true}/></td>
+                                    </tr>
+                                )})}
+                                <tr>
+                                    <td><input type='text' id="itemizeTitle" name="itemizeTitle" onChange={(e) => setItemizeMTitle(e.target.value)}/></td>
+                                    <td><input type='text' id='itemizeValue' name="itemizeValue" onChange={(e) => setItemizeMValue(e.target.value)}/></td>
+                                    <td><input type='checkbox' id='itemizePaid' name='itemizePaid' checked={itemizeMPaid} onChange={(e) => setItemizeMPaid(e.target.checked)}/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button onClick={submitItemizeLI}>Add Item</button>
+                        </div>
+                    )}
+                    <label>Frequency: 
                         <select id="IFrequency" name="IFrequency" onChange={(e) => setIModalFrequency(e.target.value)}>
                             <option>--None--</option>
                             <option value='once'>Once</option>
@@ -106,21 +171,21 @@ function IandEModal() {
                             <option value='other'>Other</option>
                         </select>
                     </label>
-                    <label>Primary Income
+                    <label>Primary Income: 
                         <input type='checkbox' id="IPrimary" name="IPrimary" onChange={(e) => setIModalPrimary(e.target.checked)}/>
                     </label>
-                    <label>Pay Day
+                    <label>Pay Day: 
                         <DatePicker 
                         selected={payDayDate}
                         onChange={(date) => setPayDayDate(date)}
                         />
                     </label>
-                    <input type='submit' value="Submit" onClick={event => submitIncomeModal(event)}></input>
+                    <input type='submit' value="Add Income" onClick={event => submitIncomeModal(event)}></input>
                     <input type='button' value="Cancel" onClick={iandEMToggle}></input>
                 </form>
             )}
             {loggedIn && modalValue === 'Expense' && (
-                <form>
+                <form className="expenseForm">
                     <label>Expense Title:
                         <input type='text' id="ETitle" name="ETitle" onChange={(e) => setEModalTitle(e.target.value)}/>
                     </label>
@@ -156,7 +221,7 @@ function IandEModal() {
                         onChange={(date) => setDueDateDate(date)}
                         />
                     </label>
-                    <input type='submit' value="Submit" onClick={event => submitExpenseModal(event)}></input>
+                    <input type='submit' value="Add Expense" onClick={event => submitExpenseModal(event)}></input>
                     <input type='button' value="Cancel" onClick={iandEMToggle}></input>
                 </form>
             )}
