@@ -76,6 +76,12 @@ export const QUERY_ME = gql`
             incomeFrequency
             primaryIncome
             payDay
+            uomePayInfo {
+              _id
+              uomeTitle
+              uomeValue
+              uomePaid
+            }
           }
           expenses {
             _id
@@ -85,6 +91,12 @@ export const QUERY_ME = gql`
             vitalExpense
             expenseCategory
             dueDate
+            iouInfo {
+              _id
+              iouTitle
+              iouValue
+              iouPaid
+            }
           }
           bankAccounts {
             _id
@@ -95,6 +107,7 @@ export const QUERY_ME = gql`
             savingsValue
           }
           totalExpense
+          totalIncome
       }
     }
 `;

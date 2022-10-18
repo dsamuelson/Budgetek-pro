@@ -14,6 +14,7 @@ function ExpensesList() {
     const iandEMValue = iandEMToggleStore.modalValue;
     const expensesListStore = useSelector((state) => state.expenses);
     const expensesList = expensesListStore.expenses;
+    const [showItemizedList, setShowItemizedList] = useState([{id: "", open: false}])
     const loggedIn = Auth.loggedIn();
 
     const [removeExpense] = useMutation(REMOVE_EXPENSE)
@@ -69,6 +70,7 @@ function ExpensesList() {
                         <tr>
                             <th title="Name of the Expense?">Title</th>
                             <th title="How much is the Expense?">Value</th>
+                            <th title="Has this been Itemized?">Itemized</th>
                             <th title="How Often does this come up?">Frequency</th>
                             <th title="Is this Vital or can it be Ignored?">Vital</th>
                             <th title="What is the category for this Expense?">Category</th>
@@ -79,16 +81,45 @@ function ExpensesList() {
                     <tbody>
                         {expensesList.map((expense) => {
                             return (
-                                <tr
-                                key={expense._id}>
-                                    <td>{expense.expenseTitle}</td>
-                                    <td>{expense.expenseValue}</td>
-                                    <td>{expense.expenseFrequency}</td>
-                                    <td>{expense.vitalExpense}</td>
-                                    <td>{expense.expenseCategory}</td>
-                                    <td>{`${formatDate(expense.dueDate)}`}</td>
-                                    <td><button onClick={(e) => removeExpenseHandler(e, expense._id)}>x</button></td>
-                                </tr>
+                                <React.Fragment key={expense._id}>
+                                    <tr>
+                                        <td>{expense.expenseTitle}</td>
+                                        <td>{expense.expenseValue}</td>
+                                        <td>{expense.expenseFrequency}</td>
+                                        <td onClick={() => setShowItemizedList([{id: expense._id, open: !showItemizedList[0].open}])}>{expense.iouInfo.length > 0 && expense.iouInfo.length}</td>
+                                        <td>{expense.vitalExpense}</td>
+                                        <td>{expense.expenseCategory}</td>
+                                        <td>{`${formatDate(expense.dueDate)}`}</td>
+                                        <td><button onClick={(e) => removeExpenseHandler(e, expense._id)}>x</button></td>
+                                    </tr>
+                                    {showItemizedList[0].id === expense._id && showItemizedList[0].open && expense.iouInfo.length > 0 && (
+                                        <tr>
+                                            <td colSpan={5}>
+                                            <table className="subTableItemized">
+                                                <thead>
+                                                        <tr>
+                                                            <th><h4>Title</h4></th>
+                                                            <th><h4>Value</h4></th>
+                                                            <th><h4>Paid</h4></th>
+                                                        </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {expense.iouInfo.map((itemizedEntry) => {
+                                                        return (
+                                                            <tr
+                                                            key={itemizedEntry._id}>
+                                                                    <td>{itemizedEntry.iouTitle}</td>
+                                                                    <td>{itemizedEntry.iouValue}</td>
+                                                                    <td><input type='checkbox' checked={itemizedEntry.iouPaid} disabled={true}/></td>
+                                                            </tr>
+                                                        )
+                                                    })}   
+                                                </tbody>                                                  
+                                                </table>
+                                            </td>
+                                        </tr>         
+                                    )}
+                                </React.Fragment>
                             ) 
                         })}
                     </tbody>

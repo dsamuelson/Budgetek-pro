@@ -155,7 +155,8 @@ const resolvers = {
                       expenseFrequency: args.expenseFrequency,
                       vitalExpense: args.vitalExpense,
                       expenseCategory: args.expenseCategory,
-                      dueDate: args.dueDate
+                      dueDate: args.dueDate,
+                      iouInfo: [...args.iouInfo]
                     },
                   },
                 },

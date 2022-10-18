@@ -81,13 +81,13 @@ const typeDefs = gql`
     type Mutation {
         createUser(email: String!, username: String!, password: String!): Auth
         login(username: String! password: String!): Auth
-        addIncome(incomeTitle: String!, incomeValue: String!, incomeFrequency: String!, primaryIncome: Boolean!, payDay: String, uomePayInfo: [UOMEi!]): Incomes
+        addIncome(incomeTitle: String!, incomeValue: String!, incomeFrequency: String!, primaryIncome: Boolean!, payDay: String, uomePayInfo: [UOMEi!]): User
         removeIncome(_id: String!): User
-        addUOMe(uomeId: String!, uomePayInfo: [UOMEi!]!): Incomes
+        addUOMe(uomeId: String!, uomePayInfo: [UOMEi!]!): User
         removeUOMe(_id: String!, incomeId: String!): User
-        addExpense(expenseTitle: String!, expenseValue: String!, expenseFrequency: String!, vitalExpense: Boolean, expenseCategory: String, dueDate: String, iouInfo: [IOUi!]): Expenses
+        addExpense(expenseTitle: String!, expenseValue: String!, expenseFrequency: String!, vitalExpense: Boolean, expenseCategory: String, dueDate: String, iouInfo: [IOUi!]): User
         removeExpense(_id: String!): User
-        addIOU(iouId: String!, iouInfo: [IOUi!]!): Expenses
+        addIOU(iouId: String!, iouInfo: [IOUi!]!): User
         removeIOU(_id: String!, expenseId: String!): User
         addBankAccount(bankName: String!, accountIdentifier: String!, checkingValue: String!, savingsAccount: Boolean, savingsValue:String): BankAccounts
     }

@@ -27,6 +27,7 @@ function IandEModal() {
 
     const [eModalTitle, setEModalTitle] = useState('');
     const [eModalValue, setEModalValue] = useState('');
+    const [eItemize, setEItemize] = useState(false);
     const [eModalFrequency, setEModalFrequency] = useState('');
     const [eModalCategory, setEModalCategory] = useState('');
     const [eModalVital, setEModalVital] = useState(false);
@@ -38,12 +39,36 @@ function IandEModal() {
 
     const loggedIn = Auth.loggedIn();
 
+    const resetIandEState = () => {
+        setIModalTitle('')
+        setIModalValue('')
+        setiItemize(false)
+        setIModalFrequency('')
+        setIModalPrimary('')
+        setPayDayDate(new Date())
+
+        setItemizeMTitle('')
+        setItemizeMValue('')
+        setItemizeMPaid(false)
+        setItemizeMPresubmit([])
+        setItemizeMSubmit([])
+
+        setEModalTitle('')
+        setEModalValue('')
+        setEItemize(false)
+        setEModalFrequency('')
+        setEModalCategory('')
+        setEModalVital(false);
+        setDueDateDate(new Date())
+    }
+
     useEffect(() => {
         if (itemizeMPresubmit.length){
             let oldValue = 0.00
                 for (let i = 0; i < itemizeMPresubmit.length; i ++) {
                     if (!itemizeMPresubmit[i].iPaid){
                         setIModalValue( oldValue += parseFloat(itemizeMPresubmit[i].iValue))
+                        setEModalValue( oldValue += parseFloat(itemizeMPresubmit[i].iValue))
                     }
                 }
             };
@@ -74,7 +99,7 @@ function IandEModal() {
         } catch (error) {
             console.log(error);
         }
-
+        resetIandEState();
         dispatch({
             type: "TOGGLE_MODAL",
             modalValue: 'None'
@@ -87,17 +112,18 @@ function IandEModal() {
             await addExpense({
                 variables: {
                     expenseTitle: eModalTitle,
-                    expenseValue: eModalValue,
+                    expenseValue: eModalValue.toString(),
                     expenseFrequency: eModalFrequency,
                     vitalExpense: eModalVital,
                     expenseCategory: eModalCategory,
                     dueDate: dueDateDate,
+                    iouInfo: [...itemizeMSubmit]
                 }
             });
         } catch (error) {
             console.log(error);
         }
-
+        resetIandEState();
         dispatch({
             type: "TOGGLE_MODAL",
             modalValue: 'None'
@@ -105,7 +131,7 @@ function IandEModal() {
 
     }
 
-    async function submitItemizeLI(e) {
+    async function submitItemizeLI(e, target) {
         e.preventDefault();
         let tempId = Math.floor(Math.random() * parseInt(new Date().valueOf()))
         let iPaid = itemizeMPaid
@@ -113,8 +139,14 @@ function IandEModal() {
         let iTitle = itemizeMTitle
         let forDisplayI = [{tempId, iPaid, iValue, iTitle}]
         let currentI = [{uomePaid: iPaid, uomeValue: iValue, uomeTitle: iTitle}]
+        let currentE = [{iouPaid: iPaid, iouValue: iValue, iouTitle: iTitle}]
         setItemizeMPresubmit((prev) => [...prev, ...forDisplayI])
-        setItemizeMSubmit((prev) => [...prev, ...currentI]);
+        if (target === 'income'){
+            setItemizeMSubmit((prev) => [...prev, ...currentI]);
+        } else if (target === 'expense') {
+            setItemizeMSubmit((prev) => [...prev, ...currentE]);
+        }
+        
     }
 
     return (
@@ -158,7 +190,7 @@ function IandEModal() {
                                 </tr>
                             </tbody>
                         </table>
-                        <button onClick={submitItemizeLI}>Add Item</button>
+                        <button onClick={(e) => submitItemizeLI(e, 'income')}>Add Item</button>
                         </div>
                     )}
                     <label>Frequency: 
@@ -190,8 +222,41 @@ function IandEModal() {
                         <input type='text' id="ETitle" name="ETitle" onChange={(e) => setEModalTitle(e.target.value)}/>
                     </label>
                     <label>Amount Due:
-                        <input type='text' id='EValue' name="EValue" onChange={(e) => setEModalValue(e.target.value)}/>
+                        <input type='text' id='EValue' name="EValue" onChange={(e) => setEModalValue(e.target.value)} disabled={eItemize}/>
+                        (or is this itemized?
+                        <input type='checkbox' id='Iitemize' onChange={(e) => setEItemize(e.target.checked)}/>
+                        )
                     </label>
+                    {eItemize && (
+                        <div className="iItemizeTableCont">
+                        <table className="iItemizeTable">
+                            <thead>
+                                <tr>
+                                    <th>Item Title</th>
+                                    <th>Item Value</th>
+                                    <th>Item Paid</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {itemizeMPresubmit.length >= 1 && itemizeMPresubmit.map((lineItem) => {
+                                return (
+                                    <tr
+                                    key={lineItem.tempId}>
+                                        <td>{lineItem.iTitle}</td>
+                                        <td>{lineItem.iValue}</td>
+                                        <td><input type='checkbox' id='itemizePaid' name='itemizePaid' checked={lineItem.iPaid} disabled={true}/></td>
+                                    </tr>
+                                )})}
+                                <tr>
+                                    <td><input type='text' id="itemizeTitle" name="itemizeTitle" onChange={(e) => setItemizeMTitle(e.target.value)}/></td>
+                                    <td><input type='text' id='itemizeValue' name="itemizeValue" onChange={(e) => setItemizeMValue(e.target.value)}/></td>
+                                    <td><input type='checkbox' id='itemizePaid' name='itemizePaid' checked={itemizeMPaid} onChange={(e) => setItemizeMPaid(e.target.checked)}/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button onClick={(e) => submitItemizeLI(e, 'expense')}>Add Item</button>
+                        </div>
+                    )}
                     <label>Frequency:
                         <select id="EFrequency" name="EFrequency" onChange={(e) => setEModalFrequency(e.target.value)}>
                             <option>--None--</option>

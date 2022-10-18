@@ -85,7 +85,7 @@ function IncomesList() {
                                             <td>{income.incomeValue}</td>
                                             <td>{income.incomeFrequency}</td>
                                             <td>{`${formatDate(income.payDay)}`}</td>
-                                            <td onClick={() => setShowItemizedList([{id: income._id, open: !showItemizedList[0].open}])}>{income.uomePayInfo.length ? income.uomePayInfo.length : ``}</td>
+                                            <td onClick={() => setShowItemizedList([{id: income._id, open: !showItemizedList[0].open}])}>{income.uomePayInfo.length > 0 && income.uomePayInfo.length}</td>
                                             <td><button onClick={(e) => removeIncomeHandler(e, income._id)}>x</button></td>
                                         </tr>
                                         {showItemizedList[0].id === income._id && showItemizedList[0].open && income.uomePayInfo.length > 0 && (
@@ -113,8 +113,7 @@ function IncomesList() {
                                                     </tbody>                                                  
                                                     </table>
                                                 </td>
-                                            </tr>
-                                                    
+                                            </tr>         
                                         )}
                                     </React.Fragment>
                                 )
