@@ -107,7 +107,7 @@ function IncomesList() {
                                                                         <td>{itemizedEntry.uomeTitle}</td>
                                                                         <td>{itemizedEntry.uomeValue}</td>
                                                                         <td><input type='checkbox' checked={itemizedEntry.uomePaid} disabled={true}/></td>
-                                                                    </tr>
+                                                                </tr>
                                                             )
                                                         })}   
                                                     </tbody>                                                  
@@ -117,7 +117,6 @@ function IncomesList() {
                                                     
                                         )}
                                     </React.Fragment>
-                                    
                                 )
                             })}
                     </tbody>     
