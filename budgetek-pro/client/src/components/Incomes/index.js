@@ -69,9 +69,9 @@ function IncomesList() {
                         <tr>
                             <th title="Where is the income from?">Title</th>
                             <th title="How much will/do you get paid?">Value</th>
+                            <th title="Has this been Itemized">Itemized</th>
                             <th title="How often does this pay?">Frequency</th>
                             <th title="When do you get paid?">Pay Date</th>
-                            <th title="Has this been Itemized">Itemized</th>
                             <th title="Remove Income">Delete</th>
                         </tr>
                     </thead>
@@ -83,9 +83,9 @@ function IncomesList() {
                                         >
                                             <td>{income.incomeTitle}</td>
                                             <td>{income.incomeValue}</td>
+                                            <td onClick={() => setShowItemizedList([{id: income._id, open: !showItemizedList[0].open}])}>{income.uomePayInfo.length > 0 && income.uomePayInfo.length}</td>
                                             <td>{income.incomeFrequency}</td>
                                             <td>{`${formatDate(income.payDay)}`}</td>
-                                            <td onClick={() => setShowItemizedList([{id: income._id, open: !showItemizedList[0].open}])}>{income.uomePayInfo.length > 0 && income.uomePayInfo.length}</td>
                                             <td><button onClick={(e) => removeIncomeHandler(e, income._id)}>x</button></td>
                                         </tr>
                                         {showItemizedList[0].id === income._id && showItemizedList[0].open && income.uomePayInfo.length > 0 && (

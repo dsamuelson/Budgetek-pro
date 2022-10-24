@@ -94,7 +94,7 @@ function ExpensesList() {
                                     </tr>
                                     {showItemizedList[0].id === expense._id && showItemizedList[0].open && expense.iouInfo.length > 0 && (
                                         <tr>
-                                            <td colSpan={5}>
+                                            <td colSpan={7}>
                                             <table className="subTableItemized">
                                                 <thead>
                                                         <tr>

@@ -7,6 +7,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+::-webkit-scrollbar {
+  display: none;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -26,7 +30,49 @@ code {
 }
 
 .incomesTable {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: flex-start;
   width: 45%;
+}
+
+.incomesTable div {
+  width: 100%;
+}
+
+.incomeTable {
+  width: 100%;
+}
+
+.incomeTable tr {
+  width: 100%;
+}
+
+.expensesTable {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: flex-start;
+  width: 45%;
+}
+
+.expensesTable div {
+  width: 100%;
+}
+
+.expenseTable {
+  width: 100%;
+}
+
+.expenseTable tr {
+  width: 100%;
+}
+
+table, td, th {
+  border: 1px solid black;
+  border-collapse: collapse!important;
+  text-align: center;
 }
 
 .calendarCont {
@@ -37,6 +83,16 @@ code {
   width: 100%!important;
 }
 
+.react-calendar__tile {
+  /* overflow: scroll!important; */
+  max-width: 90px!important;
+  max-height: 90px!important;
+}
+
+.react-calendar__tile div{
+  max-height: 100%;
+  overflow: scroll!important;
+}
 .react-calendar__tile--active {
   background-color: azure!important;
   color: black!important;
@@ -135,12 +191,15 @@ code {
   width: 100%;
   display: flex;
   justify-content: space-between;
+  border: none;
 }
 
 .subTableItemized tr th {
   width: 30%;
+  border: none;
 }
 
 .subTableItemized tr td {
   width: 30%;
+  border: none;
 }
