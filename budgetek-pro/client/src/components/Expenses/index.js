@@ -64,14 +64,14 @@ function ExpensesList() {
     return (
         <div className="expensesTable">
             {loggedIn && expensesList && (
-                <div>
+                <div> 
                 <table className="expenseTable">
                     <thead>
                         <tr>
                             <th title="Name of the Expense?">Title</th>
                             <th title="How much is the Expense?">Value</th>
-                            <th title="Has this been Itemized?">Itemized</th>
                             <th title="How Often does this come up?">Frequency</th>
+                            <th title="Has this been Itemized?">Itemized</th>
                             <th title="Is this Vital or can it be Ignored?">Vital</th>
                             <th title="What is the category for this Expense?">Category</th>
                             <th title="When does this need to be payed?">Due Date</th>
@@ -84,7 +84,7 @@ function ExpensesList() {
                                 <React.Fragment key={expense._id}>
                                     <tr>
                                         <td>{expense.expenseTitle}</td>
-                                        <td>{expense.expenseValue}</td>
+                                        <td>{expense.expenseValue}<br></br>{expense.totalExpenseValue &&`(${expense.totalExpenseValue})`}</td>
                                         <td>{expense.expenseFrequency}</td>
                                         <td onClick={() => setShowItemizedList([{id: expense._id, open: !showItemizedList[0].open}])}>{expense.iouInfo.length > 0 && expense.iouInfo.length}</td>
                                         <td>{expense.vitalExpense}</td>
@@ -124,10 +124,11 @@ function ExpensesList() {
                         })}
                     </tbody>
                 </table>
-                <button onClick={EModalToggle}>Add Expense</button>
                 </div>
             )}
+            <button onClick={EModalToggle}>Add Expense</button>
         </div>
+
     )
 }
 

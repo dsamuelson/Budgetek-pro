@@ -27,11 +27,26 @@ const typeDefs = gql`
         iouPaid: Boolean
     }
 
+    type incomeFrequencyt {
+        _id: ID
+        frequency: String
+        isSameDay: String
+        day: String
+        month: String
+    }
+
+    input incomeFrequencyi {
+        frequency: String
+        isSameDay: String
+        day: String
+        month: String
+    }
+
     type Incomes {
         _id: ID
         incomeTitle: String
         incomeValue: String
-        incomeFrequency: String
+        incomeFrequency: [incomeFrequencyt]
         primaryIncome: Boolean
         payDay: String
         uomePayInfo: [UOME]
@@ -44,6 +59,7 @@ const typeDefs = gql`
         expenseFrequency: String
         vitalExpense: Boolean
         expenseCategory: String
+        totalExpenseValue: String
         dueDate: String
         iouInfo: [IOU]
 
@@ -67,6 +83,7 @@ const typeDefs = gql`
         bankAccounts: [BankAccounts]
         totalExpense: String
         totalIncome: String
+        totalDebt: String
     }
     type Auth {
         token: ID!
@@ -81,11 +98,11 @@ const typeDefs = gql`
     type Mutation {
         createUser(email: String!, username: String!, password: String!): Auth
         login(username: String! password: String!): Auth
-        addIncome(incomeTitle: String!, incomeValue: String!, incomeFrequency: String!, primaryIncome: Boolean!, payDay: String, uomePayInfo: [UOMEi!]): User
+        addIncome(incomeTitle: String!, incomeValue: String!, incomeFrequency: [incomeFrequencyi]!, primaryIncome: Boolean!, payDay: String, uomePayInfo: [UOMEi!]): User
         removeIncome(_id: String!): User
         addUOMe(uomeId: String!, uomePayInfo: [UOMEi!]!): User
         removeUOMe(_id: String!, incomeId: String!): User
-        addExpense(expenseTitle: String!, expenseValue: String!, expenseFrequency: String!, vitalExpense: Boolean, expenseCategory: String, dueDate: String, iouInfo: [IOUi!]): User
+        addExpense(expenseTitle: String!, expenseValue: String!, expenseFrequency: String!, vitalExpense: Boolean, expenseCategory: String, totalExpenseValue: String, dueDate: String, iouInfo: [IOUi!]): User
         removeExpense(_id: String!): User
         addIOU(iouId: String!, iouInfo: [IOUi!]!): User
         removeIOU(_id: String!, expenseId: String!): User

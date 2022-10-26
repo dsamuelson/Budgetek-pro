@@ -89,8 +89,12 @@ const Home = () => {
         tileContent={({ date, view }) => {
           let iandeContent = []
           if (view === 'month') {
+            console.log(date.getDate())
             for (let i = 0; i < incomes.length; i ++) {
-              if (date.toLocaleDateString() === new Date(parseInt(incomes[i].payDay)).toLocaleDateString()) {
+              if (incomes[i].incomeFrequency[0].frequency === 'monthly' && parseInt(date.getDate()) === parseInt(incomes[i].incomeFrequency[0].day)) {
+                iandeContent.push({id: incomes[i]._id, iandeEvent: `${incomes[i].incomeTitle}: +$${incomes[i].incomeValue}`, eventClass: 'incomeLI'})
+              }
+              if (incomes[i].incomeFrequency[0].frequency === 'yearly' && parseInt(date.getMonth()) === parseInt(incomes[i].incomeFrequency[0].month) && parseInt(date.getDate()) === parseInt(incomes[i].incomeFrequency[0].day)) {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: `${incomes[i].incomeTitle}: +$${incomes[i].incomeValue}`, eventClass: 'incomeLI'})
               }
             }

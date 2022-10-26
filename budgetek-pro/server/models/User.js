@@ -53,6 +53,16 @@ userSchema.virtual('totalExpense').get(function() {
     return tExpense.toFixed(2);
 });
 
+userSchema.virtual('totalDebt').get(function() {
+    let tDebt = 0;
+    for (let i = 0; i < this.expenses.length; i ++) {
+        if (this.expenses[i].totalExpenseValue) {
+        tDebt += parseFloat(this.expenses[i].totalExpenseValue)
+    }
+    }
+    return tDebt.toFixed(2);
+});
+
 userSchema.virtual('totalIncome').get(function() {
     let tIncome = 0;
     for (let i = 0; i < this.incomes.length; i ++) {

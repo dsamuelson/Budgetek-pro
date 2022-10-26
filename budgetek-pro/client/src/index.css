@@ -55,6 +55,10 @@ code {
   justify-content: center;
   align-content: flex-start;
   width: 45%;
+  max-height: 45vw;
+  overflow: scroll;
+  border: 1px black solid;
+  border-collapse: collapse;
 }
 
 .expensesTable div {
@@ -69,10 +73,19 @@ code {
   width: 100%;
 }
 
-table, td, th {
+table, td {
   border: 1px solid black;
   border-collapse: collapse!important;
   text-align: center;
+}
+
+th {
+  background-color: white;
+  position: sticky;
+  top: -.9px;
+  padding: 5px;
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
+  border: 1px black solid;
 }
 
 .calendarCont {
@@ -84,8 +97,8 @@ table, td, th {
 }
 
 .react-calendar__tile {
-  /* overflow: scroll!important; */
-  max-width: 90px!important;
+  overflow: scroll;
+  min-width: 14.2857%!important;
   max-height: 90px!important;
 }
 

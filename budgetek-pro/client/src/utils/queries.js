@@ -25,7 +25,13 @@ export const QUERY_INCOMES = gql`
         _id
         incomeTitle
         incomeValue
-        incomeFrequency
+        incomeFrequency {
+          _id
+          frequency
+          isSameDay
+          day
+          month
+        }
         primaryIncome
         payDay
         uomePayInfo {
@@ -50,6 +56,7 @@ export const QUERY_EXPENSES = gql`
         expenseFrequency
         vitalExpense
         expenseCategory
+        totalExpenseValue
         dueDate
         iouInfo {
           _id
@@ -59,6 +66,7 @@ export const QUERY_EXPENSES = gql`
         }
       }
       totalExpense
+      totalDebt
     }
   }
 `;
@@ -108,6 +116,7 @@ export const QUERY_ME = gql`
           }
           totalExpense
           totalIncome
+          totalDebt
       }
     }
 `;

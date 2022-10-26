@@ -10,10 +10,24 @@ const IncomeSchema = new Schema ({
         type: Number,
         required: true
     },
-    incomeFrequency: {
-        type: String,
-        required: true
-    },
+    incomeFrequency: [{
+        frequency: {
+            type: String,
+            required: true
+        },
+        isSameDay: {
+            type: String,
+            required: false
+        },
+        day: {
+            type: String,
+            required: false
+        },
+        month: {
+            type: String,
+            required: false
+        }
+    }],
     primaryIncome: {
         type: Boolean,
         required: true,

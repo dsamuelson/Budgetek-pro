@@ -76,7 +76,7 @@ const resolvers = {
                     incomes: {
                       incomeTitle: args.incomeTitle,
                       incomeValue: args.incomeValue,
-                      incomeFrequency: args.incomeFrequency,
+                      incomeFrequency: [...args.incomeFrequency],
                       primaryIncome: args.primaryIncome,
                       payDay: args.payDay,
                       uomePayInfo: [...args.uomePayInfo]
@@ -155,6 +155,7 @@ const resolvers = {
                       expenseFrequency: args.expenseFrequency,
                       vitalExpense: args.vitalExpense,
                       expenseCategory: args.expenseCategory,
+                      totalExpenseValue: args.totalExpenseValue,
                       dueDate: args.dueDate,
                       iouInfo: [...args.iouInfo]
                     },
@@ -171,7 +172,6 @@ const resolvers = {
             throw new AuthenticationError('You must be logged in');
           },
           addIOU: async (parent, args, context) => {
-            console.log(args)
             if (context.user) {
               const updatedUser = await User.findOneAndUpdate(
                 { _id: context.user._id, "expenses._id": args.iouId},
@@ -223,7 +223,7 @@ const resolvers = {
           },
           addBankAccount: async (parent, args, context) => {
             if (context.user) {
-              const updatedAccount = await user.findOneAndUpdate(
+              const updatedAccount = await User.findOneAndUpdate(
                 {_id: context.user._id},
                 {
                   $addToSet: {

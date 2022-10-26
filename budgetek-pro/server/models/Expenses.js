@@ -22,6 +22,10 @@ const ExpenseSchema = new Schema({
         type: String,
         required: false
     },
+    totalExpenseValue: {
+        type: String,
+        required: false
+    },
     iouInfo: [IOWEUSchema],
     dueDate: {
         type: Date,

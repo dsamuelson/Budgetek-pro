@@ -71,7 +71,11 @@ function OverviewBar() {
                 { incomeLoading || expenseLoading ? (
                     <p className="totalsValue">Loading...</p>
                 ) : (
-                    <p className="totalsValue">{budgetTotal()}</p>
+                    <div className="totalsValue">
+                        <p>{budgetTotal()}</p>
+                        <p>Total Debt:{expenseData.me.totalDebt}</p>
+                    </div>
+                    
                 )}
             </div>            
             <div className="savResTitle">

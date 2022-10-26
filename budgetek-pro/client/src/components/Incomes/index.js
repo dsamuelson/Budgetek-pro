@@ -84,7 +84,7 @@ function IncomesList() {
                                             <td>{income.incomeTitle}</td>
                                             <td>{income.incomeValue}</td>
                                             <td onClick={() => setShowItemizedList([{id: income._id, open: !showItemizedList[0].open}])}>{income.uomePayInfo.length > 0 && income.uomePayInfo.length}</td>
-                                            <td>{income.incomeFrequency}</td>
+                                            <td>{income.incomeFrequency[0].frequency}</td>
                                             <td>{`${formatDate(income.payDay)}`}</td>
                                             <td><button onClick={(e) => removeIncomeHandler(e, income._id)}>x</button></td>
                                         </tr>

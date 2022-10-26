@@ -3,7 +3,7 @@ import Auth from '../../utils/auth';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'
 import { useMutation } from '@apollo/client';
-import { ADD_INCOME, ADD_EXPENSE, ADD_UOME } from '../../utils/mutations';
+import { ADD_INCOME, ADD_EXPENSE } from '../../utils/mutations';
 import { useDispatch, useSelector } from 'react-redux'
 
 function IandEModal() {
@@ -11,11 +11,12 @@ function IandEModal() {
     const dispatch = useDispatch();
     const modalStore = useSelector((state) => state.modalValue);
     const modalValue = modalStore.modalValue;
+    const monthName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
     const [iModalTitle, setIModalTitle] = useState('');
     const [iModalValue, setIModalValue] = useState('');
     const [iiItemize, setiItemize] = useState(false);
-    const [iModalFrequency, setIModalFrequency] = useState('');
+    const [iModalFrequency, setIModalFrequency] = useState({});
     const [iModalPrimary, setIModalPrimary] = useState(false);
     const [payDayDate, setPayDayDate] = useState(new Date())
 
@@ -30,12 +31,13 @@ function IandEModal() {
     const [eItemize, setEItemize] = useState(false);
     const [eModalFrequency, setEModalFrequency] = useState('');
     const [eModalCategory, setEModalCategory] = useState('');
+    const [addETotal, setAddETotal] = useState(false)
+    const [eTotalValue, setETotalValue] = useState('')
     const [eModalVital, setEModalVital] = useState(false);
     const [dueDateDate, setDueDateDate] = useState(new Date())
 
     const [ addIncome ] = useMutation(ADD_INCOME)
     const [ addExpense ] = useMutation(ADD_EXPENSE)
-    const [addUOMe] = useMutation(ADD_UOME)
 
     const loggedIn = Auth.loggedIn();
 
@@ -43,7 +45,7 @@ function IandEModal() {
         setIModalTitle('')
         setIModalValue('')
         setiItemize(false)
-        setIModalFrequency('')
+        setIModalFrequency({})
         setIModalPrimary('')
         setPayDayDate(new Date())
 
@@ -82,7 +84,6 @@ function IandEModal() {
     }
 
     async function submitIncomeModal(e) {
-        
         e.preventDefault();
         try {
             await addIncome({
@@ -116,6 +117,7 @@ function IandEModal() {
                     expenseFrequency: eModalFrequency,
                     vitalExpense: eModalVital,
                     expenseCategory: eModalCategory,
+                    totalExpenseValue: eTotalValue,
                     dueDate: dueDateDate,
                     iouInfo: [...itemizeMSubmit]
                 }
@@ -147,6 +149,12 @@ function IandEModal() {
             setItemizeMSubmit((prev) => [...prev, ...currentE]);
         }
         
+    }
+
+    async function payDayBreakdown(options) {
+        setIModalFrequency(payDayOptions => ({
+            ...payDayOptions,
+            ...options}))
     }
 
     return (
@@ -194,7 +202,7 @@ function IandEModal() {
                         </div>
                     )}
                     <label>Frequency: 
-                        <select id="IFrequency" name="IFrequency" onChange={(e) => setIModalFrequency(e.target.value)}>
+                        <select id="IFrequency" name="IFrequency" onChange={(e) => payDayBreakdown({frequency: e.target.value})}>
                             <option>--None--</option>
                             <option value='once'>Once</option>
                             <option value='daily'>Daily</option>
@@ -203,13 +211,36 @@ function IandEModal() {
                             <option value='other'>Other</option>
                         </select>
                     </label>
+                    {iModalFrequency.frequency === "monthly" && (
+                        <label>
+                            Please Select what applies:
+                            <div onChange={(e) => payDayBreakdown({isSameDay: e.target.value})}>
+                                <input type='radio' value="sameDay" checked={iModalFrequency.isSameDay === 'sameDay'}/>Always on the {`${payDayDate.getDate()}`} Every Month <br />
+                                <input type='radio' value='preWeekends' checked={iModalFrequency.isSameDay === 'preWeekends'}/>Same Day but before weekends <br />
+                                <input type='radio' value='postWeekends' checked={iModalFrequency.isSameDay === 'postWeekends'}/>Same Day but after weekends <br />
+                                <input type='radio' value='lastDay' checked={iModalFrequency.isSameDay === 'lastDay'}/>Always Last Day of the Month
+                            </div>
+                        </label>
+                    )}
+                    {iModalFrequency.frequency === "yearly" && (
+                        <label>
+                            Please Select what applies:
+                            <div onChange={(e) => payDayBreakdown({isSameDay: e.target.value})}>
+                                <input type='radio' value="sameDay" checked={iModalFrequency.isSameDay === 'sameDay'}/>Always on {`${monthName[payDayDate.getMonth()]} ${payDayDate.getDate()}`} Every year <br />
+                                <input type='radio' value='preWeekends' checked={iModalFrequency.isSameDay === 'preWeekends'}/>Same Day but before weekends <br />
+                                <input type='radio' value='postWeekends' checked={iModalFrequency.isSameDay === 'postWeekends'}/>Same Day but after weekends <br />
+                                <input type='radio' value='lastDay' checked={iModalFrequency.isSameDay === 'lastDay'}/>Always Last Day of {`${monthName[payDayDate.getMonth()]}`} <br />
+                                <input type='radio' value='firstDay' checked={iModalFrequency.isSameDay === 'firstDay'}/>Always First Day of {`${monthName[payDayDate.getMonth()]}`}
+                            </div>
+                        </label>
+                    )}
                     <label>Primary Income: 
                         <input type='checkbox' id="IPrimary" name="IPrimary" onChange={(e) => setIModalPrimary(e.target.checked)}/>
                     </label>
                     <label>Pay Day: 
                         <DatePicker 
                         selected={payDayDate}
-                        onChange={(date) => setPayDayDate(date)}
+                        onChange={(date) => {setPayDayDate(date); payDayBreakdown({day: date.getDate().toString()}); if (iModalFrequency.frequency === 'yearly'){payDayBreakdown({month: date.getMonth().toString()})}}}
                         />
                     </label>
                     <input type='submit' value="Add Income" onClick={event => submitIncomeModal(event)}></input>
@@ -280,6 +311,16 @@ function IandEModal() {
                             <option value='other'>Other</option>
                         </select>
                     </label>
+                    <label>
+                        Add Total Debt value?
+                        <input type='checkbox' checked={addETotal} name="addETotalValue" onChange={(e) => setAddETotal(e.target.checked)}/>
+                    </label>
+                    {addETotal && (
+                        <label>
+                            Total Debt Value:
+                            <input type="text" id="tDebtValue" name="tDebtValue" onChange={(e) => setETotalValue(e.target.value)} />
+                        </label>
+                    )}
                     <label>Due Date:
                         <DatePicker 
                         selected={dueDateDate}
