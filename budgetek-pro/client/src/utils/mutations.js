@@ -68,6 +68,10 @@ export const ADD_INCOME = gql`
           _id
           frequency
           isSameDay
+          countWeekends
+          hasCustom
+          nValue
+          nUnit
           day
           month
         }

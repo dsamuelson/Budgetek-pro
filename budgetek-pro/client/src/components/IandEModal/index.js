@@ -212,27 +212,66 @@ function IandEModal() {
                         </select>
                     </label>
                     {iModalFrequency.frequency === "monthly" && (
+                        <div>
                         <label>
                             Please Select what applies:
                             <div onChange={(e) => payDayBreakdown({isSameDay: e.target.value})}>
                                 <input type='radio' value="sameDay" checked={iModalFrequency.isSameDay === 'sameDay'}/>Always on the {`${payDayDate.getDate()}`} Every Month <br />
-                                <input type='radio' value='preWeekends' checked={iModalFrequency.isSameDay === 'preWeekends'}/>Same Day but before weekends <br />
-                                <input type='radio' value='postWeekends' checked={iModalFrequency.isSameDay === 'postWeekends'}/>Same Day but after weekends <br />
                                 <input type='radio' value='lastDay' checked={iModalFrequency.isSameDay === 'lastDay'}/>Always Last Day of the Month
                             </div>
                         </label>
-                    )}
-                    {iModalFrequency.frequency === "yearly" && (
                         <label>
-                            Please Select what applies:
-                            <div onChange={(e) => payDayBreakdown({isSameDay: e.target.value})}>
-                                <input type='radio' value="sameDay" checked={iModalFrequency.isSameDay === 'sameDay'}/>Always on {`${monthName[payDayDate.getMonth()]} ${payDayDate.getDate()}`} Every year <br />
-                                <input type='radio' value='preWeekends' checked={iModalFrequency.isSameDay === 'preWeekends'}/>Same Day but before weekends <br />
-                                <input type='radio' value='postWeekends' checked={iModalFrequency.isSameDay === 'postWeekends'}/>Same Day but after weekends <br />
-                                <input type='radio' value='lastDay' checked={iModalFrequency.isSameDay === 'lastDay'}/>Always Last Day of {`${monthName[payDayDate.getMonth()]}`} <br />
-                                <input type='radio' value='firstDay' checked={iModalFrequency.isSameDay === 'firstDay'}/>Always First Day of {`${monthName[payDayDate.getMonth()]}`}
+                            Weekends
+                            <div onChange={(e) => payDayBreakdown({countWeekends: e.target.value})}>
+                                <input type='radio' value='preWeekends' checked={iModalFrequency.countWeekends === 'preWeekends'}/>Paid before weekends <br />
+                                <input type='radio' value='postWeekends' checked={iModalFrequency.countWeekends === 'postWeekends'}/>Paid after weekends <br />
+                                <input type='radio' value='ignore' checked={iModalFrequency.countWeekends === 'ignore'} />Weekends don't change anything
                             </div>
                         </label>
+                        </div>
+                    )}
+                    {iModalFrequency.frequency === "yearly" && (
+                        <div>
+                            <label>
+                                Please Select what applies:
+                                <div onChange={(e) => payDayBreakdown({isSameDay: e.target.value})}>
+                                    <input type='radio' value="sameDay" checked={iModalFrequency.isSameDay === 'sameDay'}/>Always on {`${monthName[payDayDate.getMonth()]} ${payDayDate.getDate()}`} Every year <br />
+                                    <input type='radio' value='lastDay' checked={iModalFrequency.isSameDay === 'lastDay'}/>Always Last Day of {`${monthName[payDayDate.getMonth()]}`} <br />
+                                    <input type='radio' value='firstDay' checked={iModalFrequency.isSameDay === 'firstDay'}/>Always First Day of {`${monthName[payDayDate.getMonth()]}`}
+                                </div>
+                            </label>
+                            <label>
+                                Weekends:
+                                <div onChange={(e) => payDayBreakdown({countWeekends: e.target.value})}>
+                                    <input type='radio' value='preWeekends' checked={iModalFrequency.countWeekends === 'preWeekends'}/>Paid before weekends <br />
+                                    <input type='radio' value='postWeekends' checked={iModalFrequency.countWeekends === 'postWeekends'}/>Paid after weekends <br />
+                                    <input type='radio' value='ignore' checked={iModalFrequency.countWeekends === 'ignore'} />Weekends don't change anything
+                                </div>
+                            </label>
+                        </div>
+                    )}
+                    {iModalFrequency.frequency === "other" && (
+                        <div>
+                            <label>
+                            Please Describe:
+                            <div>
+                                <input type='checkbox' value="hasCustom" checked={iModalFrequency.hasCustom === true} onChange={(e) => payDayBreakdown({hasCustom: e.target.checked})}/>Always <input type='text' onChange={(e) => payDayBreakdown({nValue: e.target.value})} placeholder='number'/> <select id="nUnit" name="nUnit" onChange={(e) => payDayBreakdown({nUnit: e.target.value})}>
+                                            <option>--None--</option>
+                                            <option value='days'>Days</option>
+                                            <option value='months'>Months</option>
+                                            <option value='years'>Years</option>
+                                        </select> <br />
+                                </div>
+                                </label>
+                                <label>
+                                Weekends:
+                                <div onChange={(e) => payDayBreakdown({countWeekends: e.target.value})}>
+                                    <input type='radio' value='preWeekends' checked={iModalFrequency.countWeekends === 'preWeekends'}/>Paid before weekends <br />
+                                    <input type='radio' value='postWeekends' checked={iModalFrequency.countWeekends === 'postWeekends'}/>Paid after weekends <br />
+                                    <input type='radio' value='ignore' checked={iModalFrequency.countWeekends === 'ignore'} />Weekends don't change anything
+                                </div>
+                            </label>
+                        </div>
                     )}
                     <label>Primary Income: 
                         <input type='checkbox' id="IPrimary" name="IPrimary" onChange={(e) => setIModalPrimary(e.target.checked)}/>

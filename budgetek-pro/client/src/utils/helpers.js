@@ -4,6 +4,21 @@ export function formatDate(datetime) {
     return moment(parseInt(datetime)).format('MMM DD YYYY');
 };
 
+export function addDate(Value, Unit, date) {
+  // console.log(Value, Unit)
+  date = new Date(date)
+  if (Unit === 'months') {
+    date.setMonth(date.getMonth() + Value);
+  }
+  if (Unit === 'days') {
+    date.setDate(date.getDate() + Value);
+  }
+  if (Unit === 'years') {
+    date.setFullYear(date.getFullYear() + Value)
+  }
+  return date;
+}
+
 export function idbPromise(storeName, method, object) {
   return new Promise((resolve, reject) => {
     const request = window.indexedDB.open('budgetek', 1);

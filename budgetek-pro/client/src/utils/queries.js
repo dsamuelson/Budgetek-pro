@@ -29,6 +29,10 @@ export const QUERY_INCOMES = gql`
           _id
           frequency
           isSameDay
+          countWeekends
+          hasCustom
+          nValue
+          nUnit
           day
           month
         }

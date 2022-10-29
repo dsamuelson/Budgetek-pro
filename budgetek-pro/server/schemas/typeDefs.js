@@ -31,6 +31,10 @@ const typeDefs = gql`
         _id: ID
         frequency: String
         isSameDay: String
+        countWeekends: String
+        hasCustom: Boolean
+        nValue: String
+        nUnit: String
         day: String
         month: String
     }
@@ -38,6 +42,10 @@ const typeDefs = gql`
     input incomeFrequencyi {
         frequency: String
         isSameDay: String
+        countWeekends: String
+        hasCustom: Boolean
+        nValue: String
+        nUnit: String
         day: String
         month: String
     }

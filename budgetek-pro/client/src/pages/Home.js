@@ -6,13 +6,14 @@ import ExpensesList from "../components/Expenses";
 import IandEModal from "../components/IandEModal";
 import { useQuery } from "@apollo/client";
 import { QUERY_EXPENSES, QUERY_INCOMES } from "../utils/queries";
-import { idbPromise } from "../utils/helpers";
+import { idbPromise, addDate } from "../utils/helpers";
 import { useSelector, useDispatch } from 'react-redux';
 import Auth from "../utils/auth";
 
 
 
 const Home = () => {
+  
   const [date, setDate] = useState(new Date())
   const dispatch = useDispatch();
   const loggedIn = Auth.loggedIn()
@@ -89,12 +90,30 @@ const Home = () => {
         tileContent={({ date, view }) => {
           let iandeContent = []
           if (view === 'month') {
-            console.log(date.getDate())
             for (let i = 0; i < incomes.length; i ++) {
-              if (incomes[i].incomeFrequency[0].frequency === 'monthly' && parseInt(date.getDate()) === parseInt(incomes[i].incomeFrequency[0].day)) {
+              let iFrequency = incomes[i].incomeFrequency[0]
+              let unitMath = false;
+              if (iFrequency.frequency === 'other') {
+                if (iFrequency.nUnit === 'days') {
+                  unitMath = (Math.round(( date.getTime()/86400000 - parseInt(incomes[i].payDay)/86400000)%(parseInt(iFrequency.nValue)))) === parseInt(iFrequency.nValue) - 1
+                }
+                if (iFrequency.nUnit === 'months') {
+                  unitMath = parseInt(date.getDate()) === parseInt(iFrequency.day) && (date.getMonth()%parseInt(iFrequency.nValue)) === 0;
+                }
+                if (iFrequency.nUnit === 'years') {
+                  unitMath = parseInt(date.getDate()) === parseInt(iFrequency.day) && (date.getFullYear() - new Date(parseInt(incomes[i].payDay)).getFullYear())%parseInt(iFrequency.nValue) === 0 && date.getMonth() === new Date(parseInt(incomes[i].payDay)).getMonth();
+                }
+              }
+              if (iFrequency.frequency === 'daily') {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: `${incomes[i].incomeTitle}: +$${incomes[i].incomeValue}`, eventClass: 'incomeLI'})
               }
-              if (incomes[i].incomeFrequency[0].frequency === 'yearly' && parseInt(date.getMonth()) === parseInt(incomes[i].incomeFrequency[0].month) && parseInt(date.getDate()) === parseInt(incomes[i].incomeFrequency[0].day)) {
+              if (iFrequency.frequency === 'monthly' && parseInt(date.getDate()) === parseInt(iFrequency.day)) {
+                iandeContent.push({id: incomes[i]._id, iandeEvent: `${incomes[i].incomeTitle}: +$${incomes[i].incomeValue}`, eventClass: 'incomeLI'})
+              }
+              if (iFrequency.frequency === 'yearly' && parseInt(date.getMonth()) === parseInt(iFrequency.month) && parseInt(date.getDate()) === parseInt(iFrequency.day)) {
+                iandeContent.push({id: incomes[i]._id, iandeEvent: `${incomes[i].incomeTitle}: +$${incomes[i].incomeValue}`, eventClass: 'incomeLI'})
+              }
+              if (iFrequency.frequency === 'other' && date.toDateString() === new Date(parseInt(incomes[i].payDay)).toDateString() || unitMath) {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: `${incomes[i].incomeTitle}: +$${incomes[i].incomeValue}`, eventClass: 'incomeLI'})
               }
             }
@@ -126,8 +145,8 @@ const Home = () => {
   );
 } else {
   return (
-    <div>
-      You Must be logged in first!
+    <div className="mBLoggedIn">
+      <h2>You Must be logged in first!</h2>
     </div>
   )
 }

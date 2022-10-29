@@ -1,4 +1,5 @@
 const { Schema } = require('mongoose');
+const PDBreakdownSchema = require('./PDBreakdown');
 const UOMESchema = require('./Uoweme');
 
 const IncomeSchema = new Schema ({
@@ -10,24 +11,7 @@ const IncomeSchema = new Schema ({
         type: Number,
         required: true
     },
-    incomeFrequency: [{
-        frequency: {
-            type: String,
-            required: true
-        },
-        isSameDay: {
-            type: String,
-            required: false
-        },
-        day: {
-            type: String,
-            required: false
-        },
-        month: {
-            type: String,
-            required: false
-        }
-    }],
+    incomeFrequency: [PDBreakdownSchema],
     primaryIncome: {
         type: Boolean,
         required: true,
