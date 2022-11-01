@@ -126,7 +126,7 @@ function ExpensesList() {
                 </table>
                 </div>
             )}
-            <button onClick={EModalToggle}>Add Expense</button>
+            <button onClick={EModalToggle} className='modalButton'>Add Expense</button>
         </div>
 
     )

@@ -120,9 +120,10 @@ function IncomesList() {
                             })}
                     </tbody>     
                 </table>
-                <button onClick={iModalToggle}>Add Income</button>
+                
                 </div>
             )}
+            <button onClick={iModalToggle} className='modalButton'>Add Income</button>
         </div>
     )
 }

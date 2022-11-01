@@ -6,9 +6,11 @@ import ExpensesList from "../components/Expenses";
 import IandEModal from "../components/IandEModal";
 import { useQuery } from "@apollo/client";
 import { QUERY_EXPENSES, QUERY_INCOMES } from "../utils/queries";
-import { idbPromise, addDate } from "../utils/helpers";
+import { idbPromise } from "../utils/helpers";
 import { useSelector, useDispatch } from 'react-redux';
 import Auth from "../utils/auth";
+import EventsList from "../components/Events";
+import GraphsView from "../components/Graphs";
 
 
 
@@ -108,7 +110,7 @@ const Home = () => {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: `${incomes[i].incomeTitle}: +$${incomes[i].incomeValue}`, eventClass: 'incomeLI'})
               }
               if (iFrequency.frequency === 'monthly' && parseInt(date.getDate()) === parseInt(iFrequency.day)) {
-                iandeContent.push({id: incomes[i]._id, iandeEvent: `${incomes[i].incomeTitle}: +$${incomes[i].incomeValue}`, eventClass: 'incomeLI'})
+                iandeContent.push({id: incomes[i]._id, iandeEvent: `${incomes[i].incomeTitle}: `, iandEValue: `+$${incomes[i].incomeValue}`, eventClass: 'incomeLI'})
               }
               if (iFrequency.frequency === 'yearly' && parseInt(date.getMonth()) === parseInt(iFrequency.month) && parseInt(date.getDate()) === parseInt(iFrequency.day)) {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: `${incomes[i].incomeTitle}: +$${incomes[i].incomeValue}`, eventClass: 'incomeLI'})
@@ -119,7 +121,7 @@ const Home = () => {
             }
             for (let i = 0; i < expenses.length; i ++) {
               if (date.toLocaleDateString() === new Date(parseInt(expenses[i].dueDate)).toLocaleDateString()) {
-                iandeContent.push({id: expenses[i]._id, iandeEvent: `${expenses[i].expenseTitle}: -$${expenses[i].expenseValue}`, eventClass: 'expenseLI'})
+                iandeContent.push({id: expenses[i]._id, iandeEvent: `${expenses[i].expenseTitle}: `, iandEValue: `-$${expenses[i].expenseValue}`, eventClass: 'expenseLI'})
               }
             }
           }
@@ -130,7 +132,7 @@ const Home = () => {
                 {iandeContent.map((iandeUnit) => {
                   return (
                     <li
-                    key={iandeUnit.id} className={iandeUnit.eventClass}>{iandeUnit.iandeEvent}</li>
+                    key={iandeUnit.id}>{iandeUnit.iandeEvent}<span className={iandeUnit.eventClass}>{iandeUnit.iandEValue}</span></li>
                   )
                 })}
                 </ul>
@@ -140,6 +142,12 @@ const Home = () => {
         }}
         calendarType={"US"}
       />
+      </div>
+      <div className="eventsCont">
+        <EventsList />
+      </div>
+      <div className="graphsCont">
+        <GraphsView />
       </div>
     </div>
   );

@@ -11,14 +11,37 @@ body {
   display: none;
 }
 
+a {
+  cursor: pointer;
+}
+
+button {
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
+.headerBar {
+  color: white;
+  padding: 10px 30px 5px 10px;
+  background: linear-gradient(25deg, blue, lightblue 50%, white);
+}
+
+.headerBar h1 a {
+  text-decoration: none;
+  color: white;
+}
+
 .mBLoggedIn {
   width: 100%;
-  height: 70vw;
+  height: 500px;
   display: flex;
   justify-content: center;
   align-content: center;
@@ -36,7 +59,12 @@ code {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  padding: 10px;
+  padding: 5px 30px 5px 30px;
+  margin: 5px auto 10px auto;
+  border: 1px solid lightblue;
+  box-shadow: 0px 3px 10px 0px lightblue;
+  border-radius: 5px;
+  width: 92%;
 }
 
 .homeCont {
@@ -46,7 +74,7 @@ code {
 }
 
 .loginFormDiv {
-  height: 60vw;
+  height: 500px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -125,19 +153,40 @@ code {
   flex-wrap: wrap;
   justify-content: center;
   align-content: flex-start;
-  width: 45%;
-  max-height: 45vw;
+  align-items: center;
+  width: 60%;
+  min-height: 375px;
   overflow: scroll;
-  border: 1px black solid;
+  border: 1px lightblue solid;
+  border-radius: 15px;
   border-collapse: collapse;
+  box-shadow: 2px 4px 6px 1px rgba(140, 210, 233, 0.4);
 }
 
 .incomesTable div {
   width: 100%;
 }
 
+.modalButton {
+  margin-top: 2px;
+  border: 1px solid lightblue;
+  border-radius: 10px;
+  background-color: blue;
+  color: white;
+  box-shadow: 2px 4px 6px 1px rgba(140, 210, 233, 0.4);
+}
+
 .incomeTable {
   width: 100%;
+}
+
+.incomeTable button {
+  border: none;
+  color: white;
+  background-color: red;
+  line-height: 1;
+  border-radius: 10px;
+  margin-bottom: 4px;
 }
 
 .incomeTable tr {
@@ -149,11 +198,12 @@ code {
   flex-wrap: wrap;
   justify-content: center;
   align-content: flex-start;
-  width: 45%;
-  max-height: 45vw;
+  width: 60%;
   overflow: scroll;
-  border: 1px black solid;
+  border: 1px lightblue solid;
+  border-radius: 15px;
   border-collapse: collapse;
+  box-shadow: 2px 4px 6px 1px rgba(140, 210, 233, 0.4);
 }
 
 .expensesTable div {
@@ -169,9 +219,10 @@ code {
 }
 
 table, td {
-  border: 1px solid black;
+  border: 1px solid lightblue;
   border-collapse: collapse!important;
   text-align: center;
+  align-items: center;
 }
 
 th {
@@ -179,22 +230,25 @@ th {
   position: sticky;
   top: -.9px;
   padding: 5px;
-  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
-  border: 1px black solid;
+  border-bottom: 1px lightblue solid;
 }
 
 .calendarCont {
-  width: 50%!important;
+  width: 33%!important;
+  
 }
 
 .react-calendar {
   width: 100%!important;
+  border-radius: 15px;
+  box-shadow: 4px 5px 1px 1px rgba(140, 210, 233, 0.4);
+  min-height: 375px;
 }
 
 .react-calendar__tile {
   overflow: scroll;
   min-width: 14.2857%!important;
-  max-height: 90px!important;
+  max-height: 70px!important;
 }
 
 .react-calendar__tile div{
@@ -219,15 +273,19 @@ th {
 .calendarViewUL {
   list-style: none;
   padding: 0;
+  margin: 0;
+  margin-bottom: 5px;
 }
 
 .incomeTitle {
   border-bottom: 2px green solid;
+  cursor: pointer;
 }
 
 .expenseTitle {
   padding-right: 5px;
   border-bottom: 2px red solid;
+  cursor: pointer;
 }
 
 .totalsTitle {
@@ -240,10 +298,20 @@ th {
   font-size: 25px;
 }
 
+.incomeLI {
+  color: green;
+  font-weight: bold;
+}
+
 .expenseValue{
   color: red;
   -webkit-text-stroke: 1px darkred;
   font-size: 25px;
+}
+
+.expenseLI {
+  color: darkred;
+  font-weight: bold;
 }
 
 .totalsValue {
@@ -312,7 +380,93 @@ th {
   border: none;
 }
 
+.eventsCont {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: flex-start;
+  margin-top: 10px;
+  width: 33%;
+  min-height: 375px;
+  overflow: scroll;
+  border: 1px lightblue solid;
+  border-radius: 15px;
+  border-collapse: collapse;
+  box-shadow: 2px 4px 6px 1px rgba(140, 210, 233, 0.4);
+}
+
+.eventsListCont {
+  width: 100%;
+  text-align: center;
+}
+
+.eventsListTitle h2{
+  margin: 2px 0 5px 0;
+  width: 100%;
+  border-bottom: 1px solid lightblue;
+}
+
+.ULCont {
+  width: 95%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: start;
+}
+
+.eventsListIULCont {
+  margin: 0;
+  width: 100%;
+  max-height: 40%;
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+}
+
+.eventsListEULCont {
+  margin: 0;
+  width: 100%;
+  max-height: 40%;
+  display: flex;
+  flex-direction: column;
+  align-content: flex-start;
+}
+
+.graphsCont {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: flex-start;
+  width: 60%;
+  min-height: 375px;
+  overflow: scroll;
+  border: 1px lightblue solid;
+  border-radius: 15px;
+  border-collapse: collapse;
+  box-shadow: 2px 4px 6px 1px rgba(140, 210, 233, 0.4);
+}
+
+.graphsViewCont {
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+.graphsViewTitle h2{
+  margin: 2px 0 5px 0;
+  width: 100%;
+  border-bottom: 1px solid lightblue;
+}
+
 .Footer {
-  position: absolute;
-  bottom: 0;
+  width: 100%;
+  margin-top: 15px;
+  color: darkblue;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  text-align: center;
+  background: linear-gradient(170deg, white, lightblue 50%, blue);
 }
