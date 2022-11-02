@@ -18,6 +18,7 @@ const Home = () => {
   
   const [date, setDate] = useState(new Date())
   const [budgetEventsList, setBudgetEventsList] = useState([])
+  const [tempArray, setTempArray] = useState([])
   const dispatch = useDispatch();
   const loggedIn = Auth.loggedIn()
   const {loading: incomeLoading, data: incomeData, refetch: incomeDataRefetch } = useQuery(QUERY_INCOMES)
@@ -75,6 +76,29 @@ const Home = () => {
   }
   },[incomeLoading, incomeData, IandEtoggle, loggedIn, incomeDataRefetch, dispatch])
 
+  function updatebudgetEventsList(base) {
+    let bdoeID = base.doeID
+    let bID = base.id;
+    let bEvent = base.iandeEvent;
+    let bValue = base.iandEValue;
+    let bClass = base.eventClass;
+    let bDateofEvent = base.dateofEvent;
+
+    let baseData = [{doeID: bdoeID, id: bID, iandeEvent: bEvent, iandeValue: bValue, eventClass: bClass, dateofEvent: bDateofEvent}]
+    if (!budgetEventsList.some(e => e.doeID === bdoeID) && !budgetEventsList.some(e=> e.doeID === undefined)){
+      if (bDateofEvent > (new Date().getTime() - 86400000) && (bDateofEvent < new Date(addDate(7, 'days', new Date().getTime())).getTime())) {
+        setTempArray((prev) => [...prev, ...baseData])
+      }  
+    }
+    
+  }
+
+  useEffect (() => {
+    const unique = [...new Map(tempArray.map((m) => [m.doeID, m])).values()];
+    setBudgetEventsList(...[unique])
+    console.log(budgetEventsList)
+  }, [tempArray, setTempArray])
+
   if (loggedIn) {
   return (
     <div className="homeCont">
@@ -95,16 +119,16 @@ const Home = () => {
           if (view === 'month') {
             for (let i = 0; i < incomes.length; i ++) {
               let iFrequency = incomes[i].incomeFrequency[0]
-              let unitMath = false;
+              let unitIMath = false;
               if (iFrequency.frequency === 'other') {
                 if (iFrequency.nUnit === 'days') {
-                  unitMath = (Math.round(( date.getTime()/86400000 - parseInt(incomes[i].payDay)/86400000)%(parseInt(iFrequency.nValue)))) === parseInt(iFrequency.nValue) - 1
+                  unitIMath = (Math.round(( date.getTime()/86400000 - parseInt(incomes[i].payDay)/86400000)%(parseInt(iFrequency.nValue)))) === parseInt(iFrequency.nValue) - 1
                 }
                 if (iFrequency.nUnit === 'months') {
-                  unitMath = parseInt(date.getDate()) === parseInt(iFrequency.day) && (date.getMonth()%parseInt(iFrequency.nValue)) === 0;
+                  unitIMath = parseInt(date.getDate()) === parseInt(iFrequency.day) && (date.getMonth()%parseInt(iFrequency.nValue)) === 0;
                 }
                 if (iFrequency.nUnit === 'years') {
-                  unitMath = parseInt(date.getDate()) === parseInt(iFrequency.day) && (date.getFullYear() - new Date(parseInt(incomes[i].payDay)).getFullYear())%parseInt(iFrequency.nValue) === 0 && date.getMonth() === new Date(parseInt(incomes[i].payDay)).getMonth();
+                  unitIMath = parseInt(date.getDate()) === parseInt(iFrequency.day) && (date.getFullYear() - new Date(parseInt(incomes[i].payDay)).getFullYear())%parseInt(iFrequency.nValue) === 0 && date.getMonth() === new Date(parseInt(incomes[i].payDay)).getMonth();
                 }
               }
               if (iFrequency.frequency === 'daily') {
@@ -116,22 +140,23 @@ const Home = () => {
               if (iFrequency.frequency === 'yearly' && parseInt(date.getMonth()) === parseInt(iFrequency.month) && parseInt(date.getDate()) === parseInt(iFrequency.day)) {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()})
               }
-              if ((iFrequency.frequency === 'other') && (date.toDateString() === new Date(parseInt(incomes[i].payDay)).toDateString() || unitMath)) {
+              if ((iFrequency.frequency === 'other') && (date.toDateString() === new Date(parseInt(incomes[i].payDay)).toDateString() || unitIMath)) {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()})
+                updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()}))
               }
             }
             for (let i = 0; i < expenses.length; i ++) {
               let eFrequency = expenses[i].expenseFrequency[0]
-              let unitMath = false;
+              let unitEMath = false;
               if (eFrequency.frequency === 'other') {
                 if (eFrequency.nUnit === 'days') {
-                  unitMath = (Math.round(( date.getTime()/86400000 - parseInt(expenses[i].payDay)/86400000)%(parseInt(eFrequency.nValue)))) === parseInt(eFrequency.nValue) - 1
+                  unitEMath = (Math.round(( date.getTime()/86400000 - parseInt(expenses[i].dueDate)/86400000)%(parseInt(eFrequency.nValue)))) === parseInt(eFrequency.nValue) - 1
                 }
                 if (eFrequency.nUnit === 'months') {
-                  unitMath = parseInt(date.getDate()) === parseInt(eFrequency.day) && (date.getMonth()%parseInt(eFrequency.nValue)) === 0;
+                  unitEMath = parseInt(date.getDate()) === parseInt(eFrequency.day) && (date.getMonth()%parseInt(eFrequency.nValue)) === 0;
                 }
                 if (eFrequency.nUnit === 'years') {
-                  unitMath = parseInt(date.getDate()) === parseInt(eFrequency.day) && (date.getFullYear() - new Date(parseInt(expenses[i].payDay)).getFullYear())%parseInt(eFrequency.nValue) === 0 && date.getMonth() === new Date(parseInt(expenses[i].payDay)).getMonth();
+                  unitEMath = parseInt(date.getDate()) === parseInt(eFrequency.day) && (date.getFullYear() - new Date(parseInt(expenses[i].dueDate)).getFullYear())%parseInt(eFrequency.nValue) === 0 && date.getMonth() === new Date(parseInt(expenses[i].dueDate)).getMonth();
                 }
               }
               if (eFrequency.frequency === 'daily') {
@@ -143,18 +168,13 @@ const Home = () => {
               if (eFrequency.frequency === 'yearly' && parseInt(date.getMonth()) === parseInt(eFrequency.month) && parseInt(date.getDate()) === parseInt(eFrequency.day)) {
                 iandeContent.push({id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()})
               }
-              if ((eFrequency.frequency === 'other') && (date.toDateString() === new Date(parseInt(expenses[i].payDay)).toDateString() || unitMath)) {
-                iandeContent.push({id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()})
+              if ((eFrequency.frequency === 'other') && (date.toDateString() === new Date(parseInt(expenses[i].dueDate)).toDateString() || unitEMath)) {
+                iandeContent.push({doeId: expenses[i]._id + date.toDateString(), id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()})
+                updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()}))
               }
             }
-            
           }
           if (iandeContent) {
-              for (let i = 0; i < iandeContent.length; i++) {
-                if ((iandeContent[i].dateofEvent > (new Date().getTime() - 86400000)) && (iandeContent[i].dateofEvent < new Date(addDate(7, 'days', new Date().getTime())).getTime())) {
-                  setBudgetEventsList((prev) => [...prev, ...iandeContent])
-                }
-              }
             return (
               <div>
                 <ul className="calendarViewUL">
@@ -167,13 +187,13 @@ const Home = () => {
                 </ul>
               </div>
             )
-          } 
+          }
         }}
         calendarType={"US"}
       />
       </div>
       <div className="eventsCont">
-        <EventsList />
+        <EventsList events={budgetEventsList}/>
       </div>
       <div className="graphsCont">
         <GraphsView />
