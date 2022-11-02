@@ -37,7 +37,7 @@ function IncomesList() {
                 })
             })
         }
-    },[incomeLoading, incomeData, iandEMValue, dispatch])
+    },[incomeLoading, incomeData, iandEMValue, incomeDataRefetch, dispatch])
 
     function iModalToggle() {
         dispatch({

@@ -57,7 +57,17 @@ export const QUERY_EXPENSES = gql`
         _id
         expenseTitle
         expenseValue
-        expenseFrequency
+        expenseFrequency {
+          _id
+          frequency
+          isSameDay
+          countWeekends
+          hasCustom
+          nValue
+          nUnit
+          day
+          month
+        }
         vitalExpense
         expenseCategory
         totalExpenseValue
@@ -85,7 +95,17 @@ export const QUERY_ME = gql`
             _id
             incomeTitle
             incomeValue
-            incomeFrequency
+            incomeFrequency {
+              _id
+              frequency
+              isSameDay
+              countWeekends
+              hasCustom
+              nValue
+              nUnit
+              day
+              month
+            }
             primaryIncome
             payDay
             uomePayInfo {
@@ -99,7 +119,17 @@ export const QUERY_ME = gql`
             _id
             expenseTitle
             expenseValue
-            expenseFrequency
+            expenseFrequency {
+              _id
+              frequency
+              isSameDay
+              countWeekends
+              hasCustom
+              nValue
+              nUnit
+              day
+              month
+            }
             vitalExpense
             expenseCategory
             dueDate

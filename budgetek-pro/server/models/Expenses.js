@@ -1,5 +1,6 @@
 const { Schema } = require('mongoose');
 const IOWEUSchema = require('./Ioweyou');
+const DDBreakdownSchema = require('./DDBreakdown')
 
 const ExpenseSchema = new Schema({
     expenseTitle: {
@@ -10,10 +11,7 @@ const ExpenseSchema = new Schema({
         type: String,
         required: true
     },
-    expenseFrequency: {
-        type: String,
-        required: true
-    },
+    expenseFrequency: [DDBreakdownSchema],
     vitalExpense: {
         type: Boolean,
         required: false

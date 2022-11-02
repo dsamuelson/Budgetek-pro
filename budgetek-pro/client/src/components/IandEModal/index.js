@@ -29,7 +29,7 @@ function IandEModal() {
     const [eModalTitle, setEModalTitle] = useState('');
     const [eModalValue, setEModalValue] = useState('');
     const [eItemize, setEItemize] = useState(false);
-    const [eModalFrequency, setEModalFrequency] = useState('');
+    const [eModalFrequency, setEModalFrequency] = useState({});
     const [eModalCategory, setEModalCategory] = useState('');
     const [addETotal, setAddETotal] = useState(false)
     const [eTotalValue, setETotalValue] = useState('')
@@ -154,6 +154,12 @@ function IandEModal() {
     async function payDayBreakdown(options) {
         setIModalFrequency(payDayOptions => ({
             ...payDayOptions,
+            ...options}))
+    }
+
+    async function DueDateBreakdown(options) {
+        setEModalFrequency(dueDayOptions => ({
+            ...dueDayOptions,
             ...options}))
     }
 
@@ -328,7 +334,7 @@ function IandEModal() {
                         </div>
                     )}
                     <label>Frequency:
-                        <select id="EFrequency" name="EFrequency" onChange={(e) => setEModalFrequency(e.target.value)}>
+                        <select id="EFrequency" name="EFrequency" onChange={(e) => setEModalFrequency({frequency: e.target.value})}>
                             <option>--None--</option>
                             <option value='once'>Once</option>
                             <option value='daily'>Daily</option>
@@ -337,6 +343,68 @@ function IandEModal() {
                             <option value='other'>Other</option>
                         </select>
                     </label>
+                    {eModalFrequency.frequency === "monthly" && (
+                        <div>
+                        <label>
+                            Please Select what applies:
+                            <div onChange={(e) => DueDateBreakdown({isSameDay: e.target.value})}>
+                                <input type='radio' value="sameDay" checked={eModalFrequency.isSameDay === 'sameDay'}/>Always on the {`${dueDateDate.getDate()}`} Every Month <br />
+                                <input type='radio' value='lastDay' checked={eModalFrequency.isSameDay === 'lastDay'}/>Always Last Day of the Month
+                            </div>
+                        </label>
+                        <label>
+                            Weekends
+                            <div onChange={(e) => DueDateBreakdown({countWeekends: e.target.value})}>
+                                <input type='radio' value='preWeekends' checked={eModalFrequency.countWeekends === 'preWeekends'}/>Due before weekends <br />
+                                <input type='radio' value='postWeekends' checked={eModalFrequency.countWeekends === 'postWeekends'}/>Due after weekends <br />
+                                <input type='radio' value='ignore' checked={eModalFrequency.countWeekends === 'ignore'} />Weekends don't change anything
+                            </div>
+                        </label>
+                        </div>
+                    )}
+                    {eModalFrequency.frequency === "yearly" && (
+                        <div>
+                            <label>
+                                Please Select what applies:
+                                <div onChange={(e) => DueDateBreakdown({isSameDay: e.target.value})}>
+                                    <input type='radio' value="sameDay" checked={eModalFrequency.isSameDay === 'sameDay'}/>Always on {`${monthName[dueDateDate.getMonth()]} ${dueDateDate.getDate()}`} Every year <br />
+                                    <input type='radio' value='lastDay' checked={eModalFrequency.isSameDay === 'lastDay'}/>Always Last Day of {`${monthName[dueDateDate.getMonth()]}`} <br />
+                                    <input type='radio' value='firstDay' checked={eModalFrequency.isSameDay === 'firstDay'}/>Always First Day of {`${monthName[dueDateDate.getMonth()]}`}
+                                </div>
+                            </label>
+                            <label>
+                                Weekends:
+                                <div onChange={(e) => DueDateBreakdown({countWeekends: e.target.value})}>
+                                    <input type='radio' value='preWeekends' checked={eModalFrequency.countWeekends === 'preWeekends'}/>Due before weekends <br />
+                                    <input type='radio' value='postWeekends' checked={eModalFrequency.countWeekends === 'postWeekends'}/>Due after weekends <br />
+                                    <input type='radio' value='ignore' checked={eModalFrequency.countWeekends === 'ignore'} />Weekends don't change anything
+                                </div>
+                            </label>
+                        </div>
+                    )}
+                    {eModalFrequency.frequency === "other" && (
+                        <div>
+                            <label>
+                            Please Describe:
+                            <div>
+                                <input type='checkbox' value="hasCustom" checked={eModalFrequency.hasCustom === true} onChange={(e) => DueDateBreakdown({hasCustom: e.target.checked})}/>Always <input type='text' onChange={(e) => DueDateBreakdown({nValue: e.target.value})} placeholder='number'/> <select id="nUnit" name="nUnit" onChange={(e) => DueDateBreakdown({nUnit: e.target.value})}>
+                                            <option>--None--</option>
+                                            <option value='days'>Days</option>
+                                            <option value='months'>Months</option>
+                                            <option value='years'>Years</option>
+                                        </select> <br />
+                                </div>
+                                </label>
+                                <label>
+                                Weekends:
+                                <div onChange={(e) => DueDateBreakdown({countWeekends: e.target.value})}>
+                                    <input type='radio' value='preWeekends' checked={eModalFrequency.countWeekends === 'preWeekends'}/>Due before weekends <br />
+                                    <input type='radio' value='postWeekends' checked={eModalFrequency.countWeekends === 'postWeekends'}/>Due after weekends <br />
+                                    <input type='radio' value='ignore' checked={eModalFrequency.countWeekends === 'ignore'} />Weekends don't change anything
+                                </div>
+                            </label>
+                        </div>
+                    )}
                     <label>Vital Expense:
                         <input type='checkbox' id="EVital" name="EVital" onChange={(e) => setEModalVital(e.target.checked)}/>
                     </label>
@@ -363,7 +431,7 @@ function IandEModal() {
                     <label>Due Date:
                         <DatePicker 
                         selected={dueDateDate}
-                        onChange={(date) => setDueDateDate(date)}
+                        onChange={(date) => {setDueDateDate(date); DueDateBreakdown({day: date.getDate().toString()}); if (iModalFrequency.frequency === 'yearly'){DueDateBreakdown({month: date.getMonth().toString()})}}}
                         />
                     </label>
                     <input type='submit' value="Add Expense" onClick={event => submitExpenseModal(event)}></input>

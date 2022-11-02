@@ -34,7 +34,8 @@ function App() {
   return (
     <ApolloProvider client={client}>
       <Router>
-        <div>
+          <div  className='mainBody'>
+            <div className='bodyTop'>
             <Nav />
             <OverviewBar />
             <Routes>
@@ -55,6 +56,7 @@ function App() {
                 element={<NoMatch />} 
               />
             </Routes>
+            </div>
           <Footer />
         </div>
       </Router>

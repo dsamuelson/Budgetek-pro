@@ -37,7 +37,7 @@ function ExpensesList() {
                 })
             })
         }
-    },[expenseLoading, expenseData, iandEMValue, dispatch])
+    },[expenseLoading, expenseData, iandEMValue, expenseDataRefetch, dispatch])
 
     function EModalToggle() {
         dispatch({
@@ -85,7 +85,7 @@ function ExpensesList() {
                                     <tr>
                                         <td>{expense.expenseTitle}</td>
                                         <td>{expense.expenseValue}<br></br>{expense.totalExpenseValue &&`(${expense.totalExpenseValue})`}</td>
-                                        <td>{expense.expenseFrequency}</td>
+                                        <td>{expense.expenseFrequency[0].frequency}</td>
                                         <td onClick={() => setShowItemizedList([{id: expense._id, open: !showItemizedList[0].open}])}>{expense.iouInfo.length > 0 && expense.iouInfo.length}</td>
                                         <td>{expense.vitalExpense}</td>
                                         <td>{expense.expenseCategory}</td>

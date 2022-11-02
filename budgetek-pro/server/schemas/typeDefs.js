@@ -50,6 +50,29 @@ const typeDefs = gql`
         month: String
     }
 
+    type expenseFrequencyt {
+        _id: ID
+        frequency: String
+        isSameDay: String
+        countWeekends: String
+        hasCustom: Boolean
+        nValue: String
+        nUnit: String
+        day: String
+        month: String
+    }
+
+    input expenseFrequencyi {
+        frequency: String
+        isSameDay: String
+        countWeekends: String
+        hasCustom: Boolean
+        nValue: String
+        nUnit: String
+        day: String
+        month: String
+    }
+
     type Incomes {
         _id: ID
         incomeTitle: String
@@ -64,7 +87,7 @@ const typeDefs = gql`
         _id: ID
         expenseTitle: String
         expenseValue: String
-        expenseFrequency: String
+        expenseFrequency: [expenseFrequencyt]
         vitalExpense: Boolean
         expenseCategory: String
         totalExpenseValue: String
@@ -110,7 +133,7 @@ const typeDefs = gql`
         removeIncome(_id: String!): User
         addUOMe(uomeId: String!, uomePayInfo: [UOMEi!]!): User
         removeUOMe(_id: String!, incomeId: String!): User
-        addExpense(expenseTitle: String!, expenseValue: String!, expenseFrequency: String!, vitalExpense: Boolean, expenseCategory: String, totalExpenseValue: String, dueDate: String, iouInfo: [IOUi!]): User
+        addExpense(expenseTitle: String!, expenseValue: String!, expenseFrequency: [expenseFrequencyi]!, vitalExpense: Boolean, expenseCategory: String, totalExpenseValue: String, dueDate: String, iouInfo: [IOUi!]): User
         removeExpense(_id: String!): User
         addIOU(iouId: String!, iouInfo: [IOUi!]!): User
         removeIOU(_id: String!, expenseId: String!): User

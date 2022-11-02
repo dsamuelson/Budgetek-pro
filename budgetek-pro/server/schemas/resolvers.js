@@ -152,7 +152,7 @@ const resolvers = {
                     expenses: {
                       expenseTitle: args.expenseTitle,
                       expenseValue: args.expenseValue,
-                      expenseFrequency: args.expenseFrequency,
+                      expenseFrequency: [...args.expenseFrequency],
                       vitalExpense: args.vitalExpense,
                       expenseCategory: args.expenseCategory,
                       totalExpenseValue: args.totalExpenseValue,

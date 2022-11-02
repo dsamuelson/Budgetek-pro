@@ -1,18 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Auth from '../../utils/auth';
-import { useDispatch, useSelector } from 'react-redux'
-import { from, useQuery } from "@apollo/client";
-import { QUERY_INCOMES, QUERY_EXPENSES} from '../../utils/queries'
 
 function GraphsView() {
-
+     const loggedIn = Auth.loggedIn();
 
     return (
         <div className="graphsViewCont">
-            <div className="graphsViewTitle">
-                <h2>Quick View</h2>
-            </div>
-            
+            {loggedIn && (
+                <div className="graphsViewTitle">
+                    <h2>Quick View</h2>
+                </div>
+            )}
         </div>
     )
 }
