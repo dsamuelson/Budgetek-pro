@@ -537,9 +537,11 @@ th {
   width: 100%;
   border-bottom: 1px solid lightblue;
 }
+
 html, .mainBody {
   height: 100%;
 }
+
 .mainBody {
   display: flex;
   flex-direction: column;
@@ -547,6 +549,37 @@ html, .mainBody {
 
 .bodyTop {
   flex: 1 0 auto;
+}
+
+.graphsView {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.graphsDoughnut {
+  height: 100%;
+  width: 30%;
+}
+
+.graphsLine {
+  height: 100%;
+  width: 30%;
+}
+
+.graphsLine canvas {
+  min-height: 335px!important;
+}
+
+.graphsArea {
+  height: 100%;
+  width: 30%;
+}
+
+.graphsArea canvas {
+  min-height: 335px;
 }
 
 .Footer {

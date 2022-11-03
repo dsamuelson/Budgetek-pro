@@ -96,7 +96,6 @@ const Home = () => {
   useEffect (() => {
     const unique = [...new Map(tempArray.map((m) => [m.doeID, m])).values()];
     setBudgetEventsList(...[unique])
-    console.log(budgetEventsList)
   }, [tempArray, setTempArray])
 
   if (loggedIn) {
