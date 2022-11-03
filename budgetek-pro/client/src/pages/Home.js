@@ -133,12 +133,15 @@ const Home = () => {
               }
               if (iFrequency.frequency === 'daily') {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()})
+                updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()}))
               }
               if (iFrequency.frequency === 'monthly' && parseInt(date.getDate()) === parseInt(iFrequency.day)) {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()})
+                updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()}))
               }
               if (iFrequency.frequency === 'yearly' && parseInt(date.getMonth()) === parseInt(iFrequency.month) && parseInt(date.getDate()) === parseInt(iFrequency.day)) {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()})
+                updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()}))
               }
               if ((iFrequency.frequency === 'other') && (date.toDateString() === new Date(parseInt(incomes[i].payDay)).toDateString() || unitIMath)) {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()})
@@ -161,12 +164,15 @@ const Home = () => {
               }
               if (eFrequency.frequency === 'daily') {
                 iandeContent.push({id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()})
+                updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()}))
               }
               if (eFrequency.frequency === 'monthly' && parseInt(date.getDate()) === parseInt(eFrequency.day)) {
                 iandeContent.push({id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()})
+                updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()}))
               }
               if (eFrequency.frequency === 'yearly' && parseInt(date.getMonth()) === parseInt(eFrequency.month) && parseInt(date.getDate()) === parseInt(eFrequency.day)) {
                 iandeContent.push({id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()})
+                updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()}))
               }
               if ((eFrequency.frequency === 'other') && (date.toDateString() === new Date(parseInt(expenses[i].dueDate)).toDateString() || unitEMath)) {
                 iandeContent.push({doeId: expenses[i]._id + date.toDateString(), id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()})

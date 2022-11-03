@@ -194,6 +194,15 @@ code {
   margin-bottom: 4px;
 }
 
+.expenseTable button {
+  border: none;
+  color: white;
+  background-color: red;
+  line-height: 1;
+  border-radius: 10px;
+  margin-bottom: 4px;
+}
+
 .incomeTable tr {
   width: 100%;
 }
@@ -304,7 +313,7 @@ th {
 }
 
 .incomeLI {
-  color: green;
+  color: rgb(1, 179, 1);
   font-weight: bold;
 }
 
@@ -315,7 +324,7 @@ th {
 }
 
 .expenseLI {
-  color: darkred;
+  color: red;
   font-weight: bold;
 }
 
@@ -328,20 +337,83 @@ th {
   position: absolute;
   background-color: white;
   border-radius: 15px;
-  border: 1px black solid;
+  border: 2px blue solid;
+  width: 25%;
+  box-shadow: 0px 0px 120px 120px rgba(127, 204, 230, 0.4);
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.ieModal input {
+  border: 1px solid lightskyblue;
+  border-radius: 5px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.ieModal label {
+  text-align: start;
+  margin-top: 10px;
+}
+
+.ieModal .formTextInput {
+  width: 90%;
+  text-align: center;
+}
+
+.ieModal .ieModalButton {
+  margin-top: 5px;
+  color: white;
+  background-color: blue;
+  border-radius: 50px;
+  cursor: pointer;
   width: 50%;
+  align-self: center;
+}
+
+.ieModal .cancelButton {
+  background-color: red;
+}
+
+.iItemizeTable {
+  margin-left: -10px;
+}
+
+.eItemizeTable {
+  margin-left: -10px;
+}
+
+.eItemizeTableCont button {
+  border: 1px solid lightskyblue;
+  margin-top: 5px;
+  color: white;
+  background-color: blue;
+  border-radius: 50px;
+  justify-self: center;
+}
+
+.iItemizeTableCont button {
+  border: 1px solid lightskyblue;
+  margin-top: 5px;
+  color: white;
+  background-color: blue;
+  border-radius: 50px;
 }
 
 .incomeForm {
   display: flex;
   flex-direction: column;
-
+  text-align: center;
+  width: 85%;
 }
 
 .expenseForm {
   display: flex;
   flex-direction: column;
-  
+  text-align: center;
+  width: 85%;
 }
 
 .headerBar {

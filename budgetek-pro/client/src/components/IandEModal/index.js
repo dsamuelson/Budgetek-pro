@@ -165,17 +165,17 @@ function IandEModal() {
 
     return (
         <div className="ieModal">
-            <h2>ADD</h2>
+            <h2>ADD {modalValue === 'Income'? 'INCOME' : 'EXPENSE'}</h2>
             {loggedIn && modalValue === "Income" && (
                 <form className="incomeForm">
-                    <label>Income Title: 
-                        <input type='text' id="ITitle" name="ITitle" onChange={(e) => setIModalTitle(e.target.value)}/>
+                    <label>Income Title: <br />
+                        <input type='text' id="ITitle" name="ITitle" onChange={(e) => setIModalTitle(e.target.value)} className='formTextInput'/>
                     </label>
-                    <label>Pay Amount: 
-                        <input type='text' id='IValue' name="IValue" value={iModalValue} onChange={(e) => setIModalValue(e.target.value)} disabled={iiItemize}/>
-                        (or is this itemized?
-                        <input type='checkbox' id='Iitemize' onChange={(e) => setiItemize(e.target.checked)}/>
-                        )
+                    <label>Pay Amount: <br />
+                        <input type='text' id='IValue' name="IValue" value={iModalValue} onChange={(e) => setIModalValue(e.target.value)} disabled={iiItemize} className='formTextInput'/><br />
+                    </label>
+                    <label>
+                    <input type='checkbox' id='Iitemize' onChange={(e) => setiItemize(e.target.checked)}/>Itemize this Income<br />
                     </label>
                     {iiItemize && (
                         <div className="iItemizeTableCont">
@@ -279,29 +279,30 @@ function IandEModal() {
                             </label>
                         </div>
                     )}
-                    <label>Primary Income: 
-                        <input type='checkbox' id="IPrimary" name="IPrimary" onChange={(e) => setIModalPrimary(e.target.checked)}/>
+                    <label> 
+                        <input type='checkbox' id="IPrimary" name="IPrimary" onChange={(e) => setIModalPrimary(e.target.checked)}/> Primary Income
                     </label>
                     <label>Pay Day: 
                         <DatePicker 
+                        value={payDayDate}
                         selected={payDayDate}
                         onChange={(date) => {setPayDayDate(date); payDayBreakdown({day: date.getDate().toString()}); if (iModalFrequency.frequency === 'yearly'){payDayBreakdown({month: date.getMonth().toString()})}}}
-                        />
+                        className='formTextInput'/>
                     </label>
-                    <input type='submit' value="Add Income" onClick={event => submitIncomeModal(event)}></input>
-                    <input type='button' value="Cancel" onClick={iandEMToggle}></input>
+                    <input type='submit' value="Add Income" onClick={event => submitIncomeModal(event)} className='ieModalButton'></input>
+                    <input type='button' value="Cancel" onClick={iandEMToggle} className='ieModalButton cancelButton'></input>
                 </form>
             )}
             {loggedIn && modalValue === 'Expense' && (
                 <form className="expenseForm">
                     <label>Expense Title:
-                        <input type='text' id="ETitle" name="ETitle" onChange={(e) => setEModalTitle(e.target.value)}/>
+                        <input type='text' id="ETitle" name="ETitle" onChange={(e) => setEModalTitle(e.target.value)} className='formTextInput'/>
                     </label>
                     <label>Amount Due:
-                        <input type='text' id='EValue' name="EValue" onChange={(e) => setEModalValue(e.target.value)} disabled={eItemize}/>
-                        (or is this itemized?
-                        <input type='checkbox' id='Iitemize' onChange={(e) => setEItemize(e.target.checked)}/>
-                        )
+                        <input type='text' id='EValue' name="EValue" onChange={(e) => setEModalValue(e.target.value)} disabled={eItemize} className='formTextInput'/>
+                    </label>
+                    <label>
+                    <input type='checkbox' id='Iitemize' onChange={(e) => setEItemize(e.target.checked)}/>Itemize this Expense<br />
                     </label>
                     {eItemize && (
                         <div className="iItemizeTableCont">
@@ -424,7 +425,7 @@ function IandEModal() {
                     </label>
                     {addETotal && (
                         <label>
-                            Total Debt Value:
+                            Total Debt Value: <br />
                             <input type="text" id="tDebtValue" name="tDebtValue" onChange={(e) => setETotalValue(e.target.value)} />
                         </label>
                     )}
@@ -434,8 +435,8 @@ function IandEModal() {
                         onChange={(date) => {setDueDateDate(date); DueDateBreakdown({day: date.getDate().toString()}); if (iModalFrequency.frequency === 'yearly'){DueDateBreakdown({month: date.getMonth().toString()})}}}
                         />
                     </label>
-                    <input type='submit' value="Add Expense" onClick={event => submitExpenseModal(event)}></input>
-                    <input type='button' value="Cancel" onClick={iandEMToggle}></input>
+                    <input type='submit' value="Add Expense" onClick={event => submitExpenseModal(event)} className='ieModalButton'></input>
+                    <input type='button' value="Cancel" onClick={iandEMToggle} className='ieModalButton cancelButton'></input>
                 </form>
             )}
         </div>  
