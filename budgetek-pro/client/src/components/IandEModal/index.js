@@ -15,6 +15,7 @@ function IandEModal() {
 
     const [iModalTitle, setIModalTitle] = useState('');
     const [iModalValue, setIModalValue] = useState('');
+    const [iModalInterest, setIModalInterest] = useState('');
     const [iiItemize, setiItemize] = useState(false);
     const [iModalFrequency, setIModalFrequency] = useState({});
     const [iModalPrimary, setIModalPrimary] = useState(false);
@@ -33,6 +34,7 @@ function IandEModal() {
     const [eModalCategory, setEModalCategory] = useState('');
     const [addETotal, setAddETotal] = useState(false)
     const [eTotalValue, setETotalValue] = useState('')
+    const [eAPRTotal, setEAPRTotal] = useState('')
     const [eModalVital, setEModalVital] = useState(false);
     const [dueDateDate, setDueDateDate] = useState(new Date())
 
@@ -90,6 +92,7 @@ function IandEModal() {
                 variables: {
                     incomeTitle: iModalTitle,
                     incomeValue: iModalValue.toString(),
+                    incomeInterest: iModalInterest.toString(),
                     incomeFrequency: iModalFrequency,
                     primaryIncome: iModalPrimary,
                     payDay: payDayDate,
@@ -118,6 +121,7 @@ function IandEModal() {
                     vitalExpense: eModalVital,
                     expenseCategory: eModalCategory,
                     totalExpenseValue: eTotalValue,
+                    expenseAPR: eAPRTotal.toString(),
                     dueDate: dueDateDate,
                     iouInfo: [...itemizeMSubmit]
                 }
@@ -173,6 +177,9 @@ function IandEModal() {
                     </label>
                     <label>Pay Amount: <br />
                         <input type='text' id='IValue' name="IValue" value={iModalValue} onChange={(e) => setIModalValue(e.target.value)} disabled={iiItemize} className='formTextInput'/><br />
+                    </label>
+                    <label>Interest% Value (optional): <br />
+                        <input type='text' id='IInterest' name="IInterest" onChange={(e) => setIModalInterest(e.target.value)} disabled={iiItemize} className='formTextInput'/><br />
                     </label>
                     <label>
                     <input type='checkbox' id='Iitemize' onChange={(e) => setiItemize(e.target.checked)}/>Itemize this Income<br />
@@ -424,10 +431,16 @@ function IandEModal() {
                         <input type='checkbox' checked={addETotal} name="addETotalValue" onChange={(e) => setAddETotal(e.target.checked)}/>
                     </label>
                     {addETotal && (
-                        <label>
-                            Total Debt Value: <br />
-                            <input type="text" id="tDebtValue" name="tDebtValue" onChange={(e) => setETotalValue(e.target.value)} />
-                        </label>
+                        <div>
+                            <label>
+                                Total Debt Value: <br />
+                                <input type="text" id="tDebtValue" name="tDebtValue" onChange={(e) => setETotalValue(e.target.value)} />
+                            </label> <br />
+                            <label>
+                                APR% on expense (optional): <br />
+                                <input type="text" id="tDebtAPR" name="tDebtAPR" onChange={(e) => setEAPRTotal(e.target.value)} />
+                            </label>
+                        </div>
                     )}
                     <label>Due Date:
                         <DatePicker 

@@ -1,5 +1,9 @@
 import moment from 'moment';
 
+export function daysInMonth (month, year) {
+  return new Date(year, month, 0).getDate();
+}
+
 export function formatDate(datetime) {
     return moment(parseInt(datetime)).format('MMM DD YYYY');
 };

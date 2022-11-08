@@ -76,6 +76,7 @@ const resolvers = {
                     incomes: {
                       incomeTitle: args.incomeTitle,
                       incomeValue: args.incomeValue,
+                      incomeInterest: args.incomeInterest,
                       incomeFrequency: [...args.incomeFrequency],
                       primaryIncome: args.primaryIncome,
                       payDay: args.payDay,
@@ -156,6 +157,7 @@ const resolvers = {
                       vitalExpense: args.vitalExpense,
                       expenseCategory: args.expenseCategory,
                       totalExpenseValue: args.totalExpenseValue,
+                      expenseAPR: args.expenseAPR,
                       dueDate: args.dueDate,
                       iouInfo: [...args.iouInfo]
                     },

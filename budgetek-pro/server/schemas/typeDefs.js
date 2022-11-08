@@ -77,6 +77,7 @@ const typeDefs = gql`
         _id: ID
         incomeTitle: String
         incomeValue: String
+        incomeInterest: String
         incomeFrequency: [incomeFrequencyt]
         primaryIncome: Boolean
         payDay: String
@@ -91,6 +92,7 @@ const typeDefs = gql`
         vitalExpense: Boolean
         expenseCategory: String
         totalExpenseValue: String
+        expenseAPR: String
         dueDate: String
         iouInfo: [IOU]
 
@@ -129,11 +131,11 @@ const typeDefs = gql`
     type Mutation {
         createUser(email: String!, username: String!, password: String!): Auth
         login(username: String! password: String!): Auth
-        addIncome(incomeTitle: String!, incomeValue: String!, incomeFrequency: [incomeFrequencyi]!, primaryIncome: Boolean!, payDay: String, uomePayInfo: [UOMEi!]): User
+        addIncome(incomeTitle: String!, incomeValue: String!, incomeInterest: String, incomeFrequency: [incomeFrequencyi]!, primaryIncome: Boolean!, payDay: String, uomePayInfo: [UOMEi!]): User
         removeIncome(_id: String!): User
         addUOMe(uomeId: String!, uomePayInfo: [UOMEi!]!): User
         removeUOMe(_id: String!, incomeId: String!): User
-        addExpense(expenseTitle: String!, expenseValue: String!, expenseFrequency: [expenseFrequencyi]!, vitalExpense: Boolean, expenseCategory: String, totalExpenseValue: String, dueDate: String, iouInfo: [IOUi!]): User
+        addExpense(expenseTitle: String!, expenseValue: String!, expenseFrequency: [expenseFrequencyi]!, vitalExpense: Boolean, expenseCategory: String, totalExpenseValue: String, expenseAPR: String, dueDate: String, iouInfo: [IOUi!]): User
         removeExpense(_id: String!): User
         addIOU(iouId: String!, iouInfo: [IOUi!]!): User
         removeIOU(_id: String!, expenseId: String!): User

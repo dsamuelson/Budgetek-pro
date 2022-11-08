@@ -127,6 +127,7 @@ const Home = () => {
         onChange={setDate} 
         value={date}
         tileContent={({ date, view }) => {
+          console.log(new Date(date.getFullYear(), date.getMonth() + 1, 0))
           let iandeContent = []
           if (view === 'month') {
             for (let i = 0; i < incomes.length; i ++) {
@@ -151,7 +152,11 @@ const Home = () => {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()})
                 updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), eventClass: 'incomeLI', dateofEvent: date.getTime(), iandeEvent: {...incomes[i]}}))
               }
-              if (iFrequency.frequency === 'monthly' && parseInt(date.getDate()) === parseInt(iFrequency.day)) {
+              if (iFrequency.frequency === 'monthly' && iFrequency.isSameDay !== "lastDay" && parseInt(date.getDate()) === parseInt(iFrequency.day)) {
+                  iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()})
+                  updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), eventClass: 'incomeLI', dateofEvent: date.getTime(), iandeEvent: {...incomes[i]}}))
+              }
+              if (iFrequency.frequency === 'monthly' && iFrequency.isSameDay === "lastDay" && date.getTime() === new Date(date.getFullYear(), date.getMonth() + 1, 0).getTime()) {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()})
                 updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), eventClass: 'incomeLI', dateofEvent: date.getTime(), iandeEvent: {...incomes[i]}}))
               }

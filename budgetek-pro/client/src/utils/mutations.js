@@ -33,8 +33,8 @@ export const ADD_USER = gql`
 `;
 
 export const ADD_EXPENSE = gql`
-  mutation addExpense($expenseTitle: String!, $expenseValue: String!, $expenseFrequency: [expenseFrequencyi]!, $vitalExpense: Boolean, $expenseCategory: String, $totalExpenseValue: String, $dueDate: String, $iouInfo: [IOUi!]) {
-    addExpense(expenseTitle: $expenseTitle, expenseValue: $expenseValue, expenseFrequency: $expenseFrequency, vitalExpense: $vitalExpense, expenseCategory: $expenseCategory, totalExpenseValue: $totalExpenseValue, dueDate: $dueDate, iouInfo: $iouInfo) {
+  mutation addExpense($expenseTitle: String!, $expenseValue: String!, $expenseFrequency: [expenseFrequencyi]!, $vitalExpense: Boolean, $expenseCategory: String, $totalExpenseValue: String, $expenseAPR: String, $dueDate: String, $iouInfo: [IOUi!]) {
+    addExpense(expenseTitle: $expenseTitle, expenseValue: $expenseValue, expenseFrequency: $expenseFrequency, vitalExpense: $vitalExpense, expenseCategory: $expenseCategory, totalExpenseValue: $totalExpenseValue, expenseAPR: $expenseAPR, dueDate: $dueDate, iouInfo: $iouInfo) {
       _id
       expenses {
         _id
@@ -70,8 +70,8 @@ export const REMOVE_EXPENSE = gql`
 `;
 
 export const ADD_INCOME = gql`
-  mutation addIncome($incomeTitle: String!, $incomeValue: String!, $incomeFrequency: [incomeFrequencyi]!, $primaryIncome: Boolean!, $payDay: String, $uomePayInfo: [UOMEi!]) {
-    addIncome(incomeTitle: $incomeTitle, incomeValue: $incomeValue, incomeFrequency: $incomeFrequency, primaryIncome: $primaryIncome, payDay: $payDay, uomePayInfo: $uomePayInfo) {
+  mutation addIncome($incomeTitle: String!, $incomeValue: String!, $incomeInterest: String, $incomeFrequency: [incomeFrequencyi]!, $primaryIncome: Boolean!, $payDay: String, $uomePayInfo: [UOMEi!]) {
+    addIncome(incomeTitle: $incomeTitle, incomeValue: $incomeValue, incomeInterest: $incomeInterest, incomeFrequency: $incomeFrequency, primaryIncome: $primaryIncome, payDay: $payDay, uomePayInfo: $uomePayInfo) {
       _id
       incomes {
         _id

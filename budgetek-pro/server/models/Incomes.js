@@ -11,6 +11,10 @@ const IncomeSchema = new Schema ({
         type: Number,
         required: true
     },
+    incomeInterest: {
+        type: String,
+        required: false
+    },
     incomeFrequency: [PDBreakdownSchema],
     primaryIncome: {
         type: Boolean,

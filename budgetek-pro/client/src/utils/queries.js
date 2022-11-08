@@ -25,6 +25,7 @@ export const QUERY_INCOMES = gql`
         _id
         incomeTitle
         incomeValue
+        incomeInterest
         incomeFrequency {
           _id
           frequency
@@ -71,6 +72,7 @@ export const QUERY_EXPENSES = gql`
         vitalExpense
         expenseCategory
         totalExpenseValue
+        expenseAPR
         dueDate
         iouInfo {
           _id
@@ -95,6 +97,7 @@ export const QUERY_ME = gql`
             _id
             incomeTitle
             incomeValue
+            incomeInterest
             incomeFrequency {
               _id
               frequency
@@ -132,6 +135,8 @@ export const QUERY_ME = gql`
             }
             vitalExpense
             expenseCategory
+            totalExpenseValue
+            expenseAPR
             dueDate
             iouInfo {
               _id
