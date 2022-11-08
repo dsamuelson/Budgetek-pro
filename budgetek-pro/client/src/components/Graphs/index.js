@@ -13,20 +13,24 @@ import {
     Tooltip, 
     Legend } from 'chart.js';
 
-function GraphsView() {
-    const loggedIn = Auth.loggedIn();
+function GraphsView(props) {
 
-    ChartJS.register(
-        CategoryScale,
-        LinearScale,
-        PointElement,
-        LineElement,
-        Title,
-        ArcElement, 
-        Tooltip, 
-        Filler,
-        Legend
-    );
+  const graphsData = props.graphData; 
+  console.log(graphsData)
+
+  const loggedIn = Auth.loggedIn();
+
+  ChartJS.register(
+      CategoryScale,
+      LinearScale,
+      PointElement,
+      LineElement,
+      Title,
+      ArcElement, 
+      Tooltip, 
+      Filler,
+      Legend
+  );
 
     //----Line Graph setup----//
     const lineOptions = {
@@ -64,8 +68,16 @@ function GraphsView() {
     };
     //++++End of Line Graph Setup++++//
     //----Doughnut Graph Setup----//
+    const dDataLabels = [];
+    for (let i = 0 ; i < graphsData?.length ; i ++) {
+      if (graphsData[i].iandeEvent.expenseCategory) {
+        dDataLabels.push(graphsData[i].iandeEvent.expenseCategory)
+      }
+    }
+
+    console.log(dDataLabels)
     const doughnutData = {
-        labels: ['Utilities', 'Commercial', 'Credit', 'Subscription', 'Other'],
+        labels: [...dDataLabels],
         datasets: [
             {
             label: '# of Votes',

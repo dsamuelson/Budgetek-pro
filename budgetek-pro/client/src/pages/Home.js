@@ -18,7 +18,9 @@ const Home = () => {
   
   const [date, setDate] = useState(new Date())
   const [budgetEventsList, setBudgetEventsList] = useState([])
-  const [tempArray, setTempArray] = useState([])
+  const [graphsData, setGraphsData] = useState([])
+  const [tempEventArray, setEventTempArray] = useState([])
+  const [tempGraphArray, setTempGraphArray] = useState([])
   const dispatch = useDispatch();
   const loggedIn = Auth.loggedIn()
   const {loading: incomeLoading, data: incomeData, refetch: incomeDataRefetch } = useQuery(QUERY_INCOMES)
@@ -77,26 +79,37 @@ const Home = () => {
   },[incomeLoading, incomeData, IandEtoggle, loggedIn, incomeDataRefetch, dispatch])
 
   function updatebudgetEventsList(base) {
+    console.log("base", base)
     let bdoeID = base.doeID
-    let bID = base.id;
-    let bEvent = base.iandeEvent;
-    let bValue = base.iandEValue;
+    let bID = base.iandeEvent._id;
+    let bEvent = base.iandeEvent.incomeTitle || base.iandeEvent.expenseTitle;
+    let bValue = base.iandeEvent.incomeValue || base.iandeEvent.expenseValue;
     let bClass = base.eventClass;
     let bDateofEvent = base.dateofEvent;
 
     let baseData = [{doeID: bdoeID, id: bID, iandeEvent: bEvent, iandeValue: bValue, eventClass: bClass, dateofEvent: bDateofEvent}]
     if (!budgetEventsList.some(e => e.doeID === bdoeID) && !budgetEventsList.some(e=> e.doeID === undefined)){
       if (bDateofEvent > (new Date().getTime() - 86400000) && (bDateofEvent < new Date(addDate(7, 'days', new Date().getTime())).getTime())) {
-        setTempArray((prev) => [...prev, ...baseData])
-      }  
+        setEventTempArray((prev) => [...prev, ...baseData])
+      } 
+    }
+    if (!graphsData.some(e => e.doeID === bdoeID) && !graphsData.some(e=> e.doeID === undefined)){
+      if (new Date().getMonth() === new Date(parseInt(bDateofEvent)).getMonth()) {
+        setTempGraphArray((prev) => [...prev, base])
+      } 
     }
     
   }
 
   useEffect (() => {
-    const unique = [...new Map(tempArray.map((m) => [m.doeID, m])).values()];
-    setBudgetEventsList(...[unique])
-  }, [tempArray, setTempArray])
+    const uniqueEvents = [...new Map(tempEventArray.map((m) => [m.doeID, m])).values()];
+    setBudgetEventsList(...[uniqueEvents])
+  }, [tempEventArray, setEventTempArray])
+
+  useEffect (() => {
+    const uniqueGraphs = [...new Map(tempGraphArray.map((m) => [m.doeID, m])).values()];
+    setGraphsData(...[uniqueGraphs])
+  }, [tempGraphArray, setTempGraphArray])
 
   if (loggedIn) {
   return (
@@ -130,21 +143,25 @@ const Home = () => {
                   unitIMath = parseInt(date.getDate()) === parseInt(iFrequency.day) && (date.getFullYear() - new Date(parseInt(incomes[i].payDay)).getFullYear())%parseInt(iFrequency.nValue) === 0 && date.getMonth() === new Date(parseInt(incomes[i].payDay)).getMonth();
                 }
               }
+              if (iFrequency.frequency === 'once' && date.toDateString() === new Date(parseInt(incomes[i].dueDate)).toDateString()) {
+                iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()})
+                updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), eventClass: 'incomeLI', dateofEvent: date.getTime(), iandeEvent: {...incomes[i]}}))
+              }
               if (iFrequency.frequency === 'daily') {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()})
-                updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()}))
+                updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), eventClass: 'incomeLI', dateofEvent: date.getTime(), iandeEvent: {...incomes[i]}}))
               }
               if (iFrequency.frequency === 'monthly' && parseInt(date.getDate()) === parseInt(iFrequency.day)) {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()})
-                updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()}))
+                updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), eventClass: 'incomeLI', dateofEvent: date.getTime(), iandeEvent: {...incomes[i]}}))
               }
               if (iFrequency.frequency === 'yearly' && parseInt(date.getMonth()) === parseInt(iFrequency.month) && parseInt(date.getDate()) === parseInt(iFrequency.day)) {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()})
-                updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()}))
+                updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), eventClass: 'incomeLI', dateofEvent: date.getTime(), iandeEvent: {...incomes[i]}}))
               }
               if ((iFrequency.frequency === 'other') && (date.toDateString() === new Date(parseInt(incomes[i].payDay)).toDateString() || unitIMath)) {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()})
-                updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), id: incomes[i]._id, iandeEvent: incomes[i].incomeTitle, iandEValue: incomes[i].incomeValue, eventClass: 'incomeLI', dateofEvent: date.getTime()}))
+                updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), eventClass: 'incomeLI', dateofEvent: date.getTime(), iandeEvent: {...incomes[i]}}))
               }
             }
             for (let i = 0; i < expenses.length; i ++) {
@@ -161,21 +178,25 @@ const Home = () => {
                   unitEMath = parseInt(date.getDate()) === parseInt(eFrequency.day) && (date.getFullYear() - new Date(parseInt(expenses[i].dueDate)).getFullYear())%parseInt(eFrequency.nValue) === 0 && date.getMonth() === new Date(parseInt(expenses[i].dueDate)).getMonth();
                 }
               }
+              if (eFrequency.frequency === 'once' && date.toDateString() === new Date(parseInt(expenses[i].dueDate)).toDateString()) {
+                iandeContent.push({id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()})
+                updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), eventClass: 'expenseLI', dateofEvent: date.getTime(), iandeEvent: {...expenses[i]}}))              
+              }
               if (eFrequency.frequency === 'daily') {
                 iandeContent.push({id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()})
-                updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()}))
+                updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), eventClass: 'expenseLI', dateofEvent: date.getTime(), iandeEvent: {...expenses[i]}}))
               }
               if (eFrequency.frequency === 'monthly' && parseInt(date.getDate()) === parseInt(eFrequency.day)) {
                 iandeContent.push({id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()})
-                updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()}))
+                updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), eventClass: 'expenseLI', dateofEvent: date.getTime(), iandeEvent: {...expenses[i]}}))
               }
               if (eFrequency.frequency === 'yearly' && parseInt(date.getMonth()) === parseInt(eFrequency.month) && parseInt(date.getDate()) === parseInt(eFrequency.day)) {
                 iandeContent.push({id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()})
-                updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()}))
+                updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), eventClass: 'expenseLI', dateofEvent: date.getTime(), iandeEvent: {...expenses[i]}}))
               }
               if ((eFrequency.frequency === 'other') && (date.toDateString() === new Date(parseInt(expenses[i].dueDate)).toDateString() || unitEMath)) {
                 iandeContent.push({doeId: expenses[i]._id + date.toDateString(), id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()})
-                updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), id: expenses[i]._id, iandeEvent: expenses[i].expenseTitle, iandEValue: expenses[i].expenseValue, eventClass: 'expenseLI', dateofEvent: date.getTime()}))
+                updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), eventClass: 'expenseLI', dateofEvent: date.getTime(), iandeEvent: {...expenses[i]}}))              
               }
             }
           }
@@ -201,7 +222,7 @@ const Home = () => {
         <EventsList events={budgetEventsList}/>
       </div>
       <div className="graphsCont">
-        <GraphsView />
+        <GraphsView graphData={graphsData}/>
       </div>
     </div>
   );
