@@ -94,6 +94,28 @@ const resolvers = {
       
             throw new AuthenticationError('You must be logged in');
           },
+          updateIncome: async (parent, args, context) => {
+            if (context.user) {
+              let tempVals = [];
+              for (let i = 0 ; i < Object.keys(args).length; i ++) {
+                let oKeys = Object.keys(args)[i];
+                let oVals = Object.values(args)[i];
+                tempVals.push({[`incomes.$.${oKeys}`]: oVals})
+              }
+              let vals = {...tempVals.reduce(((r, c) => Object.assign(r, c)), {})}
+              const updatedUser = await User.findOneAndUpdate(
+                { _id: context.user._id, "incomes._id": args._id },
+                {...vals},
+                { new: true},
+              )
+                .select('-__v -password')
+                .populate('incomes');
+      
+              return updatedUser;
+            }
+      
+            throw new AuthenticationError('You must be logged in');
+          },
           addUOMe: async (parent, args, context) => {
             if (context.user) {
               const updatedUser = await User.findOneAndUpdate(
@@ -164,6 +186,28 @@ const resolvers = {
                   },
                 },
                 { new: true },
+              )
+                .select('-__v -password')
+                .populate('expenses');
+      
+              return updatedUser;
+            }
+      
+            throw new AuthenticationError('You must be logged in');
+          },
+          updateExpense: async (parent, args, context) => {
+            if (context.user) {
+              let tempVals = [];
+              for (let i = 0 ; i < Object.keys(args).length; i ++) {
+                let oKeys = Object.keys(args)[i];
+                let oVals = Object.values(args)[i];
+                tempVals.push({[`expenses.$.${oKeys}`]: oVals})
+              }
+              let vals = {...tempVals.reduce(((r, c) => Object.assign(r, c)), {})}
+              const updatedUser = await User.findOneAndUpdate(
+                { _id: context.user._id, "expenses._id": args._id },
+                {...vals},
+                { new: true},
               )
                 .select('-__v -password')
                 .populate('expenses');

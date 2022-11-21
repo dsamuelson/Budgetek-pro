@@ -1,12 +1,17 @@
 import moment from 'moment';
 
-export function daysInMonth (month, year) {
-  return new Date(year, month, 0).getDate();
-}
+// export function daysInMonth (month, year) {
+//   return new Date(year, month, 0).getDate();
+// }
+
 
 export function formatDate(datetime) {
-    return moment(parseInt(datetime)).format('MMM DD YYYY');
+  return moment(parseInt(datetime)).format('MMM DD YYYY');
 };
+
+export function PDDDformat(datetime) {
+  return moment(parseInt(datetime.payDay || datetime.dueDate)).format('MMM DD');
+}
 
 export function addDate(Value, Unit, date) {
   // console.log(Value, Unit)
@@ -21,6 +26,50 @@ export function addDate(Value, Unit, date) {
     date.setFullYear(date.getFullYear() + Value)
   }
   return date;
+}
+
+export function subtractDate(Value, Unit, date) {
+  // console.log(Value, Unit)
+  date = new Date(date)
+  if (Unit === 'months') {
+    date.setMonth(date.getMonth() - Value);
+  }
+  if (Unit === 'days') {
+    date.setDate(date.getDate() - Value);
+  }
+  if (Unit === 'years') {
+    date.setFullYear(date.getFullYear() - Value)
+  }
+  return date;
+}
+
+export function compareDate(Value, Unit, date1, date2) {
+  // console.log(Value, Unit)
+  date1 = new Date(date1)
+  date2 = new Date(date2)
+  let unitMath = false;
+  if (Unit === 'days') {
+    let dateDiff = Math.abs(date1 - date2)
+    let dayDiff = dateDiff/(1000 * 60 * 60 * 24)
+    unitMath = Math.floor(dayDiff%Value) === 0;
+  }
+  if (Unit === 'months') {
+    let day1 = date1.getDate();
+    let day2 = date2.getDate();
+    let month2 = date2.getMonth();
+    unitMath = day1 === day2 && month2%Value === 0;
+
+  }
+  if (Unit === 'years') {
+    let day1 = date1.getDate();
+    let day2 = date2.getDate();
+    let month1 = date1.getMonth();
+    let month2 = date2.getMonth();
+    let year1 = date1.getFullYear();
+    let year2 = date2.getFullYear();
+    unitMath = (Math.abs(year1 - year2)%Value) === 0 && day1 === day2 && month1 === month2;
+  }
+  return unitMath;
 }
 
 export function idbPromise(storeName, method, object) {

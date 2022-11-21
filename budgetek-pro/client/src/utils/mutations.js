@@ -61,6 +61,35 @@ export const ADD_EXPENSE = gql`
   }
 `;
 
+export const UPDATE_EXPENSE = gql`
+mutation updateExpense($_id: String!, $expenseTitle: String, $expenseValue: String, $vitalExpense: Boolean, $expenseCategory: String, $totalExpenseValue: String, $expenseAPR: String, $dueDate: String){
+  updateExpense(_id: $_id, expenseTitle: $expenseTitle, expenseValue: $expenseValue, vitalExpense: $vitalExpense, expenseCategory: $expenseCategory, totalExpenseValue: $totalExpenseValue, expenseAPR: $expenseAPR, dueDate: $dueDate){
+    _id
+      expenses {
+        _id
+        expenseTitle
+        expenseFrequency {
+          _id
+          frequency
+          isSameDay
+          countWeekends
+          hasCustom
+          nValue
+          nUnit
+          day
+          month
+        }
+        iouInfo {
+          _id
+          iouTitle
+          iouValue
+          iouPaid
+        }
+      }
+  }
+}
+`;
+
 export const REMOVE_EXPENSE = gql`
   mutation removeExpense($_id: String!) {
     removeExpense(_id: $_id){
@@ -96,6 +125,35 @@ export const ADD_INCOME = gql`
       }
     }
   }
+`;
+
+export const UPDATE_INCOME = gql`
+mutation updateIncome($_id: String!, $incomeTitle: String, $incomeValue: String, $incomeInterest: String, $primaryIncome: Boolean, $payDay: String){
+  updateIncome(_id: $_id, incomeTitle: $incomeTitle, incomeValue: $incomeValue, incomeInterest: $incomeInterest, primaryIncome: $primaryIncome, payDay: $payDay){
+    _id
+    incomes {
+      _id
+      incomeTitle
+      incomeFrequency {
+        _id
+        frequency
+        isSameDay
+        countWeekends
+        hasCustom
+        nValue
+        nUnit
+        day
+        month
+      }
+      uomePayInfo {
+        _id
+        uomeTitle
+        uomeValue
+        uomePaid
+      }
+    }
+  }
+}
 `;
 
 export const REMOVE_INCOME = gql`

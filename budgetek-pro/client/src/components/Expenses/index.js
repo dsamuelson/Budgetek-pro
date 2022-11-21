@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Auth from '../../utils/auth';
 import { useQuery, useMutation } from '@apollo/client';
 import { QUERY_EXPENSES} from '../../utils/queries';
-import { formatDate, idbPromise } from "../../utils/helpers";
+import { PDDDformat, idbPromise } from "../../utils/helpers";
 import { REMOVE_EXPENSE } from "../../utils/mutations";
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -74,7 +74,7 @@ function ExpensesList() {
                             <th title="Has this been Itemized?">Itemized</th>
                             <th title="Is this Vital or can it be Ignored?">Vital</th>
                             <th title="What is the category for this Expense?">Category</th>
-                            <th title="When does this need to be payed?">Due Date</th>
+                            <th title="When does this need to be payed?">Next Due On</th>
                             <th title="Remove Expense">Delete</th>
                         </tr>
                     </thead>
@@ -89,7 +89,7 @@ function ExpensesList() {
                                         <td onClick={() => setShowItemizedList([{id: expense._id, open: !showItemizedList[0].open}])}>{expense.iouInfo.length > 0 && expense.iouInfo.length}</td>
                                         <td>{expense.vitalExpense}</td>
                                         <td>{expense.expenseCategory}</td>
-                                        <td>{`${formatDate(expense.dueDate)}`}</td>
+                                        <td>{`${PDDDformat(expense)}`}</td>
                                         <td><button onClick={(e) => removeExpenseHandler(e, expense._id)}>x</button></td>
                                     </tr>
                                     {showItemizedList[0].id === expense._id && showItemizedList[0].open && expense.iouInfo.length > 0 && (

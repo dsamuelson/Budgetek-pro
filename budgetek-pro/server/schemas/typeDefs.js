@@ -132,10 +132,12 @@ const typeDefs = gql`
         createUser(email: String!, username: String!, password: String!): Auth
         login(username: String! password: String!): Auth
         addIncome(incomeTitle: String!, incomeValue: String!, incomeInterest: String, incomeFrequency: [incomeFrequencyi]!, primaryIncome: Boolean!, payDay: String, uomePayInfo: [UOMEi!]): User
+        updateIncome(_id: String!, incomeTitle: String, incomeValue: String, incomeInterest: String, primaryIncome: Boolean, payDay: String): User
         removeIncome(_id: String!): User
         addUOMe(uomeId: String!, uomePayInfo: [UOMEi!]!): User
         removeUOMe(_id: String!, incomeId: String!): User
         addExpense(expenseTitle: String!, expenseValue: String!, expenseFrequency: [expenseFrequencyi]!, vitalExpense: Boolean, expenseCategory: String, totalExpenseValue: String, expenseAPR: String, dueDate: String, iouInfo: [IOUi!]): User
+        updateExpense(_id: String!, expenseTitle: String, expenseValue: String, vitalExpense: Boolean, expenseCategory: String, totalExpenseValue: String, expenseAPR: String, dueDate: String): User
         removeExpense(_id: String!): User
         addIOU(iouId: String!, iouInfo: [IOUi!]!): User
         removeIOU(_id: String!, expenseId: String!): User

@@ -24,10 +24,6 @@ function EventsList(props) {
                                             key = {ievents.doeID}>{ievents.iandeEvent} paying on {new Date(ievents.dateofEvent).toLocaleDateString()} for ${ievents.iandeValue}</li>
                                         )
                                     }
-                                    return (
-                                        <li
-                                        key={7891011}>No upcoming incomes within the next 7 days</li>
-                                    )
                                 })}
                             </ul>
                         </div>
@@ -41,10 +37,6 @@ function EventsList(props) {
                                             key = {ievents.doeID}>{ievents.iandeEvent} due on {new Date(ievents.dateofEvent).toLocaleDateString()} for ${ievents.iandeValue}</li>
                                         )
                                     }
-                                    return (
-                                        <li
-                                        key={123456}>No upcoming expenses within the next 7 days</li>
-                                    )
                                 })}
                             </ul>
                         </div>

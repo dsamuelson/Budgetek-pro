@@ -16,7 +16,6 @@ import {
 function GraphsView(props) {
 
   const graphsData = props.graphData; 
-  console.log(graphsData)
 
   const loggedIn = Auth.loggedIn();
 
@@ -75,7 +74,6 @@ function GraphsView(props) {
       }
     }
 
-    console.log(dDataLabels)
     const doughnutData = {
         labels: [...dDataLabels],
         datasets: [
