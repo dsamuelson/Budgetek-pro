@@ -44,9 +44,10 @@ export function subtractDate(Value, Unit, date) {
 }
 
 export function compareDate(Value, Unit, date1, date2) {
-  // console.log(Value, Unit)
   date1 = new Date(date1)
   date2 = new Date(date2)
+  date1.setHours(0,0,0,0)
+  date2.setHours(0,0,0,0)
   let unitMath = false;
   if (Unit === 'days') {
     let dateDiff = Math.abs(date1 - date2)

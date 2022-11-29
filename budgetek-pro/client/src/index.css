@@ -45,15 +45,14 @@ code {
 }
 
 .mBLoggedIn {
-  width: 100%;
-  height: 500px;
+  width: fit-content;
+  height: fit-content;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-content: center;
   align-items: center;
-}
-
-.mBLoggedIn h2 {
+  margin: 10% auto 0 auto;
   padding: 10px;
   border: lightblue solid 2px;
   border-radius: 10px;

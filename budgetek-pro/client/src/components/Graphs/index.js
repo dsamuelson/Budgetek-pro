@@ -41,7 +41,7 @@ function GraphsView(props) {
             },
             title: {
             display: true,
-            text: 'Chart.js Line Chart',
+            text: 'Incomes vs Expenses'
             },
         },
     }
@@ -112,7 +112,7 @@ function GraphsView(props) {
           },
           title: {
             display: true,
-            text: 'Chart.js Line Chart',
+            text: 'Total Budget Fluctuation'
           },
         },
     };
