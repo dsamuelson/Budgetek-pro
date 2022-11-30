@@ -23,7 +23,9 @@ const userSchema = new Schema(
             required: true,
         },
         incomes: [IncomeSchema],
+        histIncome: [IncomeSchema],
         expenses: [ExpenseSchema],
+        histExpense: [ExpenseSchema],
         bankAccounts: [BankSchema]
     },
     {

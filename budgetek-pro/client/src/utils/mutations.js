@@ -61,11 +61,69 @@ export const ADD_EXPENSE = gql`
   }
 `;
 
+export const ADD_HIST_EXPENSE = gql`
+  mutation addHistExpense($expenseTitle: String!, $expenseValue: String!, $expenseFrequency: [expenseFrequencyi]!, $vitalExpense: Boolean, $expenseCategory: String, $totalExpenseValue: String, $expenseAPR: String, $dueDate: String, $iouInfo: [IOUi!]) {
+    addHistExpense(expenseTitle: $expenseTitle, expenseValue: $expenseValue, expenseFrequency: $expenseFrequency, vitalExpense: $vitalExpense, expenseCategory: $expenseCategory, totalExpenseValue: $totalExpenseValue, expenseAPR: $expenseAPR, dueDate: $dueDate, iouInfo: $iouInfo) {
+      _id
+      histExpense {
+        _id
+        expenseTitle
+        expenseFrequency {
+          _id
+          frequency
+          isSameDay
+          countWeekends
+          hasCustom
+          nValue
+          nUnit
+          day
+          month
+        }
+        iouInfo {
+          _id
+          iouTitle
+          iouValue
+          iouPaid
+        }
+      }
+    }
+  }
+`;
+
 export const UPDATE_EXPENSE = gql`
 mutation updateExpense($_id: String!, $expenseTitle: String, $expenseValue: String, $vitalExpense: Boolean, $expenseCategory: String, $totalExpenseValue: String, $expenseAPR: String, $dueDate: String){
   updateExpense(_id: $_id, expenseTitle: $expenseTitle, expenseValue: $expenseValue, vitalExpense: $vitalExpense, expenseCategory: $expenseCategory, totalExpenseValue: $totalExpenseValue, expenseAPR: $expenseAPR, dueDate: $dueDate){
     _id
       expenses {
+        _id
+        expenseTitle
+        expenseFrequency {
+          _id
+          frequency
+          isSameDay
+          countWeekends
+          hasCustom
+          nValue
+          nUnit
+          day
+          month
+        }
+        iouInfo {
+          _id
+          iouTitle
+          iouValue
+          iouPaid
+        }
+      }
+  }
+}
+`;
+
+export const UPDATE_HIST_EXPENSE = gql`
+mutation updateHistExpense($_id: String!, $expenseTitle: String, $expenseValue: String, $vitalExpense: Boolean, $expenseCategory: String, $totalExpenseValue: String, $expenseAPR: String, $dueDate: String){
+  updateHistExpense(_id: $_id, expenseTitle: $expenseTitle, expenseValue: $expenseValue, vitalExpense: $vitalExpense, expenseCategory: $expenseCategory, totalExpenseValue: $totalExpenseValue, expenseAPR: $expenseAPR, dueDate: $dueDate){
+    _id
+      histExpense {
         _id
         expenseTitle
         expenseFrequency {
@@ -98,11 +156,48 @@ export const REMOVE_EXPENSE = gql`
   }
 `;
 
+export const REMOVE_HIST_EXPENSE = gql`
+  mutation removeHistExpense($_id: String!) {
+    removeHistExpense(_id: $_id){
+      _id
+    }
+  }
+`;
+
 export const ADD_INCOME = gql`
   mutation addIncome($incomeTitle: String!, $incomeValue: String!, $incomeInterest: String, $incomeFrequency: [incomeFrequencyi]!, $primaryIncome: Boolean!, $payDay: String, $uomePayInfo: [UOMEi!]) {
     addIncome(incomeTitle: $incomeTitle, incomeValue: $incomeValue, incomeInterest: $incomeInterest, incomeFrequency: $incomeFrequency, primaryIncome: $primaryIncome, payDay: $payDay, uomePayInfo: $uomePayInfo) {
       _id
       incomes {
+        _id
+        incomeTitle
+        incomeFrequency {
+          _id
+          frequency
+          isSameDay
+          countWeekends
+          hasCustom
+          nValue
+          nUnit
+          day
+          month
+        }
+        uomePayInfo {
+          _id
+          uomeTitle
+          uomeValue
+          uomePaid
+        }
+      }
+    }
+  }
+`;
+
+export const ADD_HIST_INCOME = gql`
+  mutation addHistIncome($incomeTitle: String!, $incomeValue: String!, $incomeInterest: String, $incomeFrequency: [incomeFrequencyi]!, $primaryIncome: Boolean!, $payDay: String, $uomePayInfo: [UOMEi!]) {
+    addHistIncome(incomeTitle: $incomeTitle, incomeValue: $incomeValue, incomeInterest: $incomeInterest, incomeFrequency: $incomeFrequency, primaryIncome: $primaryIncome, payDay: $payDay, uomePayInfo: $uomePayInfo) {
+      _id
+      histIncome {
         _id
         incomeTitle
         incomeFrequency {
@@ -156,9 +251,46 @@ mutation updateIncome($_id: String!, $incomeTitle: String, $incomeValue: String,
 }
 `;
 
+export const UPDATE_HIST_INCOME = gql`
+mutation updateHistIncome($_id: String!, $incomeTitle: String, $incomeValue: String, $incomeInterest: String, $primaryIncome: Boolean, $payDay: String){
+  updateHistIncome(_id: $_id, incomeTitle: $incomeTitle, incomeValue: $incomeValue, incomeInterest: $incomeInterest, primaryIncome: $primaryIncome, payDay: $payDay){
+    _id
+    histIncome {
+      _id
+      incomeTitle
+      incomeFrequency {
+        _id
+        frequency
+        isSameDay
+        countWeekends
+        hasCustom
+        nValue
+        nUnit
+        day
+        month
+      }
+      uomePayInfo {
+        _id
+        uomeTitle
+        uomeValue
+        uomePaid
+      }
+    }
+  }
+}
+`;
+
 export const REMOVE_INCOME = gql`
   mutation removeIncome($_id: String!) {
     removeIncome(_id: $_id) {
+      _id
+    }
+  }
+`;
+
+export const REMOVE_HIST_INCOME = gql`
+  mutation removeHistIncome($_id: String!) {
+    removeHistIncome(_id: $_id) {
       _id
     }
   }

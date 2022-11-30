@@ -51,6 +51,38 @@ export const QUERY_INCOMES = gql`
   }
 `;
 
+export const QUERY_HIST_INCOMES = gql`
+  {
+    me {
+      histIncome {
+        _id
+        incomeTitle
+        incomeValue
+        incomeInterest
+        incomeFrequency {
+          _id
+          frequency
+          isSameDay
+          countWeekends
+          hasCustom
+          nValue
+          nUnit
+          day
+          month
+        }
+        primaryIncome
+        payDay
+        uomePayInfo {
+          _id
+          uomeTitle
+          uomeValue
+          uomePaid
+        }
+      }
+    }
+  }
+`;
+
 export const QUERY_EXPENSES = gql`
   {
     me {
@@ -87,6 +119,40 @@ export const QUERY_EXPENSES = gql`
   }
 `;
 
+export const QUERY_HIST_EXPENSES = gql`
+  {
+    me {
+      histExpense {
+        _id
+        expenseTitle
+        expenseValue
+        expenseFrequency {
+          _id
+          frequency
+          isSameDay
+          countWeekends
+          hasCustom
+          nValue
+          nUnit
+          day
+          month
+        }
+        vitalExpense
+        expenseCategory
+        totalExpenseValue
+        expenseAPR
+        dueDate
+        iouInfo {
+          _id
+          iouTitle
+          iouValue
+          iouPaid
+        }
+      }
+    }
+  }
+`;
+
 export const QUERY_ME = gql`
     {
       me {
@@ -118,7 +184,59 @@ export const QUERY_ME = gql`
               uomePaid
             }
           }
+          histIncome {
+            _id
+            incomeTitle
+            incomeValue
+            incomeInterest
+            incomeFrequency {
+              _id
+              frequency
+              isSameDay
+              countWeekends
+              hasCustom
+              nValue
+              nUnit
+              day
+              month
+            }
+            primaryIncome
+            payDay
+            uomePayInfo {
+              _id
+              uomeTitle
+              uomeValue
+              uomePaid
+            }
+          }
           expenses {
+            _id
+            expenseTitle
+            expenseValue
+            expenseFrequency {
+              _id
+              frequency
+              isSameDay
+              countWeekends
+              hasCustom
+              nValue
+              nUnit
+              day
+              month
+            }
+            vitalExpense
+            expenseCategory
+            totalExpenseValue
+            expenseAPR
+            dueDate
+            iouInfo {
+              _id
+              iouTitle
+              iouValue
+              iouPaid
+            }
+          }
+          histExpense {
             _id
             expenseTitle
             expenseValue

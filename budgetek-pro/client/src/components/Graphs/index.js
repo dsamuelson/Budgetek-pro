@@ -14,9 +14,16 @@ import {
     Legend } from 'chart.js';
 
 function GraphsView(props) {
-
+  let iEvents = []
+  let eEvents = []
   const graphsData = props.graphData; 
-
+  for (let i = 0; i < graphsData.length; i ++) {
+    if (graphsData[i].iandeEvent.__typename === 'Incomes') {
+      iEvents.push(graphsData[i])
+    } else if (graphsData[i].iandeEvent.__typename === 'Expenses') {
+      eEvents.push(graphsData[i])
+    }
+  }
   const loggedIn = Auth.loggedIn();
 
   ChartJS.register(
@@ -46,20 +53,34 @@ function GraphsView(props) {
         },
     }
 
-    const lgraphlabels =  ['January', 'February', 'March', 'April', 'May', 'June', 'July']
+    const lgraphlabels =  ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
     const lineData = {
         labels: lgraphlabels,
         datasets: [
           {
             label: 'Expenses',
-            data: lgraphlabels.map(() => Math.floor(Math.random() * 1000)),
+            data: lgraphlabels.map((label, index) => {
+              let monthTotal = 0;
+              for (let i = 0 ; i < eEvents.length ; i ++) {
+                if (new Date(eEvents[i].dateofEvent).getMonth() === index)
+                monthTotal += parseInt(eEvents[i].iandeEvent.expenseValue)
+              }
+              return monthTotal;
+            }),
             borderColor: 'rgb(255, 99, 132)',
             backgroundColor: 'rgba(255, 99, 132, 0.5)',
           },
           {
             label: 'Incomes',
-            data: lgraphlabels.map(() => Math.floor(Math.random() * 1000)),
+            data: lgraphlabels.map((label, index) => {
+              let monthTotal = 0;
+              for (let i = 0 ; i < iEvents.length ; i ++) {
+                if (new Date(iEvents[i].dateofEvent).getMonth() === index)
+                monthTotal += parseInt(iEvents[i].iandeEvent.incomeValue)
+              }
+              return monthTotal;
+            }),
             borderColor: 'rgb(53, 162, 235)',
             backgroundColor: 'rgba(53, 162, 235, 0.5)',
           },
@@ -70,16 +91,23 @@ function GraphsView(props) {
     const dDataLabels = [];
     for (let i = 0 ; i < graphsData?.length ; i ++) {
       if (graphsData[i].iandeEvent.expenseCategory) {
-        dDataLabels.push(graphsData[i].iandeEvent.expenseCategory)
+        dDataLabels.push({dLabel: graphsData[i].iandeEvent.expenseCategory, dValue: graphsData[i].iandeEvent.expenseValue})
       }
     }
 
+    let dDataLabelsres = dDataLabels.reduce((c, v) => {
+      c[v.dLabel] = (c[v.dLabel] || 0) + parseFloat(v.dValue);
+      return c;
+    }, {});
+    
+    console.log(Object.keys(dDataLabelsres));
+
     const doughnutData = {
-        labels: [...dDataLabels],
+        labels: [...Object.keys(dDataLabelsres)],
         datasets: [
             {
             label: '# of Votes',
-            data: [12, 19, 3, 5, 2],
+            data: [...Object.values(dDataLabelsres)],
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(54, 162, 235, 0.2)',
@@ -117,15 +145,24 @@ function GraphsView(props) {
         },
     };
 
-    const areaLabels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-
     const areaData = {
-        labels: areaLabels,
+        labels: lgraphlabels,
         datasets: [
           {
             fill: true,
             label: 'Total Budget',
-            data: areaLabels.map(() => Math.floor(Math.random() * 1000) - Math.floor(Math.random() * 1000)),
+            data: lgraphlabels.map((label, index) => {
+              let tGraphTotal = 0;
+              for (let i = 0; i< iEvents.length; i++) {
+                if (new Date(iEvents[i].dateofEvent).getMonth() === index)
+                tGraphTotal += parseInt(iEvents[i].iandeEvent.incomeValue)
+              }
+              for (let i = 0 ; i < eEvents.length ; i ++) {
+                if (new Date(eEvents[i].dateofEvent).getMonth() === index)
+                tGraphTotal -= parseInt(eEvents[i].iandeEvent.expenseValue)
+              }
+              return tGraphTotal;
+            }),
             borderColor: 'rgb(53, 162, 235)',
             backgroundColor: 'rgba(53, 162, 235, 0.5)',
           },

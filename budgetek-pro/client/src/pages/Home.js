@@ -104,7 +104,7 @@ const Home = () => {
     }
     
   }
-
+  //----Check calendar dates to display events----//
   function isDesiredDate(uUnit, currentDate) {
     currentDate.setHours(0,0,0,0)
     let eventFValue = uUnit.incomeFrequency ? uUnit.incomeFrequency[0] : uUnit.expenseFrequency[0]
@@ -142,17 +142,19 @@ const Home = () => {
       }
     }
 
-    if (eventDate.toDateString() === currentDate.toDateString() || currentDate.toDateString() === lastMonthEvent.toDateString() ||(eventFValue.frequency === 'other' && compareDate(eventnValue, eventnUnit, eventDate, currentDate.getTime())) || (eventFValue.frequency === 'daily') || (eventFValue.frequency === 'yearly' && parseInt(currentDate.getMonth()) === parseInt(eventFValue.month) && parseInt(currentDate.getDate()) === parseInt(eventFValue.day))) {
+    if (eventDate.toDateString() === currentDate.toDateString() || currentDate.toDateString() === lastMonthEvent.toDateString() ||(eventFValue.frequency === 'other' && compareDate(eventnValue, eventnUnit, eventDate, currentDate.getTime())) || (eventFValue.frequency === 'daily') || (eventFValue.frequency === 'monthly' && currentDate.getDate() === eventDate.getDate()) || (eventFValue.frequency === 'yearly' && parseInt(currentDate.getMonth()) === parseInt(eventFValue.month) && parseInt(currentDate.getDate()) === parseInt(eventFValue.day))) {
       return true;
     }
 
-    if (eventFValue.frequency === 'monthly' && currentDate.getDate() === eventDate.getDate()) {
+    if (1===0) {
       return  true;
     }
 
     return false;
   }
+  //=========================================//
 
+  //----Update Pay Day or Due Date to the next closest event----//
   async function updatePDDDDate(uUnit, newDate) {
     // console.log(uUnit, new Date(newDate).toDateString())
     //   if (uUnit.__typename === "Expenses") {
@@ -180,7 +182,7 @@ const Home = () => {
     //     }  
     //   }
     }
-
+    //===========================================//
   useEffect (() => {
     const uniqueEvents = [...new Map(tempEventArray.map((m) => [m.doeID, m])).values()];
     setBudgetEventsList(...[uniqueEvents])
@@ -215,27 +217,6 @@ const Home = () => {
                 iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i], eventClass: 'incomeLI', dateofEvent: date.getTime()})
                 updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), eventClass: 'incomeLI', dateofEvent: date.getTime(), iandeEvent: {...incomes[i]}}))
               }
-              // let iFrequency = incomes[i].incomeFrequency[0]
-              // let iEventDate = new Date(incomes[i].payDay)
-
-            //   if (iFrequency.countWeekends === 'preWeekends') {
-            //     while (iEventDate.getDay() === 0 || iEventDate.getDay() === 6) {
-            //       iEventDate = iEventDate.setDate(iEventDate.getDate() - 1)
-            //       console.log(iEventDate)
-            //     }
-            //   }
-
-            //   if ((iFrequency.frequency === 'once' && date.toDateString() === new Date(parseInt(incomes[i].payDay)).toDateString()) || (iFrequency.frequency === 'daily') || (iFrequency.frequency === 'monthly' && ((iFrequency.isSameDay !== "lastDay" && parseInt(date.getDate()) === parseInt(iFrequency.day)) || (iFrequency.isSameDay === "lastDay" && date.getTime() === new Date(date.getFullYear(), date.getMonth() + 1, 0).getTime()))) || (iFrequency.frequency === 'yearly' && parseInt(date.getMonth()) === parseInt(iFrequency.month) && parseInt(date.getDate()) === parseInt(iFrequency.day))) {
-
-            //     iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i], eventClass: 'incomeLI', dateofEvent: date.getTime()})
-            //     updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), eventClass: 'incomeLI', dateofEvent: date.getTime(), iandeEvent: {...incomes[i]}}))
-            //   }
-
-            //   if ((iFrequency.frequency === 'other') && (date.toDateString() === new Date(parseInt(incomes[i].payDay)).toDateString() || compareDate(parseInt(iFrequency.nValue), iFrequency.nUnit, parseInt(incomes[i].payDay), date.getTime()))) {
-            //     iandeContent.push({doeId: incomes[i]._id + date.toDateString(), id: incomes[i]._id, iandeEvent: incomes[i], eventClass: 'incomeLI', dateofEvent: date.getTime()})
-            //     updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), eventClass: 'incomeLI', dateofEvent: date.getTime(), iandeEvent: {...incomes[i]}}))
-            //   }
-
             }
 
             for (let i = 0; i < expenses.length; i ++) {
@@ -243,20 +224,7 @@ const Home = () => {
                 iandeContent.push({id: expenses[i]._id, iandeEvent: expenses[i], eventClass: 'expenseLI', dateofEvent: date.getTime()})
                 updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), eventClass: 'expenseLI', dateofEvent: date.getTime(), iandeEvent: {...expenses[i]}}))
               }
-            //   let eFrequency = expenses[i].expenseFrequency[0]
-              
-            //   if ((eFrequency.frequency === 'once' && date.toDateString() === new Date(parseInt(expenses[i].dueDate)).toDateString()) || (eFrequency.frequency === 'daily') || (eFrequency.frequency === 'monthly' && parseInt(date.getDate()) === parseInt(eFrequency.day)) || (eFrequency.frequency === 'yearly' && parseInt(date.getMonth()) === parseInt(eFrequency.month) && parseInt(date.getDate()) === parseInt(eFrequency.day))) {
-            //     iandeContent.push({id: expenses[i]._id, iandeEvent: expenses[i], eventClass: 'expenseLI', dateofEvent: date.getTime()})
-            //     updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), eventClass: 'expenseLI', dateofEvent: date.getTime(), iandeEvent: {...expenses[i]}}))              
-            //   }
-
-            //   if ((eFrequency.frequency === 'other') && ((date.toDateString() === new Date(parseInt(expenses[i].dueDate)).toDateString()) || (compareDate(parseInt(eFrequency.nValue), eFrequency.nUnit, parseInt(expenses[i].dueDate), date.getTime())))) {
-            //     iandeContent.push({doeId: expenses[i]._id + date.toDateString(), id: expenses[i]._id, iandeEvent: expenses[i], eventClass: 'expenseLI', dateofEvent: date.getTime()})
-            //     updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), eventClass: 'expenseLI', dateofEvent: date.getTime(), iandeEvent: {...expenses[i]}}))              
-            //   }
-
             }
-
           }
           if (iandeContent) {
             return (
@@ -288,7 +256,7 @@ const Home = () => {
   return (
     <div className="mBLoggedIn">
       <h2>Welcome to Budgetek!</h2>
-      <p>In order to proceed please log in!</p>
+      <p>In order to proceed please log in or Sign up!</p>
     </div>
   )
 }
