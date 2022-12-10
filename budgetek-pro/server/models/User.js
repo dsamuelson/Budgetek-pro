@@ -3,7 +3,8 @@ const bcrypt = require('bcrypt');
 
 const ExpenseSchema = require('./Expenses')
 const IncomeSchema = require('./Incomes')
-const BankSchema = require('./Banks')
+const BankSchema = require('./Banks');
+const HistEvents = require('./HistEvents');
 
 const userSchema = new Schema(
     {
@@ -23,9 +24,8 @@ const userSchema = new Schema(
             required: true,
         },
         incomes: [IncomeSchema],
-        histIncome: [IncomeSchema],
         expenses: [ExpenseSchema],
-        histExpense: [ExpenseSchema],
+        histEvents: [HistEvents],
         bankAccounts: [BankSchema]
     },
     {

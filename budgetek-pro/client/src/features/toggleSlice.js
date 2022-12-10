@@ -1,11 +1,13 @@
 import {
     TOGGLE_IANDE,
-    TOGGLE_MODAL
+    TOGGLE_MODAL,
+    TOGGLE_CALCONT_MODAL
   } from "../utils/actions";
 
 const initialState = {
     iande: true,
-    modalValue: 'None'
+    modalValue: 'None',
+    calcontVal: false
   }
 
   export default function TogglesReducer(state = initialState, action) {
@@ -20,6 +22,11 @@ const initialState = {
                 ...state,
                 modalValue: action.modalValue
             };
+        case TOGGLE_CALCONT_MODAL:
+            return {
+              ...state,
+              calcontVal: action.calcontVal
+            }
         default:
             return state;
     }

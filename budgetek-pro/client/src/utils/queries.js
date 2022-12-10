@@ -51,38 +51,6 @@ export const QUERY_INCOMES = gql`
   }
 `;
 
-export const QUERY_HIST_INCOMES = gql`
-  {
-    me {
-      histIncome {
-        _id
-        incomeTitle
-        incomeValue
-        incomeInterest
-        incomeFrequency {
-          _id
-          frequency
-          isSameDay
-          countWeekends
-          hasCustom
-          nValue
-          nUnit
-          day
-          month
-        }
-        primaryIncome
-        payDay
-        uomePayInfo {
-          _id
-          uomeTitle
-          uomeValue
-          uomePaid
-        }
-      }
-    }
-  }
-`;
-
 export const QUERY_EXPENSES = gql`
   {
     me {
@@ -119,35 +87,17 @@ export const QUERY_EXPENSES = gql`
   }
 `;
 
-export const QUERY_HIST_EXPENSES = gql`
+export const QUERY_HIST_EVENTS = gql`
   {
     me {
-      histExpense {
+      histEvent {
         _id
-        expenseTitle
-        expenseValue
-        expenseFrequency {
-          _id
-          frequency
-          isSameDay
-          countWeekends
-          hasCustom
-          nValue
-          nUnit
-          day
-          month
-        }
-        vitalExpense
-        expenseCategory
-        totalExpenseValue
-        expenseAPR
-        dueDate
-        iouInfo {
-          _id
-          iouTitle
-          iouValue
-          iouPaid
-        }
+        histID
+        histTitle
+        histType
+        histValue
+        histCategory
+        histDates
       }
     }
   }
@@ -160,31 +110,6 @@ export const QUERY_ME = gql`
           username
           email
           incomes {
-            _id
-            incomeTitle
-            incomeValue
-            incomeInterest
-            incomeFrequency {
-              _id
-              frequency
-              isSameDay
-              countWeekends
-              hasCustom
-              nValue
-              nUnit
-              day
-              month
-            }
-            primaryIncome
-            payDay
-            uomePayInfo {
-              _id
-              uomeTitle
-              uomeValue
-              uomePaid
-            }
-          }
-          histIncome {
             _id
             incomeTitle
             incomeValue
@@ -236,32 +161,14 @@ export const QUERY_ME = gql`
               iouPaid
             }
           }
-          histExpense {
+          histEvents {
             _id
-            expenseTitle
-            expenseValue
-            expenseFrequency {
-              _id
-              frequency
-              isSameDay
-              countWeekends
-              hasCustom
-              nValue
-              nUnit
-              day
-              month
-            }
-            vitalExpense
-            expenseCategory
-            totalExpenseValue
-            expenseAPR
-            dueDate
-            iouInfo {
-              _id
-              iouTitle
-              iouValue
-              iouPaid
-            }
+            histID
+            histTitle
+            histType
+            histValue
+            histCategory
+            histDates
           }
           bankAccounts {
             _id

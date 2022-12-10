@@ -94,27 +94,26 @@ const resolvers = {
       
             throw new AuthenticationError('You must be logged in');
           },
-          addHistIncome: async (parent, args, context) => {
+          addHistEvents: async (parent, args, context) => {
             if (context.user) {
               const updatedUser = await User.findOneAndUpdate(
                 { _id: context.user._id },
                 {
                   $addToSet: {
-                    histIncome: {
-                      incomeTitle: args.incomeTitle,
-                      incomeValue: args.incomeValue,
-                      incomeInterest: args.incomeInterest,
-                      incomeFrequency: [...args.incomeFrequency],
-                      primaryIncome: args.primaryIncome,
-                      payDay: args.payDay,
-                      uomePayInfo: [...args.uomePayInfo]
+                    histEvents: {
+                      histID: args.histID,
+                      histTitle: args.histTitle,
+                      histType: args.histType,
+                      histValue: args.histValue,
+                      histDates: [...args.histDates],
+                      histCategory: args.histCategory,
                     },
                   },
                 },
                 { new: true },
               )
                 .select('-__v -password')
-                .populate('histIncome');
+                .populate('histEvents');
       
               return updatedUser;
             }
@@ -143,22 +142,22 @@ const resolvers = {
       
             throw new AuthenticationError('You must be logged in');
           },
-          updateHistIncome: async (parent, args, context) => {
+          updateHistEvents: async (parent, args, context) => {
             if (context.user) {
               let tempVals = [];
               for (let i = 0 ; i < Object.keys(args).length; i ++) {
                 let oKeys = Object.keys(args)[i];
                 let oVals = Object.values(args)[i];
-                tempVals.push({[`histIncome.$.${oKeys}`]: oVals})
+                tempVals.push({[`histEvent.$.${oKeys}`]: oVals})
               }
               let vals = {...tempVals.reduce(((r, c) => Object.assign(r, c)), {})}
               const updatedUser = await User.findOneAndUpdate(
-                { _id: context.user._id, "histIncome._id": args._id },
+                { _id: context.user._id, "histEvents._id": args._id },
                 {...vals},
                 { new: true},
               )
                 .select('-__v -password')
-                .populate('histIncome');
+                .populate('histEvents');
       
               return updatedUser;
             }
@@ -215,17 +214,17 @@ const resolvers = {
             }
             throw new AuthenticationError('You must be logged in')
           },
-          removeHistIncome: async (parent, args, context) => {
+          removeHistEvent: async (parent, args, context) => {
             if (context.user) {
               const updatedUser = await User.findOneAndUpdate(
                 { _id: context.user._id},
                 {
-                  $pull: {histIncome: { _id: args._id }}
+                  $pull: {histEvents: { _id: args._id }}
                 },
                 { new: true }
               )
               .select('-__v')
-              .populate('histIncome')
+              .populate('histEvents')
               return updatedUser
             }
             throw new AuthenticationError('You must be logged in')
@@ -259,35 +258,6 @@ const resolvers = {
       
             throw new AuthenticationError('You must be logged in');
           },
-          addHistExpense: async (parent, args, context) => {
-            if (context.user) {
-              const updatedUser = await User.findOneAndUpdate(
-                { _id: context.user._id },
-                {
-                  $addToSet: {
-                    histExpense: {
-                      expenseTitle: args.expenseTitle,
-                      expenseValue: args.expenseValue,
-                      expenseFrequency: [...args.expenseFrequency],
-                      vitalExpense: args.vitalExpense,
-                      expenseCategory: args.expenseCategory,
-                      totalExpenseValue: args.totalExpenseValue,
-                      expenseAPR: args.expenseAPR,
-                      dueDate: args.dueDate,
-                      iouInfo: [...args.iouInfo]
-                    },
-                  },
-                },
-                { new: true },
-              )
-                .select('-__v -password')
-                .populate('histExpense');
-      
-              return updatedUser;
-            }
-      
-            throw new AuthenticationError('You must be logged in');
-          },
           updateExpense: async (parent, args, context) => {
             if (context.user) {
               let tempVals = [];
@@ -304,28 +274,6 @@ const resolvers = {
               )
                 .select('-__v -password')
                 .populate('expenses');
-      
-              return updatedUser;
-            }
-      
-            throw new AuthenticationError('You must be logged in');
-          },
-          updateHistExpense: async (parent, args, context) => {
-            if (context.user) {
-              let tempVals = [];
-              for (let i = 0 ; i < Object.keys(args).length; i ++) {
-                let oKeys = Object.keys(args)[i];
-                let oVals = Object.values(args)[i];
-                tempVals.push({[`histExpense.$.${oKeys}`]: oVals})
-              }
-              let vals = {...tempVals.reduce(((r, c) => Object.assign(r, c)), {})}
-              const updatedUser = await User.findOneAndUpdate(
-                { _id: context.user._id, "histExpense._id": args._id },
-                {...vals},
-                { new: true},
-              )
-                .select('-__v -password')
-                .populate('histExpense');
       
               return updatedUser;
             }
@@ -378,21 +326,6 @@ const resolvers = {
               )
               .select('-__v')
               .populate('expenses')
-              return updatedUser
-            }
-            throw new AuthenticationError('You must be logged in')
-          },
-          removeHistExpense: async (parent, args, context) => {
-            if (context.user) {
-              const updatedUser = await User.findOneAndUpdate(
-                { _id: context.user._id},
-                {
-                  $pull: { histExpense: { _id: args._id }}
-                },
-                { new: true }
-              )
-              .select('-__v')
-              .populate('histExpense')
               return updatedUser
             }
             throw new AuthenticationError('You must be logged in')

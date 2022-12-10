@@ -12,8 +12,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import Auth from "../utils/auth";
 import EventsList from "../components/Events";
 import GraphsView from "../components/Graphs";
-
-
+import CalendarModal from "../components/CalendarModal";
 
 const Home = () => {
   
@@ -22,6 +21,7 @@ const Home = () => {
   const [graphsData, setGraphsData] = useState([])
   const [tempEventArray, setEventTempArray] = useState([])
   const [tempGraphArray, setTempGraphArray] = useState([])
+  const [tempHistArray, setTempHistArray] = useState([])
   const dispatch = useDispatch();
   const loggedIn = Auth.loggedIn()
   const {loading: incomeLoading, data: incomeData, refetch: incomeDataRefetch } = useQuery(QUERY_INCOMES)
@@ -34,6 +34,9 @@ const Home = () => {
   const incomes = incomesStore.incomes;
   const expensesStore = useSelector((state) => state.expenses);
   const expenses = expensesStore.expenses;
+  const calcontValStore = useSelector((state) => state.calcontVal);
+  const calcontVal = calcontValStore.calcontVal;
+  const [calcontItems, setCalcontItems] = useState([])
 
   const [ updateIncome ] = useMutation(UPDATE_INCOME);
   const [ updateExpense ] = useMutation(UPDATE_EXPENSE);
@@ -82,6 +85,10 @@ const Home = () => {
     }
   }
   },[incomeLoading, incomeData, IandEtoggle, loggedIn, incomeDataRefetch, dispatch])
+
+  useEffect(() => {
+    console.log(tempHistArray)
+  }, [tempHistArray.length, setTempHistArray])
 
   function updatebudgetEventsList(base) {
     let bdoeID = base.doeID
@@ -208,6 +215,22 @@ const Home = () => {
      <Calendar 
         onChange={setDate} 
         value={date}
+        onClickDay={(e, tContent)=>{
+          let contentText = '';
+          console.log(tContent)
+          if (tContent.target.localName === `li`) {
+            contentText = tContent.target.parentElement.innerText
+          }
+          if (tContent.target.localName === `span`) {
+            contentText = tContent.target.parentElement.parentElement.innerText
+          }
+          setCalcontItems([e, contentText])
+          dispatch({
+            type: 'TOGGLE_CALCONT_MODAL',
+            calcontVal: true
+          })
+          console.log(calcontVal)
+        }}
         tileContent={({ date, view }) => {
           let iandeContent = []
           if (view === 'month') {
@@ -227,10 +250,11 @@ const Home = () => {
             }
           }
           if (iandeContent) {
+            console.log(iandeContent)
             return (
               <div>
                 <ul className="calendarViewUL">
-                {iandeContent.map((iandeUnit) => {                  
+                {iandeContent.map((iandeUnit) => {                
                   return (
                     <li
                     key={iandeUnit.id}>{iandeUnit.iandeEvent.expenseTitle || iandeUnit.iandeEvent.incomeTitle}: <span className={iandeUnit.eventClass}>${iandeUnit.iandeEvent.expenseValue || iandeUnit.iandeEvent.incomeValue}</span></li>
@@ -244,6 +268,9 @@ const Home = () => {
         calendarType={"US"}
       />
       </div>
+      {calcontVal && <div className="calContCont">
+        <CalendarModal tileContent={calcontItems}/>
+      </div>}
       <div className="eventsCont">
         <EventsList events={budgetEventsList}/>
       </div>

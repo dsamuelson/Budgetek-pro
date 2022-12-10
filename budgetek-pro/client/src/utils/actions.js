@@ -1,8 +1,13 @@
 export const UPDATE_CATEGORIES = "UPDATE_CATEGORIES";
 export const TOGGLE_IANDE = "TOGGLE_IANDE";
 export const TOGGLE_MODAL = "TOGGLE_MODAL";
+export const TOGGLE_CALCONT_MODAL = "TOGGLE_CALCONT_MODAL";
 
 export const ADD_INCOMES = "ADD_INCOMES";
 export const ADD_EXPENSES = "ADD_EXPENSES";
 export const REMOVE_INCOMES = "REMOVE_INCOMES";
 export const REMOVE_EXPENSES = "REMOVE_EXPENSES";
+
+export const ADD_TO_HIST = "ADD_TO_HIST";
+export const UPDATE_HIST = "UPDATE_HIST";
+export const REMOVE_HIST = "REMOVE_HIST";

@@ -99,8 +99,6 @@ function GraphsView(props) {
       c[v.dLabel] = (c[v.dLabel] || 0) + parseFloat(v.dValue);
       return c;
     }, {});
-    
-    console.log(Object.keys(dDataLabelsres));
 
     const doughnutData = {
         labels: [...Object.keys(dDataLabelsres)],
