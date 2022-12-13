@@ -61,9 +61,9 @@ export const ADD_EXPENSE = gql`
   }
 `;
 
-export const ADD_HIST_EXPENSE = gql`
-mutation addHistEvent($histTitle: String!, $histType: String!, $histValue: String!, $histCategory: String, $histDates: [String!], $histID: String, ){
-  addHistEvent(histTitle: $histTitle, histType: $histType, histValue: $histValue, histCategory: $histCategory, histDates: $histDates, histID: $histID){
+export const ADD_HIST_EVENT = gql`
+mutation addHistEvent($histTitle: String!, $histType: String!, $histValue: String!, $histCategory: String, $histDate: String!, $histID: String){
+  addHistEvent(histTitle: $histTitle, histType: $histType, histValue: $histValue, histCategory: $histCategory, histDate: $histDate, histID: $histID){
     _id
       histEvents {
         _id
@@ -72,7 +72,7 @@ mutation addHistEvent($histTitle: String!, $histType: String!, $histValue: Strin
         histType
         histValue
         histCategory
-        histDates
+        histDate
       }
   }
 }
@@ -108,8 +108,8 @@ mutation updateExpense($_id: String!, $expenseTitle: String, $expenseValue: Stri
 `;
 
 export const UPDATE_HIST_EVENT = gql`
-mutation updateHistEvent($_id: String!, $histTitle: String, $histType: String, $histValue: String, $histCategory: String, $histDates: [String], $histID: String, ){
-  updateHistEvent(_id: $_id, histTitle: $histTitle, histType: $histType, histValue: $histValue, histCategory: $histCategory, histDates: $histDates, histID: $histID){
+mutation updateHistEvent($_id: String!, $histTitle: String, $histType: String, $histValue: String, $histCategory: String, $histDate: String, $histID: String, ){
+  updateHistEvent(_id: $_id, histTitle: $histTitle, histType: $histType, histValue: $histValue, histCategory: $histCategory, histDate: $histDate, histID: $histID){
     _id
       histEvents {
         _id
@@ -118,7 +118,7 @@ mutation updateHistEvent($_id: String!, $histTitle: String, $histType: String, $
         histType
         histValue
         histCategory
-        histDates
+        histDate
       }
   }
 }

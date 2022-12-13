@@ -21,10 +21,10 @@ const HistEvents = new Schema ({
         type: String,
         required: false,
     },
-    histDates: [{
+    histDate: {
         type: String,
         required: true
-    }]
+    }
 },
 {
     toJSON: {

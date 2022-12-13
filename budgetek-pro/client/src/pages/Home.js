@@ -5,8 +5,8 @@ import IncomesList from "../components/Incomes";
 import ExpensesList from "../components/Expenses";
 import IandEModal from "../components/IandEModal";
 import { useQuery, useMutation } from "@apollo/client";
-import { QUERY_EXPENSES, QUERY_INCOMES } from "../utils/queries";
-import { UPDATE_EXPENSE, UPDATE_INCOME } from '../utils/mutations';
+import { QUERY_EXPENSES, QUERY_INCOMES, QUERY_HIST_EVENTS } from "../utils/queries";
+import { ADD_HIST_EVENT, UPDATE_EXPENSE, UPDATE_INCOME } from '../utils/mutations';
 import { addDate, idbPromise, compareDate } from "../utils/helpers";
 import { useSelector, useDispatch } from 'react-redux';
 import Auth from "../utils/auth";
@@ -19,6 +19,7 @@ const Home = () => {
   const [date, setDate] = useState(new Date())
   const [budgetEventsList, setBudgetEventsList] = useState([])
   const [graphsData, setGraphsData] = useState([])
+  const [histData, setHistData] = useState([])
   const [tempEventArray, setEventTempArray] = useState([])
   const [tempGraphArray, setTempGraphArray] = useState([])
   const [tempHistArray, setTempHistArray] = useState([])
@@ -26,6 +27,7 @@ const Home = () => {
   const loggedIn = Auth.loggedIn()
   const {loading: incomeLoading, data: incomeData, refetch: incomeDataRefetch } = useQuery(QUERY_INCOMES)
   const {loading: expenseLoading, data: expenseData, refetch: expenseDataRefetch} = useQuery(QUERY_EXPENSES)
+  const {loading: histLoading, data: dbHistData, refetch: dbHistDataRefetch} = useQuery(QUERY_HIST_EVENTS)
   const IandEtoggleStore = useSelector((state) => state.iande);
   const IandEtoggle = IandEtoggleStore.iande;
   const modalValueStore = useSelector((state) => state.modalValue);
@@ -38,6 +40,7 @@ const Home = () => {
   const calcontVal = calcontValStore.calcontVal;
   const [calcontItems, setCalcontItems] = useState([])
 
+  const [ addHistEvent ] = useMutation(ADD_HIST_EVENT)
   const [ updateIncome ] = useMutation(UPDATE_INCOME);
   const [ updateExpense ] = useMutation(UPDATE_EXPENSE);
 
@@ -86,30 +89,39 @@ const Home = () => {
   }
   },[incomeLoading, incomeData, IandEtoggle, loggedIn, incomeDataRefetch, dispatch])
 
-  useEffect(() => {
-    console.log(tempHistArray)
-  }, [tempHistArray.length, setTempHistArray])
-
   function updatebudgetEventsList(base) {
     let bdoeID = base.doeID
     let bID = base.iandeEvent._id;
     let bEvent = base.iandeEvent.incomeTitle || base.iandeEvent.expenseTitle;
     let bValue = base.iandeEvent.incomeValue || base.iandeEvent.expenseValue;
     let bClass = base.eventClass;
+    let hClass = base.eventClass;
+    if (hClass === 'expenseLI') {
+      hClass = 'expense'
+    } else if (hClass === 'incomeLI') {
+      hClass = 'income'
+    }
     let bDateofEvent = base.dateofEvent;
+    let hCategory = base.iandeEvent.expenseCategory || 'n/a'
 
     let baseData = [{doeID: bdoeID, id: bID, iandeEvent: bEvent, iandeValue: bValue, eventClass: bClass, dateofEvent: bDateofEvent}]
+    let bhistData = [{histID: bdoeID, histTitle: bEvent, histValue: bValue, histType: hClass, histCategory: hCategory, histDate: bDateofEvent}]
+
     if (!budgetEventsList.some(e => e.doeID === bdoeID) && !budgetEventsList.some(e=> e.doeID === undefined)){
       if (bDateofEvent > (new Date().getTime() - 86400000) && (bDateofEvent < new Date(addDate(7, 'days', new Date().getTime())).getTime())) {
         setEventTempArray((prev) => [...prev, ...baseData])
       } 
     }
     if (!graphsData.some(e => e.doeID === bdoeID) && !graphsData.some(e=> e.doeID === undefined)){
-      if (new Date().getMonth() === new Date(parseInt(bDateofEvent)).getMonth()) {
+      if (new Date().getMonth() === new Date(bDateofEvent).getMonth()) {
         setTempGraphArray((prev) => [...prev, base])
       } 
     }
-    
+    if (!tempHistArray.some(e => e.histID === bdoeID) && !tempHistArray.some(e=> e.histID === undefined)){
+      if (new Date(bDateofEvent).getMonth() === new Date().getMonth()) {
+        setTempHistArray((prev) => [...prev, ...bhistData])
+      } 
+    }
   }
   //----Check calendar dates to display events----//
   function isDesiredDate(uUnit, currentDate) {
@@ -200,6 +212,35 @@ const Home = () => {
     setGraphsData(...[uniqueGraphs])
   }, [tempGraphArray, setTempGraphArray])
 
+  useEffect (() => {
+    const uniqueHist = [...new Map(tempHistArray.map((m) => [m.histID, m])).values()];
+    setHistData(...[uniqueHist])
+  }, [tempHistArray, setTempHistArray])
+
+  // useEffect(() => {
+  //   console.log(tempHistArray)
+  //   console.log(histData)
+  // },[setHistData, histData])
+
+  // async function addtoHistory(e) {
+  //   e.preventDefault();
+  //       try {
+  //           await addHistEvent({
+  //               variables: {
+  //                   histID: iModalTitle,
+  //                   histTitle: iModalValue.toString(),
+  //                   histType: iModalInterest.toString(),
+  //                   histValue: iModalFrequency,
+  //                   histCategory: iModalPrimary,
+  //                   histDate: payDayDate,
+  //               }
+                
+  //           });
+  //       } catch (error) {
+  //           console.log(error);
+  //       }
+  // }
+
   if (loggedIn) {
   return (
     <div className="homeCont">
@@ -217,7 +258,6 @@ const Home = () => {
         value={date}
         onClickDay={(e, tContent)=>{
           let contentText = '';
-          console.log(tContent)
           if (tContent.target.localName === `li`) {
             contentText = tContent.target.parentElement.innerText
           }
@@ -229,7 +269,6 @@ const Home = () => {
             type: 'TOGGLE_CALCONT_MODAL',
             calcontVal: true
           })
-          console.log(calcontVal)
         }}
         tileContent={({ date, view }) => {
           let iandeContent = []
@@ -250,7 +289,6 @@ const Home = () => {
             }
           }
           if (iandeContent) {
-            console.log(iandeContent)
             return (
               <div>
                 <ul className="calendarViewUL">
@@ -275,7 +313,7 @@ const Home = () => {
         <EventsList events={budgetEventsList}/>
       </div>
       <div className="graphsCont">
-        <GraphsView graphData={graphsData}/>
+        <GraphsView/>
       </div>
     </div>
   );

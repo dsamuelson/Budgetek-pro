@@ -105,7 +105,7 @@ const resolvers = {
                       histTitle: args.histTitle,
                       histType: args.histType,
                       histValue: args.histValue,
-                      histDates: [...args.histDates],
+                      histDates: args.histDate,
                       histCategory: args.histCategory,
                     },
                   },

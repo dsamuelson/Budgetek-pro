@@ -71,10 +71,11 @@ function IandEModal() {
             let oldValue = 0.00
                 for (let i = 0; i < itemizeMPresubmit.length; i ++) {
                     if (!itemizeMPresubmit[i].iPaid){
-                        setIModalValue( oldValue += parseFloat(itemizeMPresubmit[i].iValue))
-                        setEModalValue( oldValue += parseFloat(itemizeMPresubmit[i].iValue))
+                        oldValue += parseFloat(itemizeMPresubmit[i].iValue)
                     }
                 }
+                setIModalValue( oldValue )
+                setEModalValue( oldValue )
             };
     },[itemizeMPresubmit, setItemizeMPresubmit])
 

@@ -145,8 +145,8 @@ const typeDefs = gql`
         addIncome(incomeTitle: String!, incomeValue: String!, incomeInterest: String, incomeFrequency: [incomeFrequencyi]!, primaryIncome: Boolean!, payDay: String, uomePayInfo: [UOMEi!]): User
         updateIncome(_id: String!, incomeTitle: String, incomeValue: String, incomeInterest: String, primaryIncome: Boolean, payDay: String): User
         removeIncome(_id: String!): User
-        addHistEvents(histID: String!, histTitle: String!, histType: String!, histValue: String!, histCategory: String, histDates: [String!]): User
-        updateHistEvents(_id: String, histID: String!, histType: String, histTitle: String, histValue: String, histCategory: String, histDates: [String!]): User
+        addHistEvents(histID: String!, histTitle: String!, histType: String!, histValue: String!, histCategory: String, histDate: String!): User
+        updateHistEvents(_id: String, histID: String!, histType: String, histTitle: String, histValue: String, histCategory: String, histDate: String): User
         removeHistEvent(_id: String!): User
         addUOMe(uomeId: String!, uomePayInfo: [UOMEi!]!): User
         removeUOMe(_id: String!, incomeId: String!): User

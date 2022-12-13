@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Auth from '../../utils/auth';
+import { compareDate } from "../../utils/helpers";
+import { useQuery } from "@apollo/client";
+import { QUERY_EXPENSES, QUERY_INCOMES } from "../../utils/queries";
 import { Doughnut, Line } from 'react-chartjs-2'
 import { 
     Chart as ChartJS,
@@ -13,19 +16,92 @@ import {
     Tooltip, 
     Legend } from 'chart.js';
 
-function GraphsView(props) {
-  let iEvents = []
-  let eEvents = []
-  const graphsData = props.graphData; 
-  for (let i = 0; i < graphsData.length; i ++) {
-    if (graphsData[i].iandeEvent.__typename === 'Incomes') {
-      iEvents.push(graphsData[i])
-    } else if (graphsData[i].iandeEvent.__typename === 'Expenses') {
-      eEvents.push(graphsData[i])
+function GraphsView() {
+  
+
+  const {loading: incomeLoading, data: incomeData, refetch: incomeDataRefetch } = useQuery(QUERY_INCOMES)
+  const {loading: expenseLoading, data: expenseData, refetch: expenseDataRefetch} = useQuery(QUERY_EXPENSES)
+  const [ tempGraphsArray, setTempGraphsArray ] = useState([]);
+  const [ iEvents, setIEvents] = useState([]);
+  const [ eEvents, setEEvents] = useState([]);
+  const [ uGraphsData, setUGraphsData] = useState([]);
+  const [ graphsData, setGraphsData] = useState([]); 
+
+
+  useEffect(() => {
+    incomeDataRefetch()
+    expenseDataRefetch()
+    if (!incomeLoading && !expenseLoading) {
+      setTempGraphsArray([...incomeData.me.incomes, ...expenseData.me.expenses])
+    }
+  }, [incomeLoading, incomeData, incomeDataRefetch, expenseLoading, expenseData, expenseDataRefetch])
+
+  useEffect(() => {
+    if (tempGraphsArray.length){
+      for (let i = 0; i < tempGraphsArray.length; i++) {
+        yearlyValue(tempGraphsArray[i])
+      }
+    }
+    
+  },[tempGraphsArray])
+
+  function yearlyValue(uUnit) {
+    if (uUnit) {
+      for (let i = 0; i < 365; i++ ) {
+        let currentDate = new Date().setDate(new Date().getDate() - [i])
+        currentDate = new Date(currentDate)
+        let eventFValue = uUnit.incomeFrequency ? uUnit.incomeFrequency[0] : uUnit.expenseFrequency[0];
+        let eventDate = new Date(parseInt(uUnit.payDay || uUnit.dueDate))
+        if (eventFValue.frequency === "monthly") {
+          eventDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), new Date(parseInt(uUnit.payDay || uUnit.dueDate)).getDate())
+        }
+        eventDate.setHours(0,0,0,0)
+        let eventnUnit = eventFValue.nUnit
+        let eventnValue = eventFValue.nValue
+        let lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0)
+        lastDay.setHours(0,0,0,0)
+
+        if (eventFValue.isSameDay === 'lastDay') {
+          eventDate = new Date(lastDay)
+        }
+
+        let onWeekend = eventDate.getDay() === 6 || eventDate.getDay() === 0
+
+        if (onWeekend && eventFValue.countWeekends === 'preWeekends') {
+          while (eventDate.getDay() === 6 || eventDate.getDay() === 0) {
+            eventDate = new Date(eventDate.setDate(eventDate.getDate() - 1))
+          }
+        } else if (onWeekend && eventFValue.countWeekends === 'postWeekends') {
+          while (eventDate.getDay() === 6 || eventDate.getDay() === 0) {
+            eventDate = new Date(eventDate.setDate(eventDate.getDate() + 1))
+          }
+        }
+        if (eventDate.toDateString() === currentDate.toDateString() ||(eventFValue.frequency === 'other' && compareDate(eventnValue, eventnUnit, eventDate, currentDate.getTime())) || (eventFValue.frequency === 'daily') || (eventFValue.frequency === 'monthly' && currentDate.getDate() === eventDate.getDate()) || (eventFValue.frequency === 'yearly' && parseInt(currentDate.getMonth()) === parseInt(eventFValue.month) && parseInt(currentDate.getDate()) === parseInt(eventFValue.day))) {
+          setGraphsData((prev) => [...prev, {eventID: eventDate.getTime()+uUnit._id, date: eventDate.getTime(), event: uUnit}])
+        }      
+        //console.log(new Date(currentDate).toDateString())
+      }
     }
   }
+
+  useEffect(() => {
+    const uniqueGraphs = [...new Map(graphsData.map((m) => [m.eventID, m])).values()];
+    setUGraphsData(...[uniqueGraphs])
+  },[graphsData, setGraphsData])
+
+  useEffect(() => {
+    for (let i = 0; i < uGraphsData.length; i ++) {
+      if (uGraphsData[i].event.__typename === 'Incomes' && !iEvents.some(e => e.eventID === uGraphsData[i].eventID) && !iEvents.some(e=> e.eventID === undefined)) {
+        iEvents.push(uGraphsData[i])
+      } else if (uGraphsData[i].event.__typename === 'Expenses' && !eEvents.some(e => e.eventID === uGraphsData[i].eventID) && !eEvents.some(e=> e.eventID === undefined)) {
+        eEvents.push(uGraphsData[i])
+      }
+    }
+  },[uGraphsData, setUGraphsData, iEvents, eEvents])
+  
   const loggedIn = Auth.loggedIn();
 
+  
   ChartJS.register(
       CategoryScale,
       LinearScale,
@@ -63,8 +139,9 @@ function GraphsView(props) {
             data: lgraphlabels.map((label, index) => {
               let monthTotal = 0;
               for (let i = 0 ; i < eEvents.length ; i ++) {
-                if (new Date(eEvents[i].dateofEvent).getMonth() === index)
-                monthTotal += parseInt(eEvents[i].iandeEvent.expenseValue)
+                if (new Date(eEvents[i].date).getMonth() === index)
+                monthTotal += parseInt(eEvents[i].event.expenseValue)
+                
               }
               return monthTotal;
             }),
@@ -76,8 +153,8 @@ function GraphsView(props) {
             data: lgraphlabels.map((label, index) => {
               let monthTotal = 0;
               for (let i = 0 ; i < iEvents.length ; i ++) {
-                if (new Date(iEvents[i].dateofEvent).getMonth() === index)
-                monthTotal += parseInt(iEvents[i].iandeEvent.incomeValue)
+                if (new Date(iEvents[i].date).getMonth() === index)
+                monthTotal += parseInt(iEvents[i].event.incomeValue)
               }
               return monthTotal;
             }),
@@ -89,9 +166,9 @@ function GraphsView(props) {
     //++++End of Line Graph Setup++++//
     //----Doughnut Graph Setup----//
     const dDataLabels = [];
-    for (let i = 0 ; i < graphsData?.length ; i ++) {
-      if (graphsData[i].iandeEvent.expenseCategory) {
-        dDataLabels.push({dLabel: graphsData[i].iandeEvent.expenseCategory, dValue: graphsData[i].iandeEvent.expenseValue})
+    for (let i = 0 ; i < eEvents?.length ; i ++) {
+      if (eEvents[i].event.expenseCategory) {
+        dDataLabels.push({dLabel: eEvents[i].event.expenseCategory, dValue: eEvents[i].event.expenseValue})
       }
     }
 
@@ -100,11 +177,32 @@ function GraphsView(props) {
       return c;
     }, {});
 
+    let aDataSetfinal = () => {
+      const aDataSet = [];
+      for (let i = 0 ; i < uGraphsData?.length ; i ++) {
+        if (new Date(uGraphsData[i].date).getFullYear() === new Date().getFullYear())
+        aDataSet.push({dLabel: new Date(uGraphsData[i].date).getMonth(), dValueup: uGraphsData[i].event.incomeValue || 0, dValuedown: uGraphsData[i].event.expenseValue || 0})
+      }
+      let aDataSetres = aDataSet.reduce((c, v) => {
+        c[v.dLabel] = (c[v.dLabel] || 0) + parseFloat(v.dValueup) - parseFloat(v.dValuedown);
+        return c;
+      }, {});
+      aDataSetres = Object.values(aDataSetres)
+      let aDsetFinal = []
+      let total = 0.00
+      for (let i = 0; i < aDataSetres.length; i++) {
+        total += aDataSetres[i]
+        total = parseFloat(total.toFixed(2))
+        aDsetFinal.push(total); 
+      }
+      return aDsetFinal
+    }
+
     const doughnutData = {
         labels: [...Object.keys(dDataLabelsres)],
         datasets: [
             {
-            label: '# of Votes',
+            label: 'Utilization by Category',
             data: [...Object.values(dDataLabelsres)],
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
@@ -149,18 +247,21 @@ function GraphsView(props) {
           {
             fill: true,
             label: 'Total Budget',
-            data: lgraphlabels.map((label, index) => {
-              let tGraphTotal = 0;
-              for (let i = 0; i< iEvents.length; i++) {
-                if (new Date(iEvents[i].dateofEvent).getMonth() === index)
-                tGraphTotal += parseInt(iEvents[i].iandeEvent.incomeValue)
-              }
-              for (let i = 0 ; i < eEvents.length ; i ++) {
-                if (new Date(eEvents[i].dateofEvent).getMonth() === index)
-                tGraphTotal -= parseInt(eEvents[i].iandeEvent.expenseValue)
-              }
-              return tGraphTotal;
-            }),
+            data: // lgraphlabels.map((label, index) => {
+            //   let tGraphTotal = 0;
+            //   for (let i = 0; i< iEvents.length; i++) {
+            //     if (new Date(iEvents[i].date).getMonth() === index) {
+            //       tGraphTotal += parseInt(iEvents[i].event.incomeValue)
+            //     }
+            //   }
+            //   for (let i = 0 ; i < eEvents.length ; i ++) {
+            //     if (new Date(eEvents[i].date).getMonth() === index) {
+            //       tGraphTotal -= parseInt(eEvents[i].event.expenseValue)
+            //     }
+            //   }
+            //   return tGraphTotal;
+            // })
+            aDataSetfinal(),
             borderColor: 'rgb(53, 162, 235)',
             backgroundColor: 'rgba(53, 162, 235, 0.5)',
           },
