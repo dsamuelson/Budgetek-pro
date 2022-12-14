@@ -14,6 +14,7 @@ function IncomesList() {
     const iandEMValue = iandEMToggleStore.modalValue;
     const incomesListStore = useSelector((state) => state.incomes);
     const incomesList = incomesListStore.incomes;
+    const [ isEditing, setIsEditing ] = useState({thisEdit: false, eTarget: {}});
     const loggedIn = Auth.loggedIn();
     const [showItemizedList, setShowItemizedList] = useState([{id: "", open: false}])
     const [removeIncome] = useMutation(REMOVE_INCOME);
@@ -60,6 +61,10 @@ function IncomesList() {
         incomeDataRefetch()
     }
 
+    useEffect(() => {
+        console.log(isEditing);
+    }, [setIsEditing])
+
     return (
         <div className="incomesTable">
             {loggedIn && incomesList && (
@@ -81,7 +86,7 @@ function IncomesList() {
                                     <React.Fragment key={income._id}>
                                         <tr 
                                         >
-                                            <td>{income.incomeTitle}</td>
+                                            <td>{income.incomeTitle} {income.primaryIncome === true && `(Primary)`}</td>
                                             <td>{income.incomeValue}</td>
                                             <td onClick={() => setShowItemizedList([{id: income._id, open: !showItemizedList[0].open}])}>{income.uomePayInfo.length > 0 && income.uomePayInfo.length}</td>
                                             <td>{income.incomeFrequency[0].frequency}</td>

@@ -7,7 +7,7 @@ import IandEModal from "../components/IandEModal";
 import { useQuery, useMutation } from "@apollo/client";
 import { QUERY_EXPENSES, QUERY_INCOMES, QUERY_HIST_EVENTS } from "../utils/queries";
 import { ADD_HIST_EVENT, UPDATE_EXPENSE, UPDATE_INCOME } from '../utils/mutations';
-import { addDate, idbPromise, compareDate } from "../utils/helpers";
+import { addDate, idbPromise, compareDate, nextDate } from "../utils/helpers";
 import { useSelector, useDispatch } from 'react-redux';
 import Auth from "../utils/auth";
 import EventsList from "../components/Events";
@@ -162,46 +162,47 @@ const Home = () => {
     }
 
     if (eventDate.toDateString() === currentDate.toDateString() || currentDate.toDateString() === lastMonthEvent.toDateString() ||(eventFValue.frequency === 'other' && compareDate(eventnValue, eventnUnit, eventDate, currentDate.getTime())) || (eventFValue.frequency === 'daily') || (eventFValue.frequency === 'monthly' && currentDate.getDate() === eventDate.getDate()) || (eventFValue.frequency === 'yearly' && parseInt(currentDate.getMonth()) === parseInt(eventFValue.month) && parseInt(currentDate.getDate()) === parseInt(eventFValue.day))) {
+      if ( new Date(parseInt(uUnit.payDay || uUnit.dueDate)).getTime() < new Date().getTime() ) {
+        let nextEventDate = new Date(nextDate(uUnit))
+        updatePDDDDate(uUnit, nextEventDate)
+      }
       return true;
-    }
-
-    if (1===0) {
-      return  true;
     }
 
     return false;
   }
-  //=========================================//
+//=========================================//
 
-  //----Update Pay Day or Due Date to the next closest event----//
+//----Update Pay Day or Due Date to the next closest event----//
   async function updatePDDDDate(uUnit, newDate) {
-    // console.log(uUnit, new Date(newDate).toDateString())
-    //   if (uUnit.__typename === "Expenses") {
-    //     try {
-    //       await updateExpense({
-    //           variables: {
-    //               _id: uUnit._id,
-    //               dueDate: newDate.toString()
-    //           }
-    //       });
-    //     } catch (error) {
-    //         console.log(error);
-    //     }  
-    //   }
-    //   if (uUnit.__typename === "Incomes") {
-    //     try {
-    //       await updateIncome({
-    //           variables: {
-    //               _id: uUnit._id,
-    //               payDay: newDate.toString()
-    //           }
-    //       });
-    //     } catch (error) {
-    //         console.log(error);
-    //     }  
-    //   }
+    console.log(uUnit, new Date(newDate).toDateString())
+      if (uUnit.__typename === "Expenses") {
+        try {
+          await updateExpense({
+              variables: {
+                  _id: uUnit._id,
+                  dueDate: newDate.toString()
+              }
+          });
+        } catch (error) {
+            console.log(error);
+        }  
+      }
+      if (uUnit.__typename === "Incomes") {
+        try {
+          await updateIncome({
+              variables: {
+                  _id: uUnit._id,
+                  payDay: newDate.toString()
+              }
+          });
+        } catch (error) {
+            console.log(error);
+        }  
+      }
     }
-    //===========================================//
+//===========================================//
+
   useEffect (() => {
     const uniqueEvents = [...new Map(tempEventArray.map((m) => [m.doeID, m])).values()];
     setBudgetEventsList(...[uniqueEvents])
@@ -252,19 +253,30 @@ const Home = () => {
       {modalValue !== 'None' && (
         <IandEModal />
       )}
-      <div className="calendarCont">
+      <div className="calendarCont" onClick={(e)=>{
+        if (e.target.localName) {
+          let contentText = '';
+          let contentDate = ``;
+          if (e.target.localName === `li`) {
+            contentDate = e.target.ownerDocument.activeElement.firstChild.ariaLabel
+            contentText = e.target.parentElement.innerText
+          } else if (e.target.localName === `span`) {
+            contentDate = e.target.ownerDocument.activeElement.firstChild.ariaLabel
+            contentText = e.target.parentElement.parentElement.innerText
+          } else if (e.target.localName === `abbr`) {
+            contentDate = e.target.ariaLabel
+            contentText = e.target.parentElement.lastChild.innerText
+          } else if (e.target.localName === `button`) {
+            contentDate = e.target.firstChild.ariaLabel
+            contentText = e.target.lastChild.innerText
+          }
+          setCalcontItems([contentDate, contentText])
+        }
+        }}>
      <Calendar 
         onChange={setDate} 
         value={date}
-        onClickDay={(e, tContent)=>{
-          let contentText = '';
-          if (tContent.target.localName === `li`) {
-            contentText = tContent.target.parentElement.innerText
-          }
-          if (tContent.target.localName === `span`) {
-            contentText = tContent.target.parentElement.parentElement.innerText
-          }
-          setCalcontItems([e, contentText])
+        onClickDay={() => {
           dispatch({
             type: 'TOGGLE_CALCONT_MODAL',
             calcontVal: true

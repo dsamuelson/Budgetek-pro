@@ -1,16 +1,37 @@
 import moment from 'moment';
 
-// export function daysInMonth (month, year) {
-//   return new Date(year, month, 0).getDate();
-// }
-
-
 export function formatDate(datetime) {
   return moment(parseInt(datetime)).format('MMM DD YYYY');
 };
 
 export function PDDDformat(datetime) {
   return moment(parseInt(datetime.payDay || datetime.dueDate)).format('MMM DD');
+}
+
+export function nextDate (uUnit) {
+  let nextDate = new Date()
+  let eventDate = new Date(parseInt(uUnit.dueDate || uUnit.payDay))
+  let eventFValue = uUnit.incomeFrequency ? uUnit.incomeFrequency[0] : uUnit.expenseFrequency[0]
+  if (eventFValue.frequency === "monthly") {
+    eventDate = eventDate.setMonth(eventDate.getMonth() + 1)
+  }
+  if (eventFValue.frequency === "daily") {
+    eventDate = eventDate.setDate(nextDate.getDate() + 1)
+  }
+  if (eventFValue.frequency === "yearly") {
+    eventDate = eventDate.setFullYear(eventDate.getFullYear() + 1)
+  }
+  if (eventFValue.frequency === "other") {
+    if (eventFValue.nUnit === "days") {
+      eventDate = eventDate.setDate(eventDate.getDate() + parseInt(eventFValue.nValue))
+    }else if (eventFValue.nUnit === "months") {
+      eventDate = eventDate.setMonth(eventDate.getMonth() + parseInt(eventFValue.nValue))
+    } else if (eventFValue.nUnit === "years") {
+      eventDate = eventDate.setFullYear(eventDate.getFullYear() + parseInt(eventFValue.nValue))
+    }
+  }
+  nextDate = new Date(eventDate)
+  return nextDate.getTime();
 }
 
 export function addDate(Value, Unit, date) {

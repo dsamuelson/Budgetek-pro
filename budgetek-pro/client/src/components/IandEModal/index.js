@@ -446,7 +446,7 @@ function IandEModal() {
                     <label>Due Date:
                         <DatePicker 
                         selected={dueDateDate}
-                        onChange={(date) => {setDueDateDate(date); DueDateBreakdown({day: date.getDate().toString()}); if (iModalFrequency.frequency === 'yearly'){DueDateBreakdown({month: date.getMonth().toString()})}}}
+                        onChange={(date) => {setDueDateDate(date); DueDateBreakdown({day: date.getDate().toString()}); if (eModalFrequency.frequency === 'yearly'){DueDateBreakdown({month: date.getMonth().toString()})}}}
                         />
                     </label>
                     <input type='submit' value="Add Expense" onClick={event => submitExpenseModal(event)} className='ieModalButton'></input>

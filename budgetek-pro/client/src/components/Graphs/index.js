@@ -79,7 +79,6 @@ function GraphsView() {
         if (eventDate.toDateString() === currentDate.toDateString() ||(eventFValue.frequency === 'other' && compareDate(eventnValue, eventnUnit, eventDate, currentDate.getTime())) || (eventFValue.frequency === 'daily') || (eventFValue.frequency === 'monthly' && currentDate.getDate() === eventDate.getDate()) || (eventFValue.frequency === 'yearly' && parseInt(currentDate.getMonth()) === parseInt(eventFValue.month) && parseInt(currentDate.getDate()) === parseInt(eventFValue.day))) {
           setGraphsData((prev) => [...prev, {eventID: eventDate.getTime()+uUnit._id, date: eventDate.getTime(), event: uUnit}])
         }      
-        //console.log(new Date(currentDate).toDateString())
       }
     }
   }
