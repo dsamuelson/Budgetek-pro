@@ -520,6 +520,7 @@ th {
 }
 
 .eventsListCont ul {
+  max-height: 170px;
   margin-top: 2px;
   overflow: scroll;
 }
