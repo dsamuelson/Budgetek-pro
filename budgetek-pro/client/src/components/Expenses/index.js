@@ -72,7 +72,6 @@ function ExpensesList() {
                             <th title="How much is the Expense?">Value</th>
                             <th title="How Often does this come up?">Frequency</th>
                             <th title="Has this been Itemized?">Itemized</th>
-                            <th title="Is this Vital or can it be Ignored?">Vital</th>
                             <th title="What is the category for this Expense?">Category</th>
                             <th title="When does this need to be payed?">Next Due On</th>
                             <th title="Remove Expense">Delete</th>
@@ -83,11 +82,10 @@ function ExpensesList() {
                             return (
                                 <React.Fragment key={expense._id}>
                                     <tr>
-                                        <td>{expense.expenseTitle}</td>
+                                        <td>{expense.expenseTitle} {expense.vitalExpense && `(Vital)`}</td>
                                         <td>{expense.expenseValue}<br></br>{expense.totalExpenseValue &&`(${expense.totalExpenseValue})`}</td>
                                         <td>{expense.expenseFrequency[0].frequency}</td>
                                         <td onClick={() => setShowItemizedList([{id: expense._id, open: !showItemizedList[0].open}])}>{expense.iouInfo.length > 0 && expense.iouInfo.length}</td>
-                                        <td>{expense.vitalExpense}</td>
                                         <td>{expense.expenseCategory}</td>
                                         <td>{`${PDDDformat(expense)}`}</td>
                                         <td><button onClick={(e) => removeExpenseHandler(e, expense._id)}>x</button></td>

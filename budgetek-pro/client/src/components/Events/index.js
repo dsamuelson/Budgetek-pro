@@ -10,7 +10,7 @@ function EventsList(props) {
 
     useEffect(() => {
         setProps(props)
-    })
+    }, [props])
 
     useEffect(() => {
         let incomeTempArray = []
