@@ -213,7 +213,7 @@ p.calContx {
   width: 100%;
 }
 
-.incomeTable button {
+.itemDelete {
   border: none;
   color: white;
   background-color: red;
@@ -222,10 +222,10 @@ p.calContx {
   margin-bottom: 4px;
 }
 
-.expenseTable button {
+.itemEdit {
   border: none;
   color: white;
-  background-color: red;
+  background-color: blue;
   line-height: 1;
   border-radius: 10px;
   margin-bottom: 4px;

@@ -14,7 +14,6 @@ function IncomesList() {
     const iandEMValue = iandEMToggleStore.modalValue;
     const incomesListStore = useSelector((state) => state.incomes);
     const incomesList = incomesListStore.incomes;
-    const [ isEditing, setIsEditing ] = useState({thisEdit: false, eTarget: {}});
     const loggedIn = Auth.loggedIn();
     const [showItemizedList, setShowItemizedList] = useState([{id: "", open: false}])
     const [removeIncome] = useMutation(REMOVE_INCOME);
@@ -61,9 +60,13 @@ function IncomesList() {
         incomeDataRefetch()
     }
 
-    useEffect(() => {
-        console.log(isEditing);
-    }, [setIsEditing])
+    async function editIncomeHandler(e, ident) {
+        e.preventDefault();
+        dispatch({
+            type: "TOGGLE_MODAL",
+            modalValue: "EditIncome"
+        })
+    }
 
     return (
         <div className="incomesTable">
@@ -77,7 +80,7 @@ function IncomesList() {
                             <th title="Has this been Itemized">Itemized</th>
                             <th title="How often does this pay?">Frequency</th>
                             <th title="When do you get paid?">Next Pay Date</th>
-                            <th title="Remove Income">Delete</th>
+                            <th title="Remove Income">Delete/Edit</th>
                         </tr>
                     </thead>
                     <tbody>                        
@@ -91,7 +94,7 @@ function IncomesList() {
                                             <td onClick={() => setShowItemizedList([{id: income._id, open: !showItemizedList[0].open}])}>{income.uomePayInfo.length > 0 && income.uomePayInfo.length}</td>
                                             <td>{income.incomeFrequency[0].frequency}</td>
                                             <td>{`${PDDDformat(income)}`}</td>
-                                            <td><button onClick={(e) => removeIncomeHandler(e, income._id)}>x</button></td>
+                                            <td><button onClick={(e) => removeIncomeHandler(e, income._id)} className="itemDelete">X</button><button onClick={(e) => editIncomeHandler(e, income._id)} className="itemEdit">E</button></td>
                                         </tr>
                                         {showItemizedList[0].id === income._id && showItemizedList[0].open && income.uomePayInfo.length > 0 && (
                                             <tr>

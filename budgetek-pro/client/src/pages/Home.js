@@ -4,6 +4,7 @@ import 'react-calendar/dist/Calendar.css';
 import IncomesList from "../components/Incomes";
 import ExpensesList from "../components/Expenses";
 import IandEModal from "../components/IandEModal";
+import EditModal from "../components/EditModal";
 import { useQuery, useMutation } from "@apollo/client";
 import { QUERY_EXPENSES, QUERY_INCOMES, QUERY_HIST_EVENTS } from "../utils/queries";
 import { ADD_HIST_EVENT, UPDATE_EXPENSE, UPDATE_INCOME } from '../utils/mutations';
@@ -250,8 +251,11 @@ const Home = () => {
       ) : (
         <ExpensesList />
       )}
-      {modalValue !== 'None' && (
+      {(modalValue === 'Income' || modalValue === "Expense") && (
         <IandEModal />
+      )}
+      {(modalValue === 'EditIncome' || modalValue === "EditExpense") && (
+        <EditModal />
       )}
       <div className="calendarCont" onClick={(e)=>{
         if (e.target.localName) {

@@ -61,6 +61,11 @@ function ExpensesList() {
         expenseDataRefetch()
     }
 
+    async function editExpenseHandler(e, ident) {
+        e.preventDefault()
+        console.log(ident)
+    }
+
     return (
         <div className="expensesTable">
             {loggedIn && expensesList && (
@@ -88,7 +93,7 @@ function ExpensesList() {
                                         <td onClick={() => setShowItemizedList([{id: expense._id, open: !showItemizedList[0].open}])}>{expense.iouInfo.length > 0 && expense.iouInfo.length}</td>
                                         <td>{expense.expenseCategory}</td>
                                         <td>{`${PDDDformat(expense)}`}</td>
-                                        <td><button onClick={(e) => removeExpenseHandler(e, expense._id)}>x</button></td>
+                                        <td><button onClick={(e) => removeExpenseHandler(e, expense._id)} className="itemDelete">X</button><button onClick={(e) => editExpenseHandler(e, expense._id)} className="itemEdit">E</button></td>
                                     </tr>
                                     {showItemizedList[0].id === expense._id && showItemizedList[0].open && expense.iouInfo.length > 0 && (
                                         <tr>

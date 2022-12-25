@@ -31,7 +31,6 @@ function EventsList(props) {
     useEffect(() => {
         setExpenseEventsTotal(0.00)
         setIncomeEventsTotal(0.00)
-        console.log(incomeEvents.length)
         for (let i = 0 ; i < incomeEvents.length ; i++) {
             setIncomeEventsTotal(incomeEventsTotal => incomeEventsTotal + parseFloat(incomeEvents[i].iandeValue))
         }
@@ -55,23 +54,23 @@ function EventsList(props) {
                         <div className="eventsListIULCont">
                             <h4>Income Events ({incomeEventsTotal.toFixed(2)})</h4>
                             <ul className="eventsListIUL">
-                                {incomeEvents.length && incomeEvents.map((ievents) => {
+                                {incomeEvents.length ? incomeEvents.map((ievents) => {
                                         return (
                                             <li 
                                             key = {ievents.doeID}>{ievents.iandeEvent} paying on {new Date(ievents.dateofEvent).toLocaleDateString()} for ${ievents.iandeValue}</li>
                                         )
-                                })}
+                                }) : <li>No Incomes Within the next 7 Days</li>}
                             </ul>
                         </div>
                         <div className="eventsListEULCont">
                             <h4>Expense Events ({expenseEventsTotal.toFixed(2)})</h4>
                             <ul className="eventsListEUL">
-                            {expenseEvents.length && expenseEvents.map((ievents) => {
+                            {expenseEvents.length ? expenseEvents.map((ievents) => {
                                         return (
                                             <li 
                                             key = {ievents.doeID}>{ievents.iandeEvent} due on {new Date(ievents.dateofEvent).toLocaleDateString()} for ${ievents.iandeValue}</li>
                                         )
-                                })}
+                                }) : <li>No Expenses Within the next 7 Days</li>}
                             </ul>
                         </div>
                     </div>
