@@ -1,41 +1,31 @@
 import React, { useState, useEffect } from "react";
 import Auth from '../../utils/auth';
 import { useQuery, useMutation } from '@apollo/client';
-import { QUERY_EXPENSES} from '../../utils/queries';
+import { QUERY_EVENTS} from '../../utils/queries';
 import { PDDDformat, idbPromise } from "../../utils/helpers";
-import { REMOVE_EXPENSE } from "../../utils/mutations";
+import { REMOVE_BUDGET_EVENT } from "../../utils/mutations";
 import { useDispatch, useSelector } from 'react-redux'
 
 function ExpensesList() {
 
     const dispatch = useDispatch()
-    const {loading: expenseLoading, data: expenseData, refetch: expenseDataRefetch} = useQuery(QUERY_EXPENSES)
+    const {loading: expenseLoading, data: expenseData, refetch: expenseDataRefetch} = useQuery(QUERY_EVENTS)
     const iandEMToggleStore = useSelector((state) => state.modalValue);
     const iandEMValue = iandEMToggleStore.modalValue;
     const expensesListStore = useSelector((state) => state.expenses);
-    const expensesList = expensesListStore.expenses;
+    const expensesList = expensesListStore.expenses
     const [showItemizedList, setShowItemizedList] = useState([{id: "", open: false}])
     const loggedIn = Auth.loggedIn();
 
-    const [removeExpense] = useMutation(REMOVE_EXPENSE)
+    const [removeExpense] = useMutation(REMOVE_BUDGET_EVENT)
         
     useEffect(() => {
         expenseDataRefetch()
-        if (expenseData) {
+        if (expenseData){
             dispatch({
                 type: 'ADD_EXPENSES',
-                expenses: expenseData.me.expenses
-            })
-            expenseData.me.expenses.forEach((idbExpense) => {
-                idbPromise('expenses', 'put', idbExpense)
-            })
-        } else if (!expenseLoading) {
-            idbPromise('expenses', 'get').then((idbExpenses) => {
-                dispatch({
-                    type: "ADD_EXPENSES",
-                    expnenses: idbExpenses
-                })
-            })
+                expenses: expenseData.me.budgetEvents.filter(budgetEvent => {return budgetEvent.eventType === 'expense'})
+              })
         }
     },[expenseLoading, expenseData, iandEMValue, expenseDataRefetch, dispatch])
 
@@ -57,13 +47,21 @@ function ExpensesList() {
         } catch (error) {
             console.log(error);
         }
-        idbPromise('expenses', 'delete', { _id: ident})
+        idbPromise('budgetEvents', 'delete', { _id: ident})
         expenseDataRefetch()
     }
 
     async function editExpenseHandler(e, ident) {
-        e.preventDefault()
+        e.preventDefault();
         console.log(ident)
+        dispatch({
+            type: "TOGGLE_MODAL",
+            modalValue: "EditExpense"
+        })
+        dispatch({
+            type:"EDIT_THIS_EVENT",
+            currentEdit: ident
+        })
     }
 
     return (
@@ -87,13 +85,13 @@ function ExpensesList() {
                             return (
                                 <React.Fragment key={expense._id}>
                                     <tr>
-                                        <td>{expense.expenseTitle} {expense.vitalExpense && `(Vital)`}</td>
-                                        <td>{expense.expenseValue}<br></br>{expense.totalExpenseValue &&`(${expense.totalExpenseValue})`}</td>
-                                        <td>{expense.expenseFrequency[0].frequency}</td>
+                                        <td>{expense.eventTitle} {expense.vitalEvent && `(Vital)`}</td>
+                                        <td>{expense.eventValue}<br></br>{expense.totalEventValue &&`(${expense.totalEventValue})`}</td>
+                                        <td>{expense.eventFrequency[0].frequency}</td>
                                         <td onClick={() => setShowItemizedList([{id: expense._id, open: !showItemizedList[0].open}])}>{expense.iouInfo.length > 0 && expense.iouInfo.length}</td>
-                                        <td>{expense.expenseCategory}</td>
-                                        <td>{`${PDDDformat(expense)}`}</td>
-                                        <td><button onClick={(e) => removeExpenseHandler(e, expense._id)} className="itemDelete">X</button><button onClick={(e) => editExpenseHandler(e, expense._id)} className="itemEdit">E</button></td>
+                                        <td>{expense.eventCategory}</td>
+                                        <td>{`${PDDDformat(expense.eventDate)}`}</td>
+                                        <td><button onClick={(e) => removeExpenseHandler(e, expense._id)} className="itemDelete">X</button><button onClick={(e) => editExpenseHandler(e, expense)} className="itemEdit">E</button></td>
                                     </tr>
                                     {showItemizedList[0].id === expense._id && showItemizedList[0].open && expense.iouInfo.length > 0 && (
                                         <tr>

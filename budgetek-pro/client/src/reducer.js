@@ -11,7 +11,8 @@ const rootReducer = combineReducers({
     modalValue: TogglesReducer,
     incomes: iandeEntriesReducer,
     expenses: iandeEntriesReducer,
-    histEvents: iandeEntriesReducer
+    histEvents: iandeEntriesReducer,
+    currentEdit: iandeEntriesReducer
 })
 
 export default rootReducer

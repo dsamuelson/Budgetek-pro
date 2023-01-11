@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Auth from '../../utils/auth';
 import { compareDate } from "../../utils/helpers";
 import { useQuery } from "@apollo/client";
-import { QUERY_EXPENSES, QUERY_INCOMES } from "../../utils/queries";
+import { QUERY_EVENTS} from "../../utils/queries";
 import { Doughnut, Line } from 'react-chartjs-2'
 import { 
     Chart as ChartJS,
@@ -19,8 +19,7 @@ import {
 function GraphsView() {
   
 
-  const {loading: incomeLoading, data: incomeData, refetch: incomeDataRefetch } = useQuery(QUERY_INCOMES)
-  const {loading: expenseLoading, data: expenseData, refetch: expenseDataRefetch} = useQuery(QUERY_EXPENSES)
+  const {loading: eventLoading, data: eventData, refetch: eventDataRefetch } = useQuery(QUERY_EVENTS)
   const [ tempGraphsArray, setTempGraphsArray ] = useState([]);
   const [ iEvents, setIEvents] = useState([]);
   const [ eEvents, setEEvents] = useState([]);
@@ -29,12 +28,11 @@ function GraphsView() {
 
 
   useEffect(() => {
-    incomeDataRefetch()
-    expenseDataRefetch()
-    if (!incomeLoading && !expenseLoading) {
-      setTempGraphsArray([...incomeData.me.incomes, ...expenseData.me.expenses])
+    eventDataRefetch()
+    if (!eventLoading) {
+      setTempGraphsArray([...eventData.me.budgetEvents])
     }
-  }, [incomeLoading, incomeData, incomeDataRefetch, expenseLoading, expenseData, expenseDataRefetch])
+  }, [eventLoading, eventData, eventDataRefetch])
 
   useEffect(() => {
     if (tempGraphsArray.length){
@@ -50,10 +48,10 @@ function GraphsView() {
       for (let i = 0; i < 365; i++ ) {
         let currentDate = new Date().setDate(new Date().getDate() - [i])
         currentDate = new Date(currentDate)
-        let eventFValue = uUnit.incomeFrequency ? uUnit.incomeFrequency[0] : uUnit.expenseFrequency[0];
-        let eventDate = new Date(parseInt(uUnit.payDay || uUnit.dueDate))
+        let eventFValue = uUnit.eventFrequency[0];
+        let eventDate = new Date(parseInt(uUnit.eventDate))
         if (eventFValue.frequency === "monthly") {
-          eventDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), new Date(parseInt(uUnit.payDay || uUnit.dueDate)).getDate())
+          eventDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), new Date(parseInt(uUnit.eventDate)).getDate())
         }
         eventDate.setHours(0,0,0,0)
         let eventnUnit = eventFValue.nUnit
@@ -90,9 +88,9 @@ function GraphsView() {
 
   useEffect(() => {
     for (let i = 0; i < uGraphsData.length; i ++) {
-      if (uGraphsData[i].event.__typename === 'Incomes' && !iEvents.some(e => e.eventID === uGraphsData[i].eventID) && !iEvents.some(e=> e.eventID === undefined)) {
+      if (uGraphsData[i].event.eventType === 'income' && !iEvents.some(e => e.eventID === uGraphsData[i].eventID) && !iEvents.some(e=> e.eventID === undefined)) {
         iEvents.push(uGraphsData[i])
-      } else if (uGraphsData[i].event.__typename === 'Expenses' && !eEvents.some(e => e.eventID === uGraphsData[i].eventID) && !eEvents.some(e=> e.eventID === undefined)) {
+      } else if (uGraphsData[i].event.eventType === 'expense' && !eEvents.some(e => e.eventID === uGraphsData[i].eventID) && !eEvents.some(e=> e.eventID === undefined)) {
         eEvents.push(uGraphsData[i])
       }
     }
@@ -139,7 +137,7 @@ function GraphsView() {
               let monthTotal = 0;
               for (let i = 0 ; i < eEvents.length ; i ++) {
                 if (new Date(eEvents[i].date).getMonth() === index)
-                monthTotal += parseInt(eEvents[i].event.expenseValue)
+                monthTotal += parseInt(eEvents[i].event.eventValue)
                 
               }
               return monthTotal;
@@ -153,7 +151,7 @@ function GraphsView() {
               let monthTotal = 0;
               for (let i = 0 ; i < iEvents.length ; i ++) {
                 if (new Date(iEvents[i].date).getMonth() === index)
-                monthTotal += parseInt(iEvents[i].event.incomeValue)
+                monthTotal += parseInt(iEvents[i].event.eventValue)
               }
               return monthTotal;
             }),
@@ -166,8 +164,8 @@ function GraphsView() {
     //----Doughnut Graph Setup----//
     const dDataLabels = [];
     for (let i = 0 ; i < eEvents?.length ; i ++) {
-      if (eEvents[i].event.expenseCategory) {
-        dDataLabels.push({dLabel: eEvents[i].event.expenseCategory, dValue: eEvents[i].event.expenseValue})
+      if (eEvents[i].event.eventCategory) {
+        dDataLabels.push({dLabel: eEvents[i].event.eventCategory, dValue: eEvents[i].event.eventValue})
       }
     }
 
@@ -179,11 +177,15 @@ function GraphsView() {
     let aDataSetfinal = () => {
       const aDataSet = [];
       for (let i = 0 ; i < uGraphsData?.length ; i ++) {
-        if (new Date(uGraphsData[i].date).getFullYear() === new Date().getFullYear())
-        aDataSet.push({dLabel: new Date(uGraphsData[i].date).getMonth(), dValueup: uGraphsData[i].event.incomeValue || 0, dValuedown: uGraphsData[i].event.expenseValue || 0})
+        if ((new Date(uGraphsData[i].date).getFullYear() === new Date().getFullYear() || (new Date(uGraphsData[i].date).getFullYear() === new Date().getFullYear() - 1 && new Date(uGraphsData[i].date).getMonth() === new Date().getMonth())) && uGraphsData[i].event.eventType === 'income') {
+          aDataSet.push({dLabel: new Date(uGraphsData[i].date).getMonth(), dValueup: parseFloat(uGraphsData[i].event.eventValue)})
+        } 
+        if ((new Date(uGraphsData[i].date).getFullYear() === new Date().getFullYear() || (new Date(uGraphsData[i].date).getFullYear() === new Date().getFullYear() - 1 && new Date(uGraphsData[i].date).getMonth() === new Date().getMonth())) && uGraphsData[i].event.eventType === 'expense') {
+          aDataSet.push({dLabel: new Date(uGraphsData[i].date).getMonth(), dValuedown: parseFloat(uGraphsData[i].event.eventValue)})
+        }
       }
       let aDataSetres = aDataSet.reduce((c, v) => {
-        c[v.dLabel] = (c[v.dLabel] || 0) + parseFloat(v.dValueup) - parseFloat(v.dValuedown);
+        c[v.dLabel] = (c[v.dLabel] || 0) + parseFloat(v.dValueup || 0.00) - parseFloat(v.dValuedown || 0.00);
         return c;
       }, {});
       aDataSetres = Object.values(aDataSetres)
@@ -210,6 +212,7 @@ function GraphsView() {
                 'rgba(75, 192, 192, 0.2)',
                 'rgba(153, 102, 255, 0.2)',
                 'rgba(255, 159, 64, 0.2)',
+                'rgba(255, 0, 127, 0.2)'
             ],
             borderColor: [
                 'rgba(255, 99, 132, 1)',
@@ -218,6 +221,7 @@ function GraphsView() {
                 'rgba(75, 192, 192, 1)',
                 'rgba(153, 102, 255, 1)',
                 'rgba(255, 159, 64, 1)',
+                'rgba(255, 0, 127, 1)'
             ],
             borderWidth: 1,
             },
@@ -250,12 +254,12 @@ function GraphsView() {
             //   let tGraphTotal = 0;
             //   for (let i = 0; i< iEvents.length; i++) {
             //     if (new Date(iEvents[i].date).getMonth() === index) {
-            //       tGraphTotal += parseInt(iEvents[i].event.incomeValue)
+            //       tGraphTotal += parseInt(iEvents[i].event.eventValue)
             //     }
             //   }
             //   for (let i = 0 ; i < eEvents.length ; i ++) {
             //     if (new Date(eEvents[i].date).getMonth() === index) {
-            //       tGraphTotal -= parseInt(eEvents[i].event.expenseValue)
+            //       tGraphTotal -= parseInt(eEvents[i].event.eventValue)
             //     }
             //   }
             //   return tGraphTotal;

@@ -8,14 +8,12 @@ const resolvers = {
           console.log(username)
             const userData = await User.findOne({username})
                 .select('-__v -password')
-                .populate('incomes')
-                .populate('expenses')
+                .populate('budgetEvents')
                 .populate('bankAccounts');
             if (!userData) {
               const userDataEmail = await User.findOne({email: username})
                 .select('-__v -password')
-                .populate('incomes')
-                .populate('expenses')
+                .populate('budgetEvents')
                 .populate('bankAccounts');
               return userDataEmail
             }
@@ -24,8 +22,7 @@ const resolvers = {
           getAllUsers: async () => {
             const userArray = await User.find({})
                 .select('-__v -password')
-                .populate('incomes')
-                .populate('expenses')
+                .populate('budgetEvents')
                 .populate('bankAccounts');
             return userArray;
           },
@@ -33,8 +30,7 @@ const resolvers = {
             if (context.user) {
               const userData = await User.findOne({ _id: context.user._id })
                 .select('-__v -password')
-                .populate('incomes')
-                .populate('expenses')
+                .populate('budgetEvents')
                 .populate('bankAccounts');
       
               return userData;
@@ -67,33 +63,6 @@ const resolvers = {
           const token = signToken(user);
           return { token, user };
         },
-        addIncome: async (parent, args, context) => {
-            if (context.user) {
-              const updatedUser = await User.findOneAndUpdate(
-                { _id: context.user._id },
-                {
-                  $addToSet: {
-                    incomes: {
-                      incomeTitle: args.incomeTitle,
-                      incomeValue: args.incomeValue,
-                      incomeInterest: args.incomeInterest,
-                      incomeFrequency: [...args.incomeFrequency],
-                      primaryIncome: args.primaryIncome,
-                      payDay: args.payDay,
-                      uomePayInfo: [...args.uomePayInfo]
-                    },
-                  },
-                },
-                { new: true },
-              )
-                .select('-__v -password')
-                .populate('incomes');
-      
-              return updatedUser;
-            }
-      
-            throw new AuthenticationError('You must be logged in');
-          },
           addHistEvents: async (parent, args, context) => {
             if (context.user) {
               const updatedUser = await User.findOneAndUpdate(
@@ -114,28 +83,6 @@ const resolvers = {
               )
                 .select('-__v -password')
                 .populate('histEvents');
-      
-              return updatedUser;
-            }
-      
-            throw new AuthenticationError('You must be logged in');
-          },
-          updateIncome: async (parent, args, context) => {
-            if (context.user) {
-              let tempVals = [];
-              for (let i = 0 ; i < Object.keys(args).length; i ++) {
-                let oKeys = Object.keys(args)[i];
-                let oVals = Object.values(args)[i];
-                tempVals.push({[`incomes.$.${oKeys}`]: oVals})
-              }
-              let vals = {...tempVals.reduce(((r, c) => Object.assign(r, c)), {})}
-              const updatedUser = await User.findOneAndUpdate(
-                { _id: context.user._id, "incomes._id": args._id },
-                {...vals},
-                { new: true},
-              )
-                .select('-__v -password')
-                .populate('incomes');
       
               return updatedUser;
             }
@@ -164,56 +111,6 @@ const resolvers = {
       
             throw new AuthenticationError('You must be logged in');
           },
-          addUOMe: async (parent, args, context) => {
-            if (context.user) {
-              const updatedUser = await User.findOneAndUpdate(
-                { _id: context.user._id, "incomes._id": args.uomeId},
-                {
-                  $addToSet: {
-                    "incomes.$.uomePayInfo": [...args.uomePayInfo]
-                  }
-                },
-                { new: true },
-              )
-                .select('-__v -password')
-                .populate('incomes');
-      
-              return updatedUser;
-            }
-      
-            throw new AuthenticationError('You must be logged in');
-          },
-          removeUOMe: async (parent, args, context) => {
-            if (context.user) {
-              const updatedUser = await User.findOneAndUpdate(
-                {_id: context.user._id, 'incomes._id': args.incomeId},
-                {
-                  $pull: { "incomes.$.uomePayInfo": {_id: args._id}}
-                },
-                { new: true }
-              )
-              .select('-__v')
-              .populate('incomes')
-
-              return updatedUser;
-            }
-            throw new AuthenticationError('You must be logged in')
-          },
-          removeIncome: async (parent, args, context) => {
-            if (context.user) {
-              const updatedUser = await User.findOneAndUpdate(
-                { _id: context.user._id},
-                {
-                  $pull: {incomes: { _id: args._id }}
-                },
-                { new: true }
-              )
-              .select('-__v')
-              .populate('incomes')
-              return updatedUser
-            }
-            throw new AuthenticationError('You must be logged in')
-          },
           removeHistEvent: async (parent, args, context) => {
             if (context.user) {
               const updatedUser = await User.findOneAndUpdate(
@@ -229,21 +126,22 @@ const resolvers = {
             }
             throw new AuthenticationError('You must be logged in')
           },
-          addExpense: async (parent, args, context) => {
+          addBudgetEvent: async (parent, args, context) => {
             if (context.user) {
               const updatedUser = await User.findOneAndUpdate(
                 { _id: context.user._id },
                 {
                   $addToSet: {
-                    expenses: {
-                      expenseTitle: args.expenseTitle,
-                      expenseValue: args.expenseValue,
-                      expenseFrequency: [...args.expenseFrequency],
-                      vitalExpense: args.vitalExpense,
-                      expenseCategory: args.expenseCategory,
-                      totalExpenseValue: args.totalExpenseValue,
-                      expenseAPR: args.expenseAPR,
-                      dueDate: args.dueDate,
+                    budgetEvents: {
+                      eventTitle: args.eventTitle,
+                      eventValue: args.eventValue,
+                      eventType: args.eventType,
+                      eventFrequency: [...args.eventFrequency],
+                      vitalEvent: args.vitalEvent,
+                      eventCategory: args.eventCategory,
+                      totalEventValue: args.totalEventValue,
+                      eventAPR: args.eventAPR,
+                      eventDate: args.eventDate,
                       iouInfo: [...args.iouInfo]
                     },
                   },
@@ -251,29 +149,29 @@ const resolvers = {
                 { new: true },
               )
                 .select('-__v -password')
-                .populate('expenses');
+                .populate('budgetEvents');
       
               return updatedUser;
             }
       
             throw new AuthenticationError('You must be logged in');
           },
-          updateExpense: async (parent, args, context) => {
+          updateBudgetEvent: async (parent, args, context) => {
             if (context.user) {
               let tempVals = [];
               for (let i = 0 ; i < Object.keys(args).length; i ++) {
                 let oKeys = Object.keys(args)[i];
                 let oVals = Object.values(args)[i];
-                tempVals.push({[`expenses.$.${oKeys}`]: oVals})
+                tempVals.push({[`budgetEvents.$.${oKeys}`]: oVals})
               }
               let vals = {...tempVals.reduce(((r, c) => Object.assign(r, c)), {})}
               const updatedUser = await User.findOneAndUpdate(
-                { _id: context.user._id, "expenses._id": args._id },
+                { _id: context.user._id, "budgetEvents._id": args._id },
                 {...vals},
                 { new: true},
               )
                 .select('-__v -password')
-                .populate('expenses');
+                .populate('budgetEvents');
       
               return updatedUser;
             }
@@ -283,16 +181,16 @@ const resolvers = {
           addIOU: async (parent, args, context) => {
             if (context.user) {
               const updatedUser = await User.findOneAndUpdate(
-                { _id: context.user._id, "expenses._id": args.iouId},
+                { _id: context.user._id, "budgetEvents._id": args.iouId},
                 {
                   $addToSet: {
-                    "expenses.$.iouInfo": [...args.iouInfo]
+                    "budgetEvents.$.iouInfo": [...args.iouInfo]
                   }
                 },
                 { new: true },
               )
                 .select('-__v -password')
-                .populate('expenses');
+                .populate('budgetEvents');
       
               return updatedUser;
             }
@@ -302,30 +200,30 @@ const resolvers = {
           removeIOU: async (parent, args, context) => {
             if (context.user) {
               const updatedUser = await User.findOneAndUpdate(
-                {_id: context.user._id, 'expenses._id': args.expenseId},
+                {_id: context.user._id, 'budgetEvents._id': args.expenseId},
                 {
-                  $pull: { "expenses.$.iouInfo": {_id: args._id}}
+                  $pull: { "budgetEvents.$.iouInfo": {_id: args._id}}
                 },
                 { new: true }
               )
               .select('-__v')
-              .populate('expenses')
+              .populate('budgetEvents')
 
               return updatedUser;
             }
             throw new AuthenticationError('You must be logged in')
           },
-          removeExpense: async (parent, args, context) => {
+          removeBudgetEvent: async (parent, args, context) => {
             if (context.user) {
               const updatedUser = await User.findOneAndUpdate(
                 { _id: context.user._id},
                 {
-                  $pull: { expenses: { _id: args._id }}
+                  $pull: { budgetEvents: { _id: args._id }}
                 },
                 { new: true }
               )
               .select('-__v')
-              .populate('expenses')
+              .populate('budgetEvents')
               return updatedUser
             }
             throw new AuthenticationError('You must be logged in')

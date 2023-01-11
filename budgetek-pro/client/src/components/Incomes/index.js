@@ -1,42 +1,32 @@
 import React, { useEffect, useState } from "react";
 import Auth from '../../utils/auth';
 import { useQuery, useMutation } from '@apollo/client';
-import { QUERY_INCOMES} from '../../utils/queries';
-import { REMOVE_INCOME } from "../../utils/mutations";
+import { QUERY_EVENTS} from '../../utils/queries';
+import { REMOVE_BUDGET_EVENT } from "../../utils/mutations";
 import { PDDDformat, idbPromise } from "../../utils/helpers";
 import { useDispatch, useSelector } from 'react-redux'
 
 function IncomesList() {
 
     const dispatch = useDispatch();
-    const {loading: incomeLoading, data: incomeData, refetch: incomeDataRefetch } = useQuery(QUERY_INCOMES)
+    const {loading: incomeLoading, data: incomeData, refetch: incomeDataRefetch } = useQuery(QUERY_EVENTS)
     const iandEMToggleStore = useSelector((state) => state.modalValue);
     const iandEMValue = iandEMToggleStore.modalValue;
     const incomesListStore = useSelector((state) => state.incomes);
-    const incomesList = incomesListStore.incomes;
+    const incomesList = incomesListStore.incomes
     const loggedIn = Auth.loggedIn();
     const [showItemizedList, setShowItemizedList] = useState([{id: "", open: false}])
-    const [removeIncome] = useMutation(REMOVE_INCOME);
-    
+    const [removeIncome] = useMutation(REMOVE_BUDGET_EVENT);
 
     useEffect(() => {
         incomeDataRefetch()
-        if (incomeData) {
+        if (incomeData){
             dispatch({
                 type: 'ADD_INCOMES',
-                incomes: incomeData.me.incomes
-            })
-            incomeData.me.incomes.forEach((idbIncome) => {
-                idbPromise('incomes', 'put', idbIncome)
-            })
-        } else if (!incomeLoading) {
-            idbPromise('incomes', 'get').then((idbIncomes) => {
-                dispatch({
-                    type: 'ADD_INCOMES',
-                    incomes: idbIncomes
-                })
-            })
+                incomes: incomeData.me.budgetEvents.filter(budgetEvent => {return budgetEvent.eventType === 'income'})
+              })
         }
+        
     },[incomeLoading, incomeData, iandEMValue, incomeDataRefetch, dispatch])
 
     function iModalToggle() {
@@ -56,15 +46,20 @@ function IncomesList() {
         })} catch (error) {
             console.log(error);
         }
-        idbPromise('incomes', 'delete', {_id: ident})
+        idbPromise('budgetEvents', 'delete', {_id: ident})
         incomeDataRefetch()
     }
 
     async function editIncomeHandler(e, ident) {
         e.preventDefault();
+        console.log(ident)
         dispatch({
             type: "TOGGLE_MODAL",
             modalValue: "EditIncome"
+        })
+        dispatch({
+            type:"EDIT_THIS_EVENT",
+            currentEdit: ident
         })
     }
 
@@ -89,14 +84,14 @@ function IncomesList() {
                                     <React.Fragment key={income._id}>
                                         <tr 
                                         >
-                                            <td>{income.incomeTitle} {income.primaryIncome === true && `(Primary)`}</td>
-                                            <td>{income.incomeValue}</td>
-                                            <td onClick={() => setShowItemizedList([{id: income._id, open: !showItemizedList[0].open}])}>{income.uomePayInfo.length > 0 && income.uomePayInfo.length}</td>
-                                            <td>{income.incomeFrequency[0].frequency}</td>
-                                            <td>{`${PDDDformat(income)}`}</td>
-                                            <td><button onClick={(e) => removeIncomeHandler(e, income._id)} className="itemDelete">X</button><button onClick={(e) => editIncomeHandler(e, income._id)} className="itemEdit">E</button></td>
+                                            <td>{income.eventTitle} {income.vitalEvent === true && `(Primary)`}</td>
+                                            <td>{income.eventValue}</td>
+                                            <td onClick={() => setShowItemizedList([{id: income._id, open: !showItemizedList[0].open}])}>{income.iouInfo.length > 0 && income.iouInfo.length}</td>
+                                            <td>{income.eventFrequency[0].frequency}</td>
+                                            <td>{`${PDDDformat(income.eventDate)}`}</td>
+                                            <td><button onClick={(e) => removeIncomeHandler(e, income._id)} className="itemDelete">X</button><button onClick={(e) => editIncomeHandler(e, income)} className="itemEdit">E</button></td>
                                         </tr>
-                                        {showItemizedList[0].id === income._id && showItemizedList[0].open && income.uomePayInfo.length > 0 && (
+                                        {showItemizedList[0].id === income._id && showItemizedList[0].open && income.iouInfo.length > 0 && (
                                             <tr>
                                                 <td colSpan={5}>
                                                 <table className="subTableItemized">
@@ -108,13 +103,13 @@ function IncomesList() {
                                                             </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {income.uomePayInfo.map((itemizedEntry) => {
+                                                        {income.iouInfo.map((itemizedEntry) => {
                                                             return (
                                                                 <tr
                                                                 key={itemizedEntry._id}>
-                                                                        <td>{itemizedEntry.uomeTitle}</td>
-                                                                        <td>{itemizedEntry.uomeValue}</td>
-                                                                        <td><input type='checkbox' checked={itemizedEntry.uomePaid} disabled={true}/></td>
+                                                                        <td>{itemizedEntry.iouTitle}</td>
+                                                                        <td>{itemizedEntry.iouValue}</td>
+                                                                        <td><input type='checkbox' checked={itemizedEntry.iouPaid} disabled={true}/></td>
                                                                 </tr>
                                                             )
                                                         })}   

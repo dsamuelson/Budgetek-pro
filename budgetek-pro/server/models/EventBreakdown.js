@@ -1,21 +1,24 @@
 const { Schema } = require('mongoose');
 
-const PDBreakdownSchema = new Schema ({
+const EventBreakdownSchema = new Schema ({
     frequency: {
         type: String,
-        required: true
+        required: true,
+        default: 'once'
     },
     isSameDay: {
         type: String,
-        required: false
+        required: false,
     },
     countWeekends: {
         type: String,
-        required: false
+        required: false,
+        default: 'ignore'
     },
     hasCustom: {
         type: Boolean,
-        required: false
+        required: false,
+        default: false
     },
     nValue: {
         type: String,
@@ -40,4 +43,4 @@ const PDBreakdownSchema = new Schema ({
     }
 })
 
-module.exports = PDBreakdownSchema;
+module.exports = EventBreakdownSchema;

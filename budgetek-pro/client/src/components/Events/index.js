@@ -17,9 +17,9 @@ function EventsList(props) {
         let expenseTempArray = []
         if (useProps.events) {
             useProps.events.map((ievents) => {
-                if (ievents.eventClass === 'incomeLI') {
+                if (ievents.eventClass === 'income') {
                     incomeTempArray.push(ievents)
-                } else if (ievents.eventClass === 'expenseLI') {
+                } else if (ievents.eventClass === 'expense') {
                     expenseTempArray.push(ievents)
                 }
             })

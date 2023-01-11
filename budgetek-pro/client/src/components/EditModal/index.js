@@ -3,25 +3,27 @@ import Auth from '../../utils/auth';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'
 import { useMutation } from '@apollo/client';
-import { ADD_INCOME, ADD_EXPENSE } from '../../utils/mutations';
+import { ADD_BUDGET_EVENT } from '../../utils/mutations';
 import { useDispatch, useSelector } from 'react-redux'
 
-function EditModal(props) {
-
-    const [useProps, setProps ] = useState(props)
-
+function EditModal() {
     const dispatch = useDispatch();
     const modalStore = useSelector((state) => state.modalValue);
     const modalValue = modalStore.modalValue;
+    const editEventStore = useSelector((state) => state.currentEdit);
+    const currentEdit = editEventStore.currentEdit[0];
+    console.log(currentEdit)
     const monthName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-    const [iModalTitle, setIModalTitle] = useState('');
-    const [iModalValue, setIModalValue] = useState('');
-    const [iModalInterest, setIModalInterest] = useState('');
-    const [iiItemize, setiItemize] = useState(false);
-    const [iModalFrequency, setIModalFrequency] = useState({});
-    const [iModalPrimary, setIModalPrimary] = useState(false);
-    const [payDayDate, setPayDayDate] = useState(new Date())
+    const [ modalId, setModalID ] = useState('')
+    const [ iModalTitle, setIModalTitle ] = useState('');
+    const [ iModalValue, setIModalValue ] = useState('');
+    const [ iModalInterest, setIModalInterest ] = useState('');
+    const [ iiItemize, setiItemize ] = useState(false);
+    const [ iItemizeEvents, setIItemizeEvents ] = useState([])
+    const [ iModalFrequency, setIModalFrequency ] = useState({});
+    const [ iModalPrimary, setIModalPrimary ] = useState(false);
+    const [ payDayDate, setPayDayDate ] = useState(new Date())
 
     const [itemizeMTitle, setItemizeMTitle] = useState('')
     const [itemizeMValue, setItemizeMValue] = useState('')
@@ -32,6 +34,7 @@ function EditModal(props) {
     const [eModalTitle, setEModalTitle] = useState('');
     const [eModalValue, setEModalValue] = useState('');
     const [eItemize, setEItemize] = useState(false);
+    const [eItemizeEvents, setEItemizeEvents] = useState(false);
     const [eModalFrequency, setEModalFrequency] = useState({});
     const [eModalCategory, setEModalCategory] = useState('');
     const [addETotal, setAddETotal] = useState(false)
@@ -40,8 +43,8 @@ function EditModal(props) {
     const [eModalVital, setEModalVital] = useState(false);
     const [dueDateDate, setDueDateDate] = useState(new Date())
 
-    const [ addIncome ] = useMutation(ADD_INCOME)
-    const [ addExpense ] = useMutation(ADD_EXPENSE)
+    const [ addIncome ] = useMutation(ADD_BUDGET_EVENT)
+    const [ addExpense ] = useMutation(ADD_BUDGET_EVENT)
 
     const loggedIn = Auth.loggedIn();
 
@@ -69,12 +72,44 @@ function EditModal(props) {
     }
 
     useEffect(() => {
-        setProps(props)
-    }, [props])
+        if (currentEdit) {
+            if (currentEdit.__typename === "Incomes") {
+                setModalID(currentEdit._id)
+                setIModalTitle(currentEdit.incomeTitle)
+                setIModalValue(parseFloat(currentEdit.incomeValue))
+                setIModalInterest(currentEdit.incomeInterest)
+                if (currentEdit.uomePayInfo.length > 0) {
+                    setiItemize(true)
+                    setIItemizeEvents(currentEdit.uomePayInfo)
+                }
+                setPayDayDate(new Date(parseInt(currentEdit.payDay)))
+                setIModalFrequency(...currentEdit.incomeFrequency)
+                setIModalPrimary(currentEdit.primaryIncome)
+            } else if (currentEdit.__typename === "Expenses") {
+                setModalID(currentEdit._id)
+                setEModalTitle(currentEdit.expenseTitle)
+                setEModalValue(currentEdit.expenseValue)
+                setEAPRTotal(currentEdit.expenseAPR)
+                if (currentEdit.iouInfo.length > 0) {
+                    setEItemize(true)
+                    setEItemizeEvents(currentEdit.iouInfo)
+                }
+                setDueDateDate(new Date(parseInt(currentEdit.dueDate)))
+                setEModalFrequency(...currentEdit.expenseFrequency)
+                setEModalVital(currentEdit.vitalExpense)
+                setEModalCategory(currentEdit.expenseCategory)
+                if (currentEdit.totalExpenseValue) {
+                    setAddETotal(true)
+                    setETotalValue(currentEdit.totalExpenseValue)
+                }
+                
+            }
+        }
+    }, [currentEdit])
 
-    useEffect(() => {
-        console.log(props)
-    }, [useProps, setProps])
+    // useEffect(() => {
+    //     console.log(props)
+    // }, [useProps, setProps])
 
     useEffect(() => {
         if (itemizeMPresubmit.length){
@@ -96,9 +131,9 @@ function EditModal(props) {
             })        
     }
 
-    async function submitIncomeModal(e) {
+    async function submitEditIncomeModal(e) {
         e.preventDefault();
-        console.log("_id: ", useProps._id)
+        console.log("_id: ", modalId)
         console.log("incomeTitle: ", iModalTitle)
         console.log("incomeValue: ", iModalValue.toString())
         console.log("incomeInterest: ", iModalInterest.toString())
@@ -132,7 +167,7 @@ function EditModal(props) {
 
     async function submitExpenseModal(e) {
         e.preventDefault();
-        console.log("_id: ", useProps._id)
+        console.log("_id: ", modalId)
         console.log("expenseTitle: ", eModalTitle)
         console.log("expenseValue: ", eModalValue.toString())
         console.log("expenseFrequency: ", eModalFrequency)
@@ -214,7 +249,7 @@ function EditModal(props) {
                         <input type='text' id='IInterest' name="IInterest" onChange={(e) => setIModalInterest(e.target.value)} disabled={iiItemize} className='formTextInput'/><br />
                     </label>
                     <label>
-                    <input type='checkbox' id='Iitemize' onChange={(e) => setiItemize(e.target.checked)}/>Itemize this Income<br />
+                    <input type='checkbox' id='Iitemize' checked={iiItemize} onChange={(e) => setiItemize(e.target.checked)}/>Itemize this Income<br />
                     </label>
                     {iiItemize && (
                         <div className="iItemizeTableCont">
@@ -227,13 +262,13 @@ function EditModal(props) {
                                 </tr>
                             </thead>
                             <tbody>
-                            {itemizeMPresubmit.length >= 1 && itemizeMPresubmit.map((lineItem) => {
+                            {iItemizeEvents.length >= 1 && iItemizeEvents.map((lineItem) => {
                                 return (
                                     <tr
-                                    key={lineItem.tempId}>
-                                        <td>{lineItem.iTitle}</td>
-                                        <td>{lineItem.iValue}</td>
-                                        <td><input type='checkbox' id='itemizePaid' name='itemizePaid' checked={lineItem.iPaid} disabled={true}/></td>
+                                    key={lineItem._id}>
+                                        <td>{lineItem.uomeTitle}</td>
+                                        <td>{lineItem.uomeValue}</td>
+                                        <td><input type='checkbox' id='itemizePaid' name='itemizePaid' checked={lineItem.uomePaid} disabled={true}/></td>
                                     </tr>
                                 )})}
                                 <tr>
@@ -247,7 +282,7 @@ function EditModal(props) {
                         </div>
                     )}
                     <label>Frequency: 
-                        <select id="IFrequency" name="IFrequency" onChange={(e) => payDayBreakdown({frequency: e.target.value})}>
+                        <select id="IFrequency" name="IFrequency" value={iModalFrequency.frequency} onChange={(e) => payDayBreakdown({frequency: e.target.value})}>
                             <option>--None--</option>
                             <option value='once'>Once</option>
                             <option value='daily'>Daily</option>
@@ -300,7 +335,7 @@ function EditModal(props) {
                             <label>
                             Please Describe:
                             <div>
-                                <input type='checkbox' value="hasCustom" checked={iModalFrequency.hasCustom === true} onChange={(e) => payDayBreakdown({hasCustom: e.target.checked})}/>Always <input type='text' onChange={(e) => payDayBreakdown({nValue: e.target.value})} placeholder='number'/> <select id="nUnit" name="nUnit" onChange={(e) => payDayBreakdown({nUnit: e.target.value})}>
+                                <input type='checkbox' value={iModalFrequency.nUnit} checked={iModalFrequency.hasCustom === true} onChange={(e) => payDayBreakdown({hasCustom: e.target.checked})}/>Always <input type='text' onChange={(e) => payDayBreakdown({nValue: e.target.value})} placeholder='number'/> <select id="nUnit" name="nUnit" onChange={(e) => payDayBreakdown({nUnit: e.target.value})}>
                                             <option>--None--</option>
                                             <option value='days'>Days</option>
                                             <option value='months'>Months</option>
@@ -319,7 +354,7 @@ function EditModal(props) {
                         </div>
                     )}
                     <label> 
-                        <input type='checkbox' id="IPrimary" name="IPrimary" onChange={(e) => setIModalPrimary(e.target.checked)}/> Primary Income
+                        <input type='checkbox' id="IPrimary" name="IPrimary" checked={iModalPrimary} onChange={(e) => setIModalPrimary(e.target.checked)}/> Primary Income
                     </label>
                     <label>Pay Day: 
                         <DatePicker 
@@ -328,20 +363,20 @@ function EditModal(props) {
                         onChange={(date) => {setPayDayDate(date); payDayBreakdown({day: date.getDate().toString()}); if (iModalFrequency.frequency === 'yearly'){payDayBreakdown({month: date.getMonth().toString()})}}}
                         className='formTextInput'/>
                     </label>
-                    <input type='submit' value="Add Income" onClick={event => submitIncomeModal(event)} className='ieModalButton'></input>
+                    <input type='submit' value="Submit Edit" onClick={event => submitEditIncomeModal(event)} className='ieModalButton'></input>
                     <input type='button' value="Cancel" onClick={iandEMToggle} className='ieModalButton cancelButton'></input>
                 </form>
             )}
             {loggedIn && modalValue === 'EditExpense' && (
                 <form className="expenseForm">
                     <label>Expense Title:
-                        <input type='text' id="ETitle" name="ETitle" onChange={(e) => setEModalTitle(e.target.value)} className='formTextInput'/>
+                        <input type='text' id="ETitle" name="ETitle" onChange={(e) => setEModalTitle(e.target.value)} className='formTextInput' value={eModalTitle}/>
                     </label>
                     <label>Amount Due:
-                        <input type='text' id='EValue' name="EValue" onChange={(e) => setEModalValue(e.target.value)} disabled={eItemize} className='formTextInput'/>
+                        <input type='text' id='EValue' name="EValue" value={eModalValue} onChange={(e) => setEModalValue(e.target.value)} disabled={eItemize} className='formTextInput'/>
                     </label>
                     <label>
-                    <input type='checkbox' id='Iitemize' onChange={(e) => setEItemize(e.target.checked)}/>Itemize this Expense<br />
+                    <input type='checkbox' id='Iitemize' checked={eItemize} onChange={(e) => setEItemize(e.target.checked)}/>Itemize this Expense<br />
                     </label>
                     {eItemize && (
                         <div className="iItemizeTableCont">
@@ -354,13 +389,13 @@ function EditModal(props) {
                                 </tr>
                             </thead>
                             <tbody>
-                            {itemizeMPresubmit.length >= 1 && itemizeMPresubmit.map((lineItem) => {
+                            {eItemizeEvents.length >= 1 && eItemizeEvents.map((lineItem) => {
                                 return (
                                     <tr
                                     key={lineItem.tempId}>
-                                        <td>{lineItem.iTitle}</td>
-                                        <td>{lineItem.iValue}</td>
-                                        <td><input type='checkbox' id='itemizePaid' name='itemizePaid' checked={lineItem.iPaid} disabled={true}/></td>
+                                        <td>{lineItem.iouTitle}</td>
+                                        <td>{lineItem.iouValue}</td>
+                                        <td><input type='checkbox' id='itemizePaid' name='itemizePaid' checked={lineItem.iouPaid} disabled={true}/></td>
                                     </tr>
                                 )})}
                                 <tr>
@@ -374,7 +409,7 @@ function EditModal(props) {
                         </div>
                     )}
                     <label>Frequency:
-                        <select id="EFrequency" name="EFrequency" onChange={(e) => setEModalFrequency({frequency: e.target.value})}>
+                        <select id="EFrequency" name="EFrequency" value={eModalFrequency.frequency} onChange={(e) => setEModalFrequency({frequency: e.target.value})}>
                             <option>--None--</option>
                             <option value='once'>Once</option>
                             <option value='daily'>Daily</option>
@@ -427,7 +462,7 @@ function EditModal(props) {
                             <label>
                             Please Describe:
                             <div>
-                                <input type='checkbox' value="hasCustom" checked={eModalFrequency.hasCustom === true} onChange={(e) => DueDateBreakdown({hasCustom: e.target.checked})}/>Always <input type='text' onChange={(e) => DueDateBreakdown({nValue: e.target.value})} placeholder='number'/> <select id="nUnit" name="nUnit" onChange={(e) => DueDateBreakdown({nUnit: e.target.value})}>
+                                <input type='checkbox' value={eModalFrequency.nUnit} checked={eModalFrequency.hasCustom === true} onChange={(e) => DueDateBreakdown({hasCustom: e.target.checked})}/>Always <input type='text' onChange={(e) => DueDateBreakdown({nValue: e.target.value})} placeholder='number'/> <select id="nUnit" name="nUnit" onChange={(e) => DueDateBreakdown({nUnit: e.target.value})}>
                                             <option>--None--</option>
                                             <option value='days'>Days</option>
                                             <option value='months'>Months</option>
@@ -446,10 +481,10 @@ function EditModal(props) {
                         </div>
                     )}
                     <label>Vital Expense:
-                        <input type='checkbox' id="EVital" name="EVital" onChange={(e) => setEModalVital(e.target.checked)}/>
+                        <input type='checkbox' id="EVital" name="EVital" checked={eModalVital} onChange={(e) => setEModalVital(e.target.checked)}/>
                     </label>
                     <label>Main Category of Expense:
-                    <select id="ECategory" name="ECategory" onChange={(e) => setEModalCategory(e.target.value)}>
+                    <select id="ECategory" name="ECategory" value={eModalCategory} onChange={(e) => setEModalCategory(e.target.value)}>
                             <option>--None--</option>
                             <option value='utilities'>Utilities</option>
                             <option value='commercial'>Commercial</option>
@@ -466,11 +501,11 @@ function EditModal(props) {
                         <div>
                             <label>
                                 Total Debt Value: <br />
-                                <input type="text" id="tDebtValue" name="tDebtValue" onChange={(e) => setETotalValue(e.target.value)} />
+                                <input type="text" id="tDebtValue" name="tDebtValue" value={eTotalValue} onChange={(e) => setETotalValue(e.target.value)} />
                             </label> <br />
                             <label>
                                 APR% on expense (optional): <br />
-                                <input type="text" id="tDebtAPR" name="tDebtAPR" onChange={(e) => setEAPRTotal(e.target.value)} />
+                                <input type="text" id="tDebtAPR" name="tDebtAPR" value={eAPRTotal} onChange={(e) => setEAPRTotal(e.target.value)} />
                             </label>
                         </div>
                     )}
@@ -480,7 +515,7 @@ function EditModal(props) {
                         onChange={(date) => {setDueDateDate(date); DueDateBreakdown({day: date.getDate().toString()}); if (eModalFrequency.frequency === 'yearly'){DueDateBreakdown({month: date.getMonth().toString()})}}}
                         />
                     </label>
-                    <input type='submit' value="Add Expense" onClick={event => submitExpenseModal(event)} className='ieModalButton'></input>
+                    <input type='submit' value="Submit Edit" onClick={event => submitExpenseModal(event)} className='ieModalButton'></input>
                     <input type='button' value="Cancel" onClick={iandEMToggle} className='ieModalButton cancelButton'></input>
                 </form>
             )}

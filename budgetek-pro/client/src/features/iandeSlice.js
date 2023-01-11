@@ -1,9 +1,10 @@
-import {ADD_EXPENSES, ADD_INCOMES, ADD_TO_HIST, REMOVE_EXPENSES, REMOVE_HIST, REMOVE_INCOMES} from '../utils/actions'
+import {ADD_EXPENSES, ADD_INCOMES, ADD_TO_HIST, REMOVE_EXPENSES, REMOVE_HIST, REMOVE_INCOMES, EDIT_THIS_EVENT} from '../utils/actions'
 
 const initialState = {
     incomes: [],
     expenses: [],
     histEvents: [],
+    currentEdit: []
 }
 
 export default function iandeEntriesReducer(state = initialState, action) {
@@ -18,6 +19,11 @@ export default function iandeEntriesReducer(state = initialState, action) {
                 ...state,
                 incomes: [...action.incomes]
             };
+        case EDIT_THIS_EVENT:
+                return {
+                    ...state,
+                    currentEdit: [action.currentEdit]
+                };
         case ADD_TO_HIST:
             return {
                 ...state,

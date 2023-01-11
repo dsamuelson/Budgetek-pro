@@ -1,6 +1,6 @@
 const { Schema } = require('mongoose');
 
-const HistEvents = new Schema ({
+const HistEventsSchema = new Schema ({
     histID: {
         type: String,
         required: true
@@ -32,4 +32,4 @@ const HistEvents = new Schema ({
     }
 })
 
-module.exports = HistEvents;
+module.exports = HistEventsSchema;

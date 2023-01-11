@@ -1,14 +1,5 @@
 import { gql } from '@apollo/client';
 
-export const QUERY_CATEGORIES = gql`
-  {
-    categories {
-      _id
-      name
-    }
-  }
-`;
-
 export const QUERY_USER = gql`
   {
     user {
@@ -18,15 +9,15 @@ export const QUERY_USER = gql`
   }
 `;
 
-export const QUERY_INCOMES = gql`
+export const QUERY_EVENTS = gql`
   {
     me {
-      incomes {
+      budgetEvents {
         _id
-        incomeTitle
-        incomeValue
-        incomeInterest
-        incomeFrequency {
+        eventTitle
+        eventValue
+        eventType
+        eventFrequency {
           _id
           frequency
           isSameDay
@@ -37,43 +28,11 @@ export const QUERY_INCOMES = gql`
           day
           month
         }
-        primaryIncome
-        payDay
-        uomePayInfo {
-          _id
-          uomeTitle
-          uomeValue
-          uomePaid
-        }
-      }
-      totalIncome
-    }
-  }
-`;
-
-export const QUERY_EXPENSES = gql`
-  {
-    me {
-      expenses {
-        _id
-        expenseTitle
-        expenseValue
-        expenseFrequency {
-          _id
-          frequency
-          isSameDay
-          countWeekends
-          hasCustom
-          nValue
-          nUnit
-          day
-          month
-        }
-        vitalExpense
-        expenseCategory
-        totalExpenseValue
-        expenseAPR
-        dueDate
+        vitalEvent
+        eventCategory
+        totalEventValue
+        eventAPR
+        eventDate
         iouInfo {
           _id
           iouTitle
@@ -82,6 +41,7 @@ export const QUERY_EXPENSES = gql`
         }
       }
       totalExpense
+      totalIncome
       totalDebt
     }
   }
@@ -109,12 +69,12 @@ export const QUERY_ME = gql`
           _id
           username
           email
-          incomes {
+          budgetEvents {
             _id
-            incomeTitle
-            incomeValue
-            incomeInterest
-            incomeFrequency {
+            eventTitle
+            eventValue
+            eventType
+            eventFrequency {
               _id
               frequency
               isSameDay
@@ -125,35 +85,11 @@ export const QUERY_ME = gql`
               day
               month
             }
-            primaryIncome
-            payDay
-            uomePayInfo {
-              _id
-              uomeTitle
-              uomeValue
-              uomePaid
-            }
-          }
-          expenses {
-            _id
-            expenseTitle
-            expenseValue
-            expenseFrequency {
-              _id
-              frequency
-              isSameDay
-              countWeekends
-              hasCustom
-              nValue
-              nUnit
-              day
-              month
-            }
-            vitalExpense
-            expenseCategory
-            totalExpenseValue
-            expenseAPR
-            dueDate
+            vitalEvent
+            eventCategory
+            totalEventValue
+            eventAPR
+            eventDate
             iouInfo {
               _id
               iouTitle

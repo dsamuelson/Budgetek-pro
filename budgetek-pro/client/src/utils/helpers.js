@@ -5,13 +5,13 @@ export function formatDate(datetime) {
 };
 
 export function PDDDformat(datetime) {
-  return moment(parseInt(datetime.payDay || datetime.dueDate)).format('MMM DD');
+  return moment(parseInt(datetime)).format('MMM DD');
 }
 
 export function nextDate (uUnit) {
   let nextDate = new Date()
-  let eventDate = new Date(parseInt(uUnit.dueDate || uUnit.payDay))
-  let eventFValue = uUnit.incomeFrequency ? uUnit.incomeFrequency[0] : uUnit.expenseFrequency[0]
+  let eventDate = new Date(parseInt(uUnit.eventDate))
+  let eventFValue = uUnit.eventFrequency[0]
   if (eventFValue.frequency === "monthly") {
     eventDate = eventDate.setMonth(eventDate.getMonth() + 1)
   }
@@ -100,8 +100,7 @@ export function idbPromise(storeName, method, object) {
     let db, tx, store;
     request.onupgradeneeded = function(e) {
       const db = request.result;
-      db.createObjectStore('incomes', { keyPath: '_id' });
-      db.createObjectStore('expenses', { keyPath: '_id' });
+      db.createObjectStore('budgetEvents', { keyPath: '_id' });
     };
 
     request.onerror = function(e) {

@@ -1,10 +1,9 @@
 const { Schema, model } = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const ExpenseSchema = require('./Expenses')
-const IncomeSchema = require('./Incomes')
 const BankSchema = require('./Banks');
-const HistEvents = require('./HistEvents');
+const HistEventsSchema = require('./HistEvents');
+const BudgetEventSchema = require('./BudgetEvents');
 
 const userSchema = new Schema(
     {
@@ -23,9 +22,8 @@ const userSchema = new Schema(
             type: String,
             required: true,
         },
-        incomes: [IncomeSchema],
-        expenses: [ExpenseSchema],
-        histEvents: [HistEvents],
+        budgetEvents: [BudgetEventSchema],
+        histEvents: [HistEventsSchema],
         bankAccounts: [BankSchema]
     },
     {
@@ -49,26 +47,31 @@ userSchema.methods.isCorrectPassword = async function (password) {
 
 userSchema.virtual('totalExpense').get(function() {
     let tExpense = 0;
-    for (let i = 0; i < this.expenses.length; i ++) {
-        tExpense += parseFloat(this.expenses[i].expenseValue)
+    for (let i = 0; i < this.budgetEvents.length; i ++) {
+        if (this.budgetEvents[i].eventType === 'expense'){
+            tExpense += parseFloat(this.budgetEvents[i].eventValue)
+        }
     }
     return tExpense.toFixed(2);
 });
 
 userSchema.virtual('totalDebt').get(function() {
     let tDebt = 0;
-    for (let i = 0; i < this.expenses.length; i ++) {
-        if (this.expenses[i].totalExpenseValue) {
-        tDebt += parseFloat(this.expenses[i].totalExpenseValue)
-    }
+    for (let i = 0; i < this.budgetEvents.length; i ++) {
+        if (this.budgetEvents[i].eventType === 'expense'){
+            if (this.budgetEvents[i].totalEventValue) {
+                tDebt += parseFloat(this.budgetEvents[i].totalEventValue)
+            } 
+        }
     }
     return tDebt.toFixed(2);
 });
 
 userSchema.virtual('totalIncome').get(function() {
     let tIncome = 0;
-    for (let i = 0; i < this.incomes.length; i ++) {
-        tIncome += parseFloat(this.incomes[i].incomeValue)
+    for (let i = 0; i < this.budgetEvents.length; i ++) {
+        if (this.budgetEvents[i].eventType === 'income')
+        tIncome += parseFloat(this.budgetEvents[i].eventValue)
     }
     return tIncome.toFixed(2);
 });

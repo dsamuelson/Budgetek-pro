@@ -6,8 +6,8 @@ import ExpensesList from "../components/Expenses";
 import IandEModal from "../components/IandEModal";
 import EditModal from "../components/EditModal";
 import { useQuery, useMutation } from "@apollo/client";
-import { QUERY_EXPENSES, QUERY_INCOMES, QUERY_HIST_EVENTS } from "../utils/queries";
-import { ADD_HIST_EVENT, UPDATE_EXPENSE, UPDATE_INCOME } from '../utils/mutations';
+import { QUERY_EVENTS, QUERY_HIST_EVENTS } from "../utils/queries";
+import { ADD_HIST_EVENT, UPDATE_BUDGET_EVENT } from '../utils/mutations';
 import { addDate, idbPromise, compareDate, nextDate } from "../utils/helpers";
 import { useSelector, useDispatch } from 'react-redux';
 import Auth from "../utils/auth";
@@ -26,8 +26,7 @@ const Home = () => {
   const [tempHistArray, setTempHistArray] = useState([])
   const dispatch = useDispatch();
   const loggedIn = Auth.loggedIn()
-  const {loading: incomeLoading, data: incomeData, refetch: incomeDataRefetch } = useQuery(QUERY_INCOMES)
-  const {loading: expenseLoading, data: expenseData, refetch: expenseDataRefetch} = useQuery(QUERY_EXPENSES)
+  const {loading: eventsLoading, data: eventsData, refetch: eventsDataRefetch } = useQuery(QUERY_EVENTS)
   const {loading: histLoading, data: dbHistData, refetch: dbHistDataRefetch} = useQuery(QUERY_HIST_EVENTS)
   const IandEtoggleStore = useSelector((state) => state.iande);
   const IandEtoggle = IandEtoggleStore.iande;
@@ -35,75 +34,55 @@ const Home = () => {
   const modalValue = modalValueStore.modalValue;
   const incomesStore = useSelector((state) => state.incomes);
   const incomes = incomesStore.incomes;
-  const expensesStore = useSelector((state) => state.expenses);
+  const expensesStore = useSelector((state) => state.expenses)
   const expenses = expensesStore.expenses;
   const calcontValStore = useSelector((state) => state.calcontVal);
   const calcontVal = calcontValStore.calcontVal;
   const [calcontItems, setCalcontItems] = useState([])
 
   const [ addHistEvent ] = useMutation(ADD_HIST_EVENT)
-  const [ updateIncome ] = useMutation(UPDATE_INCOME);
-  const [ updateExpense ] = useMutation(UPDATE_EXPENSE);
+  const [ updateBudgetEvent ] = useMutation(UPDATE_BUDGET_EVENT);
 
 
     useEffect(() => {
       if (loggedIn) {
-        expenseDataRefetch()
-      if (expenseData) {
-          dispatch({
-              type: 'ADD_EXPENSES',
-              expenses: expenseData.me.expenses
-          })
-          expenseData.me.expenses.forEach((idbExpense) => {
-              idbPromise('expenses', 'put', idbExpense)
-          })
-      } else if (!expenseLoading) {
-          idbPromise('expenses', 'get').then((idbExpenses) => {
+        eventsDataRefetch()
+      if (eventsData) {
+        dispatch({
+          type: 'ADD_INCOMES',
+          incomes: eventsData.me.budgetEvents.filter(budgetEvent => {return budgetEvent.eventType === 'income'})
+        })
+        dispatch({
+          type: 'ADD_EXPENSES',
+          expenses: eventsData.me.budgetEvents.filter(budgetEvent => {return budgetEvent.eventType === 'expense'})
+        })
+        eventsData.me.budgetEvents.forEach((idbEvent) => {
+            idbPromise('budgetEvents', 'put', idbEvent)
+        }) 
+      } else if (!eventsLoading) {
+          idbPromise('budgetEvents', 'get').then((idbEvents) => {
               dispatch({
-                  type: "ADD_EXPENSES",
-                  expnenses: idbExpenses
+                  type: "ADD_INCOMES",
+                  incomes: idbEvents.filter(budgetEvent => {return budgetEvent.eventType === 'income'})
+              })
+              dispatch({
+                type: "ADD_EXPENSES",
+                expenses: idbEvents.filter(budgetEvent => {return budgetEvent.eventType === 'expense'})
               })
           })
       }
     }
-  },[expenseLoading, expenseData, IandEtoggle, loggedIn, expenseDataRefetch, dispatch])
-
-  useEffect(() => {
-    if (loggedIn) {
-    incomeDataRefetch()
-    if (incomeData) {
-        dispatch({
-            type: 'ADD_INCOMES',
-            incomes: incomeData.me.incomes
-        })
-        incomeData.me.incomes.forEach((idbIncome) => {
-            idbPromise('incomes', 'put', idbIncome)
-        })
-    } else if (!incomeLoading) {
-        idbPromise('incomes', 'get').then((idbIncomes) => {
-            dispatch({
-                type: 'ADD_INCOMES',
-                incomes: idbIncomes
-            })
-        })
-    }
-  }
-  },[incomeLoading, incomeData, IandEtoggle, loggedIn, incomeDataRefetch, dispatch])
+  },[eventsLoading, eventsData, IandEtoggle, loggedIn, eventsDataRefetch, dispatch])
 
   function updatebudgetEventsList(base) {
     let bdoeID = base.doeID
     let bID = base.iandeEvent._id;
-    let bEvent = base.iandeEvent.incomeTitle || base.iandeEvent.expenseTitle;
-    let bValue = base.iandeEvent.incomeValue || base.iandeEvent.expenseValue;
-    let bClass = base.eventClass;
-    let hClass = base.eventClass;
-    if (hClass === 'expenseLI') {
-      hClass = 'expense'
-    } else if (hClass === 'incomeLI') {
-      hClass = 'income'
-    }
+    let bEvent = base.iandeEvent.eventTitle;
+    let bValue = base.iandeEvent.eventValue;
+    let bClass = base.iandeEvent.eventType;
+    let hClass = base.iandeEvent.eventType;
     let bDateofEvent = base.dateofEvent;
-    let hCategory = base.iandeEvent.expenseCategory || 'n/a'
+    let hCategory = base.iandeEvent.eventCategory
 
     let baseData = [{doeID: bdoeID, id: bID, iandeEvent: bEvent, iandeValue: bValue, eventClass: bClass, dateofEvent: bDateofEvent}]
     let bhistData = [{histID: bdoeID, histTitle: bEvent, histValue: bValue, histType: hClass, histCategory: hCategory, histDate: bDateofEvent}]
@@ -127,10 +106,10 @@ const Home = () => {
   //----Check calendar dates to display events----//
   function isDesiredDate(uUnit, currentDate) {
     currentDate.setHours(0,0,0,0)
-    let eventFValue = uUnit.incomeFrequency ? uUnit.incomeFrequency[0] : uUnit.expenseFrequency[0]
-    let eventDate = new Date(parseInt(uUnit.payDay || uUnit.dueDate))
+    let eventFValue = uUnit.eventFrequency[0]
+    let eventDate = new Date(parseInt(uUnit.eventDate))
     if (eventFValue.frequency === "monthly") {
-      eventDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), new Date(parseInt(uUnit.payDay || uUnit.dueDate)).getDate())
+      eventDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), new Date(parseInt(uUnit.eventDate)).getDate())
     }
     eventDate.setHours(0,0,0,0)
     let eventnUnit = eventFValue.nUnit
@@ -163,7 +142,7 @@ const Home = () => {
     }
 
     if (eventDate.toDateString() === currentDate.toDateString() || currentDate.toDateString() === lastMonthEvent.toDateString() ||(eventFValue.frequency === 'other' && compareDate(eventnValue, eventnUnit, eventDate, currentDate.getTime())) || (eventFValue.frequency === 'daily') || (eventFValue.frequency === 'monthly' && currentDate.getDate() === eventDate.getDate()) || (eventFValue.frequency === 'yearly' && parseInt(currentDate.getMonth()) === parseInt(eventFValue.month) && parseInt(currentDate.getDate()) === parseInt(eventFValue.day))) {
-      if ( new Date(parseInt(uUnit.payDay || uUnit.dueDate)).getTime() < new Date().getTime() ) {
+      if ( new Date(parseInt(uUnit.eventDate)).getTime() < new Date().getTime() ) {
         let nextEventDate = new Date(nextDate(uUnit))
         updatePDDDDate(uUnit, nextEventDate)
       }
@@ -176,25 +155,12 @@ const Home = () => {
 
 //----Update Pay Day or Due Date to the next closest event----//
   async function updatePDDDDate(uUnit, newDate) {
-    console.log(uUnit, new Date(newDate).toDateString())
-      if (uUnit.__typename === "Expenses") {
+      if (uUnit) {
         try {
-          await updateExpense({
+          await updateBudgetEvent({
               variables: {
                   _id: uUnit._id,
-                  dueDate: newDate.toString()
-              }
-          });
-        } catch (error) {
-            console.log(error);
-        }  
-      }
-      if (uUnit.__typename === "Incomes") {
-        try {
-          await updateIncome({
-              variables: {
-                  _id: uUnit._id,
-                  payDay: newDate.toString()
+                  eventDate: newDate.toString()
               }
           });
         } catch (error) {
@@ -254,9 +220,9 @@ const Home = () => {
       {(modalValue === 'Income' || modalValue === "Expense") && (
         <IandEModal />
       )}
-      {(modalValue === 'EditIncome' || modalValue === "EditExpense") && (
+      {/* {(modalValue === 'EditIncome' || modalValue === "EditExpense") && (
         <EditModal />
-      )}
+      )} */}
       <div className="calendarCont" onClick={(e)=>{
         if (e.target.localName) {
           let contentText = '';
@@ -292,15 +258,15 @@ const Home = () => {
 
             for (let i = 0; i < incomes.length; i ++) {
               if(isDesiredDate(incomes[i], date)) {
-                iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i], eventClass: 'incomeLI', dateofEvent: date.getTime()})
-                updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), eventClass: 'incomeLI', dateofEvent: date.getTime(), iandeEvent: {...incomes[i]}}))
+                iandeContent.push({id: incomes[i]._id, iandeEvent: incomes[i], dateofEvent: date.getTime()})
+                updatebudgetEventsList(({doeID: incomes[i]._id + date.getTime(), dateofEvent: date.getTime(), iandeEvent: {...incomes[i]}}))
               }
             }
 
             for (let i = 0; i < expenses.length; i ++) {
               if(isDesiredDate(expenses[i], date)) {
-                iandeContent.push({id: expenses[i]._id, iandeEvent: expenses[i], eventClass: 'expenseLI', dateofEvent: date.getTime()})
-                updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), eventClass: 'expenseLI', dateofEvent: date.getTime(), iandeEvent: {...expenses[i]}}))
+                iandeContent.push({id: expenses[i]._id, iandeEvent: expenses[i], dateofEvent: date.getTime()})
+                updatebudgetEventsList(({doeID: expenses[i]._id + date.getTime(), dateofEvent: date.getTime(), iandeEvent: {...expenses[i]}}))
               }
             }
           }
@@ -311,7 +277,7 @@ const Home = () => {
                 {iandeContent.map((iandeUnit) => {                
                   return (
                     <li
-                    key={iandeUnit.id}>{iandeUnit.iandeEvent.expenseTitle || iandeUnit.iandeEvent.incomeTitle}: <span className={iandeUnit.eventClass}>${iandeUnit.iandeEvent.expenseValue || iandeUnit.iandeEvent.incomeValue}</span></li>
+                    key={iandeUnit.id}>{iandeUnit.iandeEvent.eventTitle}: <span className={iandeUnit.iandeEvent.eventType + 'LI'} >${iandeUnit.iandeEvent.eventValue}</span></li>
                   )
                 })}
                 </ul>

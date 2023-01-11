@@ -1,18 +1,6 @@
 const { gql } = require('apollo-server-express')
 
 const typeDefs = gql`
-    type UOME {
-        _id: ID
-        uomeTitle: String
-        uomeValue: String
-        uomePaid: Boolean
-    }
-
-    input UOMEi {
-        uomeTitle: String!
-        uomeValue: String!
-        uomePaid: Boolean
-    }
 
     type IOU {
         _id: ID
@@ -27,7 +15,7 @@ const typeDefs = gql`
         iouPaid: Boolean
     }
 
-    type incomeFrequencyt {
+    type eventFrequencyt {
         _id: ID
         frequency: String
         isSameDay: String
@@ -39,7 +27,7 @@ const typeDefs = gql`
         month: String
     }
 
-    input incomeFrequencyi {
+    input eventFrequencyi {
         frequency: String
         isSameDay: String
         countWeekends: String
@@ -50,50 +38,18 @@ const typeDefs = gql`
         month: String
     }
 
-    type expenseFrequencyt {
-        _id: ID
-        frequency: String
-        isSameDay: String
-        countWeekends: String
-        hasCustom: Boolean
-        nValue: String
-        nUnit: String
-        day: String
-        month: String
-    }
 
-    input expenseFrequencyi {
-        frequency: String
-        isSameDay: String
-        countWeekends: String
-        hasCustom: Boolean
-        nValue: String
-        nUnit: String
-        day: String
-        month: String
-    }
-
-    type Incomes {
+    type BudgetEventsT {
         _id: ID
-        incomeTitle: String
-        incomeValue: String
-        incomeInterest: String
-        incomeFrequency: [incomeFrequencyt]
-        primaryIncome: Boolean
-        payDay: String
-        uomePayInfo: [UOME]
-    }
-
-    type Expenses {
-        _id: ID
-        expenseTitle: String
-        expenseValue: String
-        expenseFrequency: [expenseFrequencyt]
-        vitalExpense: Boolean
-        expenseCategory: String
-        totalExpenseValue: String
-        expenseAPR: String
-        dueDate: String
+        eventTitle: String
+        eventValue: String
+        eventType: String
+        eventFrequency: [eventFrequencyt]
+        vitalEvent: Boolean
+        eventCategory: String
+        totalEventValue: String
+        eventAPR: String
+        eventDate: String
         iouInfo: [IOU]
 
     }
@@ -121,8 +77,7 @@ const typeDefs = gql`
         _id: ID
         username: String
         email: String
-        incomes: [Incomes]
-        expenses: [Expenses]
+        budgetEvents: [BudgetEventsT]
         histEvents: [histEventt]
         bankAccounts: [BankAccounts]
         totalExpense: String
@@ -142,20 +97,15 @@ const typeDefs = gql`
     type Mutation {
         createUser(email: String!, username: String!, password: String!): Auth
         login(username: String! password: String!): Auth
-        addIncome(incomeTitle: String!, incomeValue: String!, incomeInterest: String, incomeFrequency: [incomeFrequencyi]!, primaryIncome: Boolean!, payDay: String, uomePayInfo: [UOMEi!]): User
-        updateIncome(_id: String!, incomeTitle: String, incomeValue: String, incomeInterest: String, primaryIncome: Boolean, payDay: String): User
-        removeIncome(_id: String!): User
         addHistEvents(histID: String!, histTitle: String!, histType: String!, histValue: String!, histCategory: String, histDate: String!): User
         updateHistEvents(_id: String, histID: String!, histType: String, histTitle: String, histValue: String, histCategory: String, histDate: String): User
         removeHistEvent(_id: String!): User
-        addUOMe(uomeId: String!, uomePayInfo: [UOMEi!]!): User
-        removeUOMe(_id: String!, incomeId: String!): User
-        addExpense(expenseTitle: String!, expenseValue: String!, expenseFrequency: [expenseFrequencyi]!, vitalExpense: Boolean, expenseCategory: String, totalExpenseValue: String, expenseAPR: String, dueDate: String, iouInfo: [IOUi!]): User
-        updateExpense(_id: String!, expenseTitle: String, expenseValue: String, vitalExpense: Boolean, expenseCategory: String, totalExpenseValue: String, expenseAPR: String, dueDate: String): User
-        removeExpense(_id: String!): User
+        addBudgetEvent(eventTitle: String!, eventValue: String!, eventType: String!, eventFrequency: [eventFrequencyi]!, vitalEvent: Boolean, eventCategory: String, totalEventValue: String, eventAPR: String, eventDate: String, iouInfo: [IOUi!]): User
+        updateBudgetEvent(_id: String!, eventTitle: String, eventValue: String, eventType: String, vitalEvent: Boolean, eventCategory: String, totalEventValue: String, eventAPR: String, eventDate: String): User
+        removeBudgetEvent(_id: String!): User
         addIOU(iouId: String!, iouInfo: [IOUi!]!): User
-        removeIOU(_id: String!, expenseId: String!): User
-        addBankAccount(bankName: String!, accountIdentifier: String!, checkingValue: String!, savingsAccount: Boolean, savingsValue:String): BankAccounts
+        removeIOU(_id: String!, eventId: String!): User
+        addBankAccount(bankName: String!, accountIdentifier: String!, checkingValue: String!, savingsAccount: Boolean, savingsValue: String): BankAccounts
     }
 `;
 

@@ -1,4 +1,6 @@
 const db = require('./connection');
-const { User, Product, Category } = require('../models');
+const { User } = require('../models');
 
-db.once('open', async () => {});
+db.once('open', async () => {
+
+});

@@ -11,3 +11,5 @@ export const REMOVE_EXPENSES = "REMOVE_EXPENSES";
 export const ADD_TO_HIST = "ADD_TO_HIST";
 export const UPDATE_HIST = "UPDATE_HIST";
 export const REMOVE_HIST = "REMOVE_HIST";
+
+export const EDIT_THIS_EVENT = "EDIT_THIS_EVENT";
