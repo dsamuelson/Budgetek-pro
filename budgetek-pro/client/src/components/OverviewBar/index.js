@@ -2,13 +2,13 @@ import React from "react";
 import { useQuery } from '@apollo/client';
 import { QUERY_EVENTS } from '../../utils/queries';
 import { useSelector, useDispatch } from 'react-redux';
+import graphSVG from '../../assets/icons/pie-chart-svgrepo-com.svg'
 import Auth from '../../utils/auth'
 
 function OverviewBar() {
-
     const {loading: eventsLoading, data: eventsData} = useQuery(QUERY_EVENTS)
     const loggedIn = Auth.loggedIn();
-    const IandEtoggleStore = useSelector((state) => state.iande);
+    const IandEtoggleStore = useSelector((state) => state.toggles);
     const IandEtoggle = IandEtoggleStore.iande;
     const dispatch = useDispatch();
     
@@ -17,7 +17,7 @@ function OverviewBar() {
         let incomes = eventsData.me.totalIncome;
         let budgetValue = parseFloat(incomes - expenses).toFixed(2);
 
-        if (budgetValue <= 0) {
+        if (budgetValue < 0) {
             budgetValue = `(- ${Math.abs(budgetValue).toFixed(2)})`
         }
 
@@ -43,12 +43,14 @@ function OverviewBar() {
     }
 
     return (
-        <div>
+        <div className="overviewBar">
         {loggedIn && (
         <div className="OBCont">
             <div className="incomeBox">
-                <h2 className="incomeTitle"
-                    onClick={viewIncome}>Incomes</h2>
+                <div className="OBTitlesCont">
+                    <h2 className="incomeTitle" onClick={viewIncome} title="Show Incomes Table">Incomes</h2>
+                    <img src={graphSVG} alt="Show Income breakdown" title="Show Income breakdown" onClick={() => {dispatch({ type: 'TOGGLE_BU_MODAL', buVal: 'mIncomes'})}} className="graphsIcon"/>
+                </div>
                 { eventsLoading ? (
                     <p className="incomeValue">Loading...</p>
                 ) : (
@@ -56,8 +58,10 @@ function OverviewBar() {
                 )}
             </div>
             <div className="expenseBox">
-                <h2 className="expenseTitle"
-                    onClick={viewExpenses}>Expenses</h2>
+                <div className="OBTitlesCont">
+                    <h2 className="expenseTitle" onClick={viewExpenses} title="Show Expenses Table">Expenses</h2>
+                    <img src={graphSVG} alt="Show Expenses breakdown" title="Show Expenses breakdown" onClick={() => {dispatch({ type: 'TOGGLE_BU_MODAL', buVal: 'mExpenses'})}} className="graphsIcon"/>
+                </div>
                 { eventsLoading ? (
                     <p className="expenseValue">Loading...</p>
                 ) : ( 
@@ -65,7 +69,10 @@ function OverviewBar() {
                 )}
             </div>
             <div className="totalsBox">
-                <h2 className="totalsTitle">Totals</h2>
+                <div className="OBTitlesCont">
+                    <h2 className="totalsTitle">Totals</h2>
+                    <img src={graphSVG} alt="Show Total Expenses breakdown" title="Show Total Expenses breakdown" onClick={() => {dispatch({ type: 'TOGGLE_BU_MODAL', buVal: 'mTotal'})}} className="graphsIcon"/>
+                </div>
                 { eventsLoading ? (
                     <p className="totalsValue">Loading...</p>
                 ) : (
@@ -75,14 +82,7 @@ function OverviewBar() {
                     </div>
                     
                 )}
-            </div>            
-            <div className="savResTitle">
-                <h3>Residuals</h3>
-                <p className="resValue">$$$</p>
-                <h3>Savings</h3>
-                <p className="savValue">$$$</p>
-            </div>
-            
+            </div>                        
         </div>
         )}
         </div>

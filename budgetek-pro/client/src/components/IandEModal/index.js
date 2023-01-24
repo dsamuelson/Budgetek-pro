@@ -2,14 +2,15 @@ import React, { useState, useEffect } from "react";
 import Auth from '../../utils/auth';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
+import { QUERY_EVENTS } from "../../utils/queries";
 import { ADD_BUDGET_EVENT } from '../../utils/mutations';
 import { useDispatch, useSelector } from 'react-redux'
 
 function IandEModal() {
 
     const dispatch = useDispatch();
-    const modalStore = useSelector((state) => state.modalValue);
+    const modalStore = useSelector((state) => state.toggles);
     const modalValue = modalStore.modalValue;
     const monthName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -32,6 +33,7 @@ function IandEModal() {
     const [eventDate, setEventDate] = useState(new Date())
 
     const [ addEvent ] = useMutation(ADD_BUDGET_EVENT)
+    const {refetch: eventDataRefetch} = useQuery(QUERY_EVENTS)
 
     const loggedIn = Auth.loggedIn();
 
@@ -46,7 +48,7 @@ function IandEModal() {
         setEModalTitle('')
         setEModalValue('')
         setEItemize(false)
-        setEModalFrequency('')
+        setEModalFrequency({})
         setEModalCategory('')
         setEModalVital(false);
         setEventDate(new Date())
@@ -76,10 +78,12 @@ function IandEModal() {
             dispatch({
                 type: "TOGGLE_MODAL",
                 modalValue: 'None'
-            })        
+            })
+            eventDataRefetch()        
     }
 
     async function submitEventModal(e) {
+        console.log(eModalFrequency)
         e.preventDefault();
         try {
             await addEvent({
@@ -100,6 +104,7 @@ function IandEModal() {
             console.log(error);
         }
         resetIandEState();
+        eventDataRefetch()
         dispatch({
             type: "TOGGLE_MODAL",
             modalValue: 'None'
@@ -107,7 +112,7 @@ function IandEModal() {
 
     }
 
-    async function submitItemizeLI(e, target) {
+    async function submitItemizeLI(e) {
         e.preventDefault();
         let tempId = Math.floor(Math.random() * parseInt(new Date().valueOf()))
         let iPaid = itemizeMPaid

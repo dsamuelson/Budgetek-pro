@@ -48,7 +48,7 @@ function GraphsView() {
       for (let i = 0; i < 365; i++ ) {
         let currentDate = new Date().setDate(new Date().getDate() - [i])
         currentDate = new Date(currentDate)
-        let eventFValue = uUnit.eventFrequency[0];
+        let eventFValue = uUnit.eventFrequency;
         let eventDate = new Date(parseInt(uUnit.eventDate))
         if (eventFValue.frequency === "monthly") {
           eventDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), new Date(parseInt(uUnit.eventDate)).getDate())
@@ -87,14 +87,9 @@ function GraphsView() {
   },[graphsData, setGraphsData])
 
   useEffect(() => {
-    for (let i = 0; i < uGraphsData.length; i ++) {
-      if (uGraphsData[i].event.eventType === 'income' && !iEvents.some(e => e.eventID === uGraphsData[i].eventID) && !iEvents.some(e=> e.eventID === undefined)) {
-        iEvents.push(uGraphsData[i])
-      } else if (uGraphsData[i].event.eventType === 'expense' && !eEvents.some(e => e.eventID === uGraphsData[i].eventID) && !eEvents.some(e=> e.eventID === undefined)) {
-        eEvents.push(uGraphsData[i])
-      }
-    }
-  },[uGraphsData, setUGraphsData, iEvents, eEvents])
+      setIEvents(uGraphsData.filter((incomeEvent) => {return incomeEvent.event.eventType === 'income'}))
+      setEEvents(uGraphsData.filter((expenseEvent) => {return expenseEvent.event.eventType === 'expense'}))
+  },[uGraphsData, setUGraphsData])
   
   const loggedIn = Auth.loggedIn();
 
@@ -212,7 +207,7 @@ function GraphsView() {
                 'rgba(75, 192, 192, 0.2)',
                 'rgba(153, 102, 255, 0.2)',
                 'rgba(255, 159, 64, 0.2)',
-                'rgba(255, 0, 127, 0.2)'
+                'rgba(255, 0, 127, 0.2)',
             ],
             borderColor: [
                 'rgba(255, 99, 132, 1)',
@@ -221,7 +216,7 @@ function GraphsView() {
                 'rgba(75, 192, 192, 1)',
                 'rgba(153, 102, 255, 1)',
                 'rgba(255, 159, 64, 1)',
-                'rgba(255, 0, 127, 1)'
+                'rgba(255, 0, 127, 1)',
             ],
             borderWidth: 1,
             },

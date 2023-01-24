@@ -9,16 +9,16 @@ export const QUERY_USER = gql`
   }
 `;
 
-export const QUERY_EVENTS = gql`
+export const QUERY_BUDGET_EVENTS = gql`
   {
     me {
+      _id
       budgetEvents {
         _id
         eventTitle
         eventValue
         eventType
         eventFrequency {
-          _id
           frequency
           isSameDay
           countWeekends
@@ -43,6 +43,79 @@ export const QUERY_EVENTS = gql`
       totalExpense
       totalIncome
       totalDebt
+      monthlyCatagoryDebt
+      debtTotalperCatagory
+      monthlyCatagoryIncome
+    }
+  }
+`;
+
+export const QUERY_EVENTS = gql`
+  {
+    me {
+      _id
+      budgetEvents {
+        _id
+        eventTitle
+        eventValue
+        eventType
+        eventFrequency {
+          frequency
+          isSameDay
+          countWeekends
+          hasCustom
+          nValue
+          nUnit
+          day
+          month
+        }
+        vitalEvent
+        eventCategory
+        totalEventValue
+        eventAPR
+        eventDate
+        iouInfo {
+          _id
+          iouTitle
+          iouValue
+          iouPaid
+        }
+      }
+      histEvents {
+        _id
+        histID
+        eventID
+        histTitle
+        histValue
+        histType
+        histFrequency {
+          frequency
+          isSameDay
+          countWeekends
+          hasCustom
+          nValue
+          nUnit
+          day
+          month
+        }
+        histVitalEvent
+        histCategory
+        totalHistEventValue
+        histAPR
+        histIOUInfo {
+          _id
+          iouTitle
+          iouValue
+          iouPaid
+        }
+        histDate
+      }
+      totalExpense
+      totalIncome
+      totalDebt
+      monthlyCatagoryDebt
+      debtTotalperCatagory
+      monthlyCatagoryIncome
     }
   }
 `;
@@ -50,14 +123,35 @@ export const QUERY_EVENTS = gql`
 export const QUERY_HIST_EVENTS = gql`
   {
     me {
-      histEvent {
+      _id
+      histEvents {
         _id
         histID
+        eventID
         histTitle
-        histType
         histValue
+        histType
+        histFrequency {
+          frequency
+          isSameDay
+          countWeekends
+          hasCustom
+          nValue
+          nUnit
+          day
+          month
+        }
+        histVitalEvent
         histCategory
-        histDates
+        totalHistEventValue
+        histAPR
+        histIOUInfo {
+          _id
+          iouTitle
+          iouValue
+          iouPaid
+        }
+        histDate
       }
     }
   }
@@ -75,7 +169,6 @@ export const QUERY_ME = gql`
             eventValue
             eventType
             eventFrequency {
-              _id
               frequency
               isSameDay
               countWeekends
@@ -100,23 +193,38 @@ export const QUERY_ME = gql`
           histEvents {
             _id
             histID
+            eventID
             histTitle
-            histType
             histValue
+            histType
+            histFrequency {
+              frequency
+              isSameDay
+              countWeekends
+              hasCustom
+              nValue
+              nUnit
+              day
+              month
+            }
+            histVitalEvent
             histCategory
-            histDates
-          }
-          bankAccounts {
-            _id
-            bankName
-            accountIdentifier
-            checkingValue
-            savingsAccount
-            savingsValue
+            totalHistEventValue
+            histAPR
+            histIOUInfo {
+              _id
+              iouTitle
+              iouValue
+              iouPaid
+            }
+            histDate
           }
           totalExpense
           totalIncome
           totalDebt
+          monthlyCatagoryDebt
+          debtTotalperCatagory
+          monthlyCatagoryIncome
       }
     }
 `;

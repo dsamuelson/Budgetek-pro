@@ -10,22 +10,25 @@ function ExpensesList() {
 
     const dispatch = useDispatch()
     const {loading: expenseLoading, data: expenseData, refetch: expenseDataRefetch} = useQuery(QUERY_EVENTS)
-    const iandEMToggleStore = useSelector((state) => state.modalValue);
+    const iandEMToggleStore = useSelector((state) => state.toggles);
     const iandEMValue = iandEMToggleStore.modalValue;
-    const expensesListStore = useSelector((state) => state.expenses);
+    const expensesListStore = useSelector((state) => state.internalEvents);
     const expensesList = expensesListStore.expenses
     const [showItemizedList, setShowItemizedList] = useState([{id: "", open: false}])
+    const [showTotalExpenseCategories, setShowTotalExpenseCategories ] = useState({})
+    const [showMonthlyExpenseCategories, setShowMonthlyExpenseCategories ] = useState({})
     const loggedIn = Auth.loggedIn();
 
     const [removeExpense] = useMutation(REMOVE_BUDGET_EVENT)
         
     useEffect(() => {
-        expenseDataRefetch()
         if (expenseData){
             dispatch({
                 type: 'ADD_EXPENSES',
                 expenses: expenseData.me.budgetEvents.filter(budgetEvent => {return budgetEvent.eventType === 'expense'})
               })
+            setShowTotalExpenseCategories(expenseData.me.debtTotalperCatagory)
+            setShowMonthlyExpenseCategories(expenseData.me.monthlyCatagoryDebt)
         }
     },[expenseLoading, expenseData, iandEMValue, expenseDataRefetch, dispatch])
 
@@ -82,12 +85,13 @@ function ExpensesList() {
                     </thead>
                     <tbody>
                         {expensesList.map((expense) => {
+
                             return (
                                 <React.Fragment key={expense._id}>
                                     <tr>
                                         <td>{expense.eventTitle} {expense.vitalEvent && `(Vital)`}</td>
                                         <td>{expense.eventValue}<br></br>{expense.totalEventValue &&`(${expense.totalEventValue})`}</td>
-                                        <td>{expense.eventFrequency[0].frequency}</td>
+                                        <td>{expense.eventFrequency.frequency}</td>
                                         <td onClick={() => setShowItemizedList([{id: expense._id, open: !showItemizedList[0].open}])}>{expense.iouInfo.length > 0 && expense.iouInfo.length}</td>
                                         <td>{expense.eventCategory}</td>
                                         <td>{`${PDDDformat(expense.eventDate)}`}</td>
@@ -128,6 +132,8 @@ function ExpensesList() {
                 </div>
             )}
             <button onClick={EModalToggle} className='modalButton'>Add Expense</button>
+            <div><p>{JSON.stringify(showTotalExpenseCategories)}</p></div>
+            <div><p>{JSON.stringify(showMonthlyExpenseCategories)}</p></div>
         </div>
 
     )

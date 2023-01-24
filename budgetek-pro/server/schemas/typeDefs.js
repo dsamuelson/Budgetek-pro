@@ -1,6 +1,14 @@
 const { gql } = require('apollo-server-express')
 
 const typeDefs = gql`
+    scalar JSON
+
+    type HistIOU {
+        _id: ID
+        iouTitle: String
+        iouValue: String
+        iouPaid: Boolean
+    }
 
     type IOU {
         _id: ID
@@ -16,7 +24,6 @@ const typeDefs = gql`
     }
 
     type eventFrequencyt {
-        _id: ID
         frequency: String
         isSameDay: String
         countWeekends: String
@@ -38,39 +45,46 @@ const typeDefs = gql`
         month: String
     }
 
+    input histEventFrequencyi {
+        frequency: String
+        isSameDay: String
+        countWeekends: String
+        hasCustom: Boolean
+        nValue: String
+        nUnit: String
+        day: String
+        month: String
+    }
+
 
     type BudgetEventsT {
         _id: ID
         eventTitle: String
         eventValue: String
         eventType: String
-        eventFrequency: [eventFrequencyt]
+        eventFrequency: eventFrequencyt
         vitalEvent: Boolean
         eventCategory: String
         totalEventValue: String
         eventAPR: String
         eventDate: String
         iouInfo: [IOU]
-
     }
 
-    type histEventt {
+    type HistEventsT {
         _id: ID
         histID: String
+        eventID: String
         histTitle: String
-        histType: String
         histValue: String
+        histType: String
+        histFrequency: eventFrequencyt
+        histVitalEvent: Boolean
         histCategory: String
-        histDates: [String]
-    }
-
-    type BankAccounts {
-        _id: ID
-        bankName: String
-        accountIdentifier: String
-        checkingValue: String
-        savingsAccount: Boolean
-        savingsValue: String
+        totalHistEventValue: String
+        histAPR: String
+        histDate: String
+        histIOUInfo: [HistIOU]
     }
 
     type User {
@@ -78,11 +92,13 @@ const typeDefs = gql`
         username: String
         email: String
         budgetEvents: [BudgetEventsT]
-        histEvents: [histEventt]
-        bankAccounts: [BankAccounts]
+        histEvents: [HistEventsT]
         totalExpense: String
         totalIncome: String
         totalDebt: String
+        monthlyCatagoryDebt: JSON
+        debtTotalperCatagory: JSON
+        monthlyCatagoryIncome: JSON
     }
     type Auth {
         token: ID!
@@ -97,15 +113,18 @@ const typeDefs = gql`
     type Mutation {
         createUser(email: String!, username: String!, password: String!): Auth
         login(username: String! password: String!): Auth
-        addHistEvents(histID: String!, histTitle: String!, histType: String!, histValue: String!, histCategory: String, histDate: String!): User
-        updateHistEvents(_id: String, histID: String!, histType: String, histTitle: String, histValue: String, histCategory: String, histDate: String): User
-        removeHistEvent(_id: String!): User
-        addBudgetEvent(eventTitle: String!, eventValue: String!, eventType: String!, eventFrequency: [eventFrequencyi]!, vitalEvent: Boolean, eventCategory: String, totalEventValue: String, eventAPR: String, eventDate: String, iouInfo: [IOUi!]): User
+        addBudgetEvent(eventTitle: String!, eventValue: String!, eventType: String!, eventFrequency: eventFrequencyi, vitalEvent: Boolean, eventCategory: String, totalEventValue: String, eventAPR: String, eventDate: String, iouInfo: [IOUi!]): User
+        addIOU(iouId: String!, iouInfo: [IOUi!]!): User
         updateBudgetEvent(_id: String!, eventTitle: String, eventValue: String, eventType: String, vitalEvent: Boolean, eventCategory: String, totalEventValue: String, eventAPR: String, eventDate: String): User
         removeBudgetEvent(_id: String!): User
-        addIOU(iouId: String!, iouInfo: [IOUi!]!): User
         removeIOU(_id: String!, eventId: String!): User
-        addBankAccount(bankName: String!, accountIdentifier: String!, checkingValue: String!, savingsAccount: Boolean, savingsValue: String): BankAccounts
+        addHistEvent(histID: String!, eventID: String!, eventTitle: String!, eventValue: String!, eventType: String!, eventFrequency: eventFrequencyi, vitalEvent: Boolean, eventCategory: String, totalEventValue: String, eventAPR: String, eventDate: String, iouInfo: [IOUi!]): User
+        updateHistEvent(_id: String, histID: String!, histType: String, histTitle: String, histValue: String, histCategory: String, histDate: String): User
+        removeHistEvent(histID: String, _id: String): User
+        rsUdata: User
+        rsBEdata: User
+        rsHEdata: User
+        rsBAdata: User
     }
 `;
 

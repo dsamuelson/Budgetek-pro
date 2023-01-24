@@ -33,7 +33,7 @@ export const ADD_USER = gql`
 `;
 
 export const ADD_BUDGET_EVENT = gql`
-  mutation addBudgetEvent($eventTitle: String!, $eventValue: String!, $eventType: String!, $eventFrequency: [eventFrequencyi]!, $vitalEvent: Boolean, $eventCategory: String, $totalEventValue: String, $eventAPR: String, $eventDate: String, $iouInfo: [IOUi!]) {
+  mutation addBudgetEvent($eventTitle: String!, $eventValue: String!, $eventType: String!, $eventFrequency: eventFrequencyi, $vitalEvent: Boolean, $eventCategory: String, $totalEventValue: String, $eventAPR: String, $eventDate: String, $iouInfo: [IOUi!]) {
     addBudgetEvent(eventTitle: $eventTitle, eventValue: $eventValue, eventType: $eventType, eventFrequency: $eventFrequency, vitalEvent: $vitalEvent, eventCategory: $eventCategory, totalEventValue: $totalEventValue, eventAPR: $eventAPR, eventDate: $eventDate, iouInfo: $iouInfo) {
       _id
       budgetEvents {
@@ -42,7 +42,6 @@ export const ADD_BUDGET_EVENT = gql`
         eventValue
         eventType
         eventFrequency {
-          _id
           frequency
           isSameDay
           countWeekends
@@ -78,7 +77,6 @@ mutation updateBudgetEvent($_id: String!, $eventTitle: String, $eventValue: Stri
       eventValue
       eventType
       eventFrequency {
-        _id
         frequency
         isSameDay
         countWeekends
@@ -114,18 +112,38 @@ export const REMOVE_BUDGET_EVENT = gql`
 `;
 
 export const ADD_HIST_EVENT = gql`
-mutation addHistEvent($histTitle: String!, $histType: String!, $histValue: String!, $histCategory: String, $histDate: String!, $histID: String){
-  addHistEvent(histTitle: $histTitle, histType: $histType, histValue: $histValue, histCategory: $histCategory, histDate: $histDate, histID: $histID){
+mutation addHistEvent($histID: String!, $eventID: String!, $eventTitle: String!, $eventValue: String!, $eventType: String!, $eventFrequency: eventFrequencyi, $vitalEvent: Boolean, $eventCategory: String, $totalEventValue: String, $eventAPR: String, $eventDate: String, $iouInfo: [IOUi!]) {
+  addHistEvent(histID: $histID, eventID: $eventID, eventTitle: $eventTitle, eventValue: $eventValue, eventType: $eventType, eventFrequency: $eventFrequency, vitalEvent: $vitalEvent, eventCategory: $eventCategory, totalEventValue: $totalEventValue, eventAPR: $eventAPR, eventDate: $eventDate, iouInfo: $iouInfo) {
     _id
-      histEvents {
-        _id
-        histID
-        histTitle
-        histType
-        histValue
-        histCategory
-        histDate
+    histEvents {
+      _id
+      histID
+      eventID
+      histTitle
+      histValue
+      histType
+      histFrequency {
+        frequency
+        isSameDay
+        countWeekends
+        hasCustom
+        nValue
+        nUnit
+        day
+        month
       }
+      histVitalEvent
+      histCategory
+      totalHistEventValue
+      histAPR
+      histIOUInfo {
+        _id
+        iouTitle
+        iouValue
+        iouPaid
+      }
+      histDate
+    }
   }
 }
 `;
@@ -134,15 +152,35 @@ export const UPDATE_HIST_EVENT = gql`
 mutation updateHistEvent($_id: String!, $histTitle: String, $histType: String, $histValue: String, $histCategory: String, $histDate: String, $histID: String, ){
   updateHistEvent(_id: $_id, histTitle: $histTitle, histType: $histType, histValue: $histValue, histCategory: $histCategory, histDate: $histDate, histID: $histID){
     _id
-      histEvents {
-        _id
-        histID
-        histTitle
-        histType
-        histValue
-        histCategory
-        histDate
+    histEvents {
+      _id
+      histID
+      eventID
+      histTitle
+      histValue
+      histType
+      histFrequency {
+        frequency
+        isSameDay
+        countWeekends
+        hasCustom
+        nValue
+        nUnit
+        day
+        month
       }
+      histVitalEvent
+      histCategory
+      totalHistEventValue
+      histAPR
+      histIOUInfo {
+        _id
+        iouTitle
+        iouValue
+        iouPaid
+      }
+      histDate
+    }
   }
 }
 `;

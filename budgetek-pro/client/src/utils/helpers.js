@@ -11,7 +11,7 @@ export function PDDDformat(datetime) {
 export function nextDate (uUnit) {
   let nextDate = new Date()
   let eventDate = new Date(parseInt(uUnit.eventDate))
-  let eventFValue = uUnit.eventFrequency[0]
+  let eventFValue = uUnit.eventFrequency
   if (eventFValue.frequency === "monthly") {
     eventDate = eventDate.setMonth(eventDate.getMonth() + 1)
   }
@@ -101,6 +101,7 @@ export function idbPromise(storeName, method, object) {
     request.onupgradeneeded = function(e) {
       const db = request.result;
       db.createObjectStore('budgetEvents', { keyPath: '_id' });
+      db.createObjectStore('histEvents', { keyPath: '_id' });
     };
 
     request.onerror = function(e) {

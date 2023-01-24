@@ -59,6 +59,10 @@ code {
   box-shadow: 2px 4px 6px 1px rgba(140, 210, 233, 0.4);
 }
 
+.overviewBar {
+  width: 100%;
+}
+
 .OBCont {
   display: flex;
   flex-wrap: wrap;
@@ -71,10 +75,36 @@ code {
   width: 92%;
 }
 
+.OBTitlesCont {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
 .homeCont {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
+}
+
+.graphsIcon {
+  width: 25px;
+  height: 25px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.buModal {
+  position: fixed;
+  background-color: white;
+  border-radius: 15px;
+  border: 1px blue solid;
+  padding: 20px;
+  width: 50%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .calContCont {
@@ -428,6 +458,7 @@ th {
   margin-top: 5px;
   color: white;
   background-color: blue;
+  box-shadow: 0px 0px 120px 120px rgba(127, 204, 230, 0.4);
   border-radius: 50px;
   justify-self: center;
 }
@@ -445,6 +476,23 @@ th {
   flex-direction: column;
   text-align: center;
   width: 85%;
+}
+
+.eventWindowButtons {
+  display: flex;
+  justify-content: space-around;
+  border-bottom: 1px solid lightblue;
+}
+
+.eventWindowButtons button {
+  background-color: blue;
+  padding: 5px;
+  color: white;
+  font-weight: bold;
+  border-radius: 15px;
+  border: 1px blue solid;
+  margin: 5px;
+  margin-top: 0px;
 }
 
 .headerBar {

@@ -7,25 +7,25 @@ import { PDDDformat, idbPromise } from "../../utils/helpers";
 import { useDispatch, useSelector } from 'react-redux'
 
 function IncomesList() {
-
     const dispatch = useDispatch();
     const {loading: incomeLoading, data: incomeData, refetch: incomeDataRefetch } = useQuery(QUERY_EVENTS)
-    const iandEMToggleStore = useSelector((state) => state.modalValue);
+    const iandEMToggleStore = useSelector((state) => state.toggles);
     const iandEMValue = iandEMToggleStore.modalValue;
-    const incomesListStore = useSelector((state) => state.incomes);
+    const incomesListStore = useSelector((state) => state.internalEvents);
     const incomesList = incomesListStore.incomes
     const loggedIn = Auth.loggedIn();
     const [showItemizedList, setShowItemizedList] = useState([{id: "", open: false}])
+    const [ showTotalIncomeCategory, setShowTotalIncomeCategory ] = useState({})
     const [removeIncome] = useMutation(REMOVE_BUDGET_EVENT);
 
     useEffect(() => {
-        incomeDataRefetch()
         if (incomeData){
             dispatch({
                 type: 'ADD_INCOMES',
                 incomes: incomeData.me.budgetEvents.filter(budgetEvent => {return budgetEvent.eventType === 'income'})
               })
-        }
+            setShowTotalIncomeCategory(incomeData.me.monthlyCatagoryIncome)     
+        }  
         
     },[incomeLoading, incomeData, iandEMValue, incomeDataRefetch, dispatch])
 
@@ -61,6 +61,7 @@ function IncomesList() {
             type:"EDIT_THIS_EVENT",
             currentEdit: ident
         })
+        incomeDataRefetch()
     }
 
     return (
@@ -87,7 +88,7 @@ function IncomesList() {
                                             <td>{income.eventTitle} {income.vitalEvent === true && `(Primary)`}</td>
                                             <td>{income.eventValue}</td>
                                             <td onClick={() => setShowItemizedList([{id: income._id, open: !showItemizedList[0].open}])}>{income.iouInfo.length > 0 && income.iouInfo.length}</td>
-                                            <td>{income.eventFrequency[0].frequency}</td>
+                                            <td>{income.eventFrequency.frequency}</td>
                                             <td>{`${PDDDformat(income.eventDate)}`}</td>
                                             <td><button onClick={(e) => removeIncomeHandler(e, income._id)} className="itemDelete">X</button><button onClick={(e) => editIncomeHandler(e, income)} className="itemEdit">E</button></td>
                                         </tr>
@@ -127,6 +128,7 @@ function IncomesList() {
                 </div>
             )}
             <button onClick={iModalToggle} className='modalButton'>Add Income</button>
+            <div><p>{JSON.stringify(showTotalIncomeCategory)}</p></div>
         </div>
     )
 }

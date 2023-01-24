@@ -8,7 +8,6 @@ import NoMatch from './pages/NoMatch';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Nav from './components/Nav';
-import OverviewBar from './components/OverviewBar';
 import Footer from './components/Footer';
 
 const httpLink = createHttpLink({
@@ -37,7 +36,6 @@ function App() {
           <div  className='mainBody'>
             <div className='bodyTop'>
             <Nav />
-            <OverviewBar />
             <Routes>
               <Route 
                 path="/" 

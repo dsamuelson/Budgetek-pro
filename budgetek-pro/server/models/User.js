@@ -1,7 +1,6 @@
 const { Schema, model } = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const BankSchema = require('./Banks');
 const HistEventsSchema = require('./HistEvents');
 const BudgetEventSchema = require('./BudgetEvents');
 
@@ -24,7 +23,6 @@ const userSchema = new Schema(
         },
         budgetEvents: [BudgetEventSchema],
         histEvents: [HistEventsSchema],
-        bankAccounts: [BankSchema]
     },
     {
         toJSON: {
@@ -65,6 +63,49 @@ userSchema.virtual('totalDebt').get(function() {
         }
     }
     return tDebt.toFixed(2);
+});
+
+userSchema.virtual('monthlyCatagoryDebt').get(function() {
+    let expensesEvents = this.budgetEvents.filter(bEvent => {return bEvent.eventType === 'expense'})
+    let expenseArr = []
+    for (let i = 0; i < expensesEvents.length ; i ++) {
+        expenseArr.push({expenseCatagory: expensesEvents[i].eventCategory, expenseValue: parseFloat(expensesEvents[i].eventValue)})
+    }
+    
+    let catagoryDebt = expenseArr.reduce((c, v) => {
+        c[v.expenseCatagory] = (c[v.expenseCatagory] || 0) + parseFloat(v.expenseValue);
+        return c;
+      }, {});
+    return catagoryDebt;
+});
+
+userSchema.virtual('debtTotalperCatagory').get(function() {
+    let expensesEvents = this.budgetEvents.filter(bEvent => {return bEvent.eventType === 'expense'})
+    let expenseArr = []
+    for (let i = 0; i < expensesEvents.length ; i ++) {
+        expenseArr.push({expenseCatagory: expensesEvents[i].eventCategory, expenseValue: parseFloat(expensesEvents[i].totalEventValue || 0.00)})
+    }
+    
+    let totalCategoryDebt = expenseArr.reduce((c, v) => {
+        c[v.expenseCatagory] = (c[v.expenseCatagory] || 0) + parseFloat(v.expenseValue);
+        return c;
+      }, {});
+    
+    return totalCategoryDebt;
+});
+
+userSchema.virtual('monthlyCatagoryIncome').get(function() {
+    let incomesEvents = this.budgetEvents.filter(bEvent => {return bEvent.eventType === 'income'})
+    let incomeArr = []
+    for (let i = 0; i < incomesEvents.length ; i ++) {
+        incomeArr.push({incomeCatagory: incomesEvents[i].eventCategory, incomeValue: parseFloat(incomesEvents[i].eventValue)})
+    }
+    
+    let catagoryIncome = incomeArr.reduce((c, v) => {
+        c[v.incomeCatagory] = (c[v.incomeCatagory] || 0) + parseFloat(v.incomeValue);
+        return c;
+      }, {});
+    return catagoryIncome;
 });
 
 userSchema.virtual('totalIncome').get(function() {

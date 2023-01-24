@@ -9,12 +9,12 @@ const resolvers = {
             const userData = await User.findOne({username})
                 .select('-__v -password')
                 .populate('budgetEvents')
-                .populate('bankAccounts');
+                .populate('histEvents');
             if (!userData) {
               const userDataEmail = await User.findOne({email: username})
                 .select('-__v -password')
                 .populate('budgetEvents')
-                .populate('bankAccounts');
+                .populate('histEvents');
               return userDataEmail
             }
             return userData;
@@ -23,7 +23,7 @@ const resolvers = {
             const userArray = await User.find({})
                 .select('-__v -password')
                 .populate('budgetEvents')
-                .populate('bankAccounts');
+                .populate('histEvents');
             return userArray;
           },
           me: async (parent, args, context) => {
@@ -31,7 +31,7 @@ const resolvers = {
               const userData = await User.findOne({ _id: context.user._id })
                 .select('-__v -password')
                 .populate('budgetEvents')
-                .populate('bankAccounts');
+                .populate('histEvents');
       
               return userData;
             }
@@ -63,7 +63,8 @@ const resolvers = {
           const token = signToken(user);
           return { token, user };
         },
-          addHistEvents: async (parent, args, context) => {
+          addHistEvent: async (parent, args, context) => {
+            console.log(args)
             if (context.user) {
               const updatedUser = await User.findOneAndUpdate(
                 { _id: context.user._id },
@@ -71,25 +72,34 @@ const resolvers = {
                   $addToSet: {
                     histEvents: {
                       histID: args.histID,
-                      histTitle: args.histTitle,
-                      histType: args.histType,
-                      histValue: args.histValue,
-                      histDates: args.histDate,
-                      histCategory: args.histCategory,
+                      eventID: args.eventID,
+                      histTitle: args.eventTitle,
+                      histValue: args.eventValue,
+                      histType: args.eventType,
+                      histFrequency: args.eventFrequency,
+                      histVitalEvent: args.vitalEvent,
+                      histCategory: args.eventCategory,
+                      totalHistEventValue: args.totalEventValue,
+                      histAPR: args.eventAPR,
+                      histDate: args.eventDate,
+                      histIOUInfo: [...args.iouInfo]
                     },
                   },
                 },
-                { new: true },
+                { runValidators: true, new: true },
               )
                 .select('-__v -password')
-                .populate('histEvents');
+                .populate('histEvents')
+                .catch(response => {
+                  console.log(response)
+                })
       
               return updatedUser;
             }
       
             throw new AuthenticationError('You must be logged in');
           },
-          updateHistEvents: async (parent, args, context) => {
+          updateHistEvent: async (parent, args, context) => {
             if (context.user) {
               let tempVals = [];
               for (let i = 0 ; i < Object.keys(args).length; i ++) {
@@ -99,7 +109,7 @@ const resolvers = {
               }
               let vals = {...tempVals.reduce(((r, c) => Object.assign(r, c)), {})}
               const updatedUser = await User.findOneAndUpdate(
-                { _id: context.user._id, "histEvents._id": args._id },
+                { _id: context.user._id, "histEvents.histID": args.histID },
                 {...vals},
                 { new: true},
               )
@@ -116,7 +126,7 @@ const resolvers = {
               const updatedUser = await User.findOneAndUpdate(
                 { _id: context.user._id},
                 {
-                  $pull: {histEvents: { _id: args._id }}
+                  $pull: {histEvents: { histID: args.histID } || { _id: args._id }}
                 },
                 { new: true }
               )
@@ -127,6 +137,7 @@ const resolvers = {
             throw new AuthenticationError('You must be logged in')
           },
           addBudgetEvent: async (parent, args, context) => {
+            console.log(args)
             if (context.user) {
               const updatedUser = await User.findOneAndUpdate(
                 { _id: context.user._id },
@@ -136,7 +147,7 @@ const resolvers = {
                       eventTitle: args.eventTitle,
                       eventValue: args.eventValue,
                       eventType: args.eventType,
-                      eventFrequency: [...args.eventFrequency],
+                      eventFrequency: args.eventFrequency,
                       vitalEvent: args.vitalEvent,
                       eventCategory: args.eventCategory,
                       totalEventValue: args.totalEventValue,
@@ -228,30 +239,72 @@ const resolvers = {
             }
             throw new AuthenticationError('You must be logged in')
           },
-          addBankAccount: async (parent, args, context) => {
+          rsUdata: async (parent, args, context) => {
             if (context.user) {
-              const updatedAccount = await User.findOneAndUpdate(
+              const refreshedUser = await User.findOneAndUpdate(
                 {_id: context.user._id},
                 {
-                  $addToSet: {
-                    bankAccounts: {
-                      bankName: args.bankName,
-                      accountIdentifier: args.accountIdentifier,
-                      checkingValue: args.checkingValue,
-                      savingsAccount: args.savingsAccount,
-                      savingsValue: args.savingsValue
-                    }
+                  $set: {
+                    bankAccounts: [],
+                    budgetEvents: [],
+                    histEvents: []
                   }
                 },
                 { new: true }
               )
-                .select('-__v')
-                .populate('bankAccounts');
-
-              return updatedAccount;
+              .select('-__v -password')
+              return refreshedUser
             }
-            throw new AuthenticationError('You Must be logged in')
-          }
+            throw new AuthenticationError("You Don't have Authorization to do this")
+          },
+          rsBEdata: async (parent, args, context) => {
+            if (context.user) {
+              const refreshedUser = await User.findOneAndUpdate(
+                {_id: context.user._id},
+                {
+                  $set: {
+                    budgetEvents: []
+                  }
+                },
+                { new: true }
+              )
+              .select('-__v -password')
+              return refreshedUser
+            }
+            throw new AuthenticationError("You Don't have Authorization to do this")
+          },
+          rsHEdata: async (parent, args, context) => {
+            if (context.user) {
+              const refreshedUser = await User.findOneAndUpdate(
+                {_id: context.user._id},
+                {
+                  $set: {
+                    histEvents: []
+                  }
+                },
+                { new: true }
+              )
+              .select('-__v -password')
+              return refreshedUser
+            }
+            throw new AuthenticationError("You Don't have Authorization to do this")
+          },
+          rsBAdata: async (parent, args, context) => {
+            if (context.user) {
+              const refreshedUser = await User.findOneAndUpdate(
+                {_id: context.user._id},
+                {
+                  $set: {
+                    bankAccounts: []
+                  }
+                },
+                { new: true }
+              )
+              .select('-__v -password')
+              return refreshedUser
+            }
+            throw new AuthenticationError("You Don't have Authorization to do this")
+          },
     }
 }
 

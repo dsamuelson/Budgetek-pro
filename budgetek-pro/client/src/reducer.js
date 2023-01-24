@@ -6,13 +6,8 @@ import iandeEntriesReducer from "./features/iandeSlice";
 
 const rootReducer = combineReducers({
     categories: catagoriesReducer,
-    iande: TogglesReducer,
-    calcontVal: TogglesReducer,
-    modalValue: TogglesReducer,
-    incomes: iandeEntriesReducer,
-    expenses: iandeEntriesReducer,
-    histEvents: iandeEntriesReducer,
-    currentEdit: iandeEntriesReducer
+    toggles: TogglesReducer,
+    internalEvents: iandeEntriesReducer,
 })
 
 export default rootReducer
