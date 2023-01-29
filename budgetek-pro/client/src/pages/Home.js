@@ -4,7 +4,6 @@ import 'react-calendar/dist/Calendar.css';
 import IncomesList from "../components/Incomes";
 import ExpensesList from "../components/Expenses";
 import IandEModal from "../components/IandEModal";
-import EditModal from "../components/EditModal";
 import OverviewBar from "../components/OverviewBar"
 import { useQuery, useMutation } from "@apollo/client";
 import { QUERY_EVENTS } from "../utils/queries";
@@ -148,7 +147,10 @@ const Home = () => {
       if ( new Date(parseInt(uUnitArray[i].eventDate)).getTime() < new Date().getTime() ){
         let nextEventDate = new Date(nextDate(uUnitArray[i]))
         updatePDDDDate(uUnitArray[i], nextEventDate)
-        addHistHandler(uUnitArray[i], new Date(parseInt(uUnitArray[i].eventDate)).getTime())
+        if (eventsData.me.budgetEvents > 0) {
+          addHistHandler(uUnitArray[i], new Date(parseInt(uUnitArray[i].eventDate)).getTime())
+        }
+        
       } 
     }
   }, [incomes, expenses, historyEvents])
@@ -177,13 +179,10 @@ const Home = () => {
     }
     let histId = "UID" + meID + "EID" + event._id + "D" + histDate.toString()
     let histIDCompare = [];
-    let histIDCompareRan = false
-    if (!eventsLoading) {
+    if (eventsData.me.histEvents.length > 0) {
       histIDCompare = eventsData.me.histEvents.filter((event) => {return event.histID === histId})
-      histIDCompareRan = true
     }
-    
-    if (!eventsLoading && histIDCompareRan && histIDCompare.length === 0){
+    if (!eventsLoading && histIDCompare.length === 0){
       let histIOU = () => {
         let iouArray = []
         for (let i = 0; i < event.iouInfo.length; i++) {
@@ -227,7 +226,6 @@ const Home = () => {
       } catch (e) {
           console.error(e)
       }
-      histIDCompareRan = false
     }  
   }
 
@@ -246,9 +244,6 @@ const Home = () => {
       {buVal !== 'None' ? (
         <BudgetUtilizationModal />
       ) : null }
-      {(modalValue === 'EditIncome' || modalValue === "EditExpense") && (
-        <EditModal />
-      )}
       <div className="calendarCont" onClick={(e)=>{
         if (e.target.localName) {
           let contentText = '';

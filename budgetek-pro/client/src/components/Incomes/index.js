@@ -15,7 +15,6 @@ function IncomesList() {
     const incomesList = incomesListStore.incomes
     const loggedIn = Auth.loggedIn();
     const [showItemizedList, setShowItemizedList] = useState([{id: "", open: false}])
-    const [ showTotalIncomeCategory, setShowTotalIncomeCategory ] = useState({})
     const [removeIncome] = useMutation(REMOVE_BUDGET_EVENT);
 
     useEffect(() => {
@@ -23,8 +22,7 @@ function IncomesList() {
             dispatch({
                 type: 'ADD_INCOMES',
                 incomes: incomeData.me.budgetEvents.filter(budgetEvent => {return budgetEvent.eventType === 'income'})
-              })
-            setShowTotalIncomeCategory(incomeData.me.monthlyCatagoryIncome)     
+              })    
         }  
         
     },[incomeLoading, incomeData, iandEMValue, incomeDataRefetch, dispatch])
@@ -90,7 +88,7 @@ function IncomesList() {
                                             <td onClick={() => setShowItemizedList([{id: income._id, open: !showItemizedList[0].open}])}>{income.iouInfo.length > 0 && income.iouInfo.length}</td>
                                             <td>{income.eventFrequency.frequency}</td>
                                             <td>{`${PDDDformat(income.eventDate)}`}</td>
-                                            <td><button onClick={(e) => removeIncomeHandler(e, income._id)} className="itemDelete">X</button><button onClick={(e) => editIncomeHandler(e, income)} className="itemEdit">E</button></td>
+                                            <td><button onClick={(e) => removeIncomeHandler(e, income._id)} className="itemDelete">X</button></td>
                                         </tr>
                                         {showItemizedList[0].id === income._id && showItemizedList[0].open && income.iouInfo.length > 0 && (
                                             <tr>
@@ -128,7 +126,6 @@ function IncomesList() {
                 </div>
             )}
             <button onClick={iModalToggle} className='modalButton'>Add Income</button>
-            <div><p>{JSON.stringify(showTotalIncomeCategory)}</p></div>
         </div>
     )
 }

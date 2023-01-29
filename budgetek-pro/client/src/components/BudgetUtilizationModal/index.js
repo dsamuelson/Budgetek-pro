@@ -75,7 +75,7 @@ function BudgetUtilizationModal() {
         <div className="buModal">    
             <p onClick={() => {dispatch({type: "TOGGLE_BU_MODAL", buVal: "None"})}} className="calContx">x</p>
             <h2>Budget Utilization Per Category ({categoryBreakdownToggle === "mTotal" ? "Total Debt" : "Monthly"})</h2>
-            <div><Doughnut data={doughnutData}/></div>
+            <div className="buDonut"><Doughnut data={doughnutData}/></div>
         </div>
     )
 }

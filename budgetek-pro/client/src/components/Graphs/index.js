@@ -169,31 +169,6 @@ function GraphsView() {
       return c;
     }, {});
 
-    let aDataSetfinal = () => {
-      const aDataSet = [];
-      for (let i = 0 ; i < uGraphsData?.length ; i ++) {
-        if ((new Date(uGraphsData[i].date).getFullYear() === new Date().getFullYear() || (new Date(uGraphsData[i].date).getFullYear() === new Date().getFullYear() - 1 && new Date(uGraphsData[i].date).getMonth() === new Date().getMonth())) && uGraphsData[i].event.eventType === 'income') {
-          aDataSet.push({dLabel: new Date(uGraphsData[i].date).getMonth(), dValueup: parseFloat(uGraphsData[i].event.eventValue)})
-        } 
-        if ((new Date(uGraphsData[i].date).getFullYear() === new Date().getFullYear() || (new Date(uGraphsData[i].date).getFullYear() === new Date().getFullYear() - 1 && new Date(uGraphsData[i].date).getMonth() === new Date().getMonth())) && uGraphsData[i].event.eventType === 'expense') {
-          aDataSet.push({dLabel: new Date(uGraphsData[i].date).getMonth(), dValuedown: parseFloat(uGraphsData[i].event.eventValue)})
-        }
-      }
-      let aDataSetres = aDataSet.reduce((c, v) => {
-        c[v.dLabel] = (c[v.dLabel] || 0) + parseFloat(v.dValueup || 0.00) - parseFloat(v.dValuedown || 0.00);
-        return c;
-      }, {});
-      aDataSetres = Object.values(aDataSetres)
-      let aDsetFinal = []
-      let total = 0.00
-      for (let i = 0; i < aDataSetres.length; i++) {
-        total += aDataSetres[i]
-        total = parseFloat(total.toFixed(2))
-        aDsetFinal.push(total); 
-      }
-      return aDsetFinal
-    }
-
     const doughnutData = {
         labels: [...Object.keys(dDataLabelsres)],
         datasets: [
@@ -225,6 +200,24 @@ function GraphsView() {
     //++++End of Doughnut Graph Setup++++//
     //----Area Graph Setup----//
 
+    let aDataSetfinal = () => {
+      const aDataSet = [];
+      for (let i = 0 ; i < uGraphsData?.length ; i ++) {
+        if (((new Date(uGraphsData[i].date).getFullYear() === new Date().getFullYear()) || (new Date(uGraphsData[i].date).getFullYear() === new Date().getFullYear() - 1)) && uGraphsData[i].event.eventType === 'income') {
+          aDataSet.push({dLabel: new Date(uGraphsData[i].date).getMonth(), dValueup: parseFloat(uGraphsData[i].event.eventValue)})
+        } 
+        if (((new Date(uGraphsData[i].date).getFullYear() === new Date().getFullYear()) || (new Date(uGraphsData[i].date).getFullYear() === new Date().getFullYear() - 1)) && uGraphsData[i].event.eventType === 'expense') {
+          aDataSet.push({dLabel: new Date(uGraphsData[i].date).getMonth(), dValuedown: parseFloat(uGraphsData[i].event.eventValue)})
+        }
+      }
+      let aDataSetres = aDataSet.reduce((c, v) => {
+        c[v.dLabel] = (c[v.dLabel] || 0) + parseFloat(v.dValueup || 0.00) - parseFloat(v.dValuedown || 0.00);
+        return c;
+      }, {});
+      aDataSetres = Object.values(aDataSetres)
+      return  aDataSetres 
+    }
+
     const areaOptions = {
         responsive: true,
         maintainAspectRatio: false,
@@ -245,21 +238,7 @@ function GraphsView() {
           {
             fill: true,
             label: 'Total Budget',
-            data: // lgraphlabels.map((label, index) => {
-            //   let tGraphTotal = 0;
-            //   for (let i = 0; i< iEvents.length; i++) {
-            //     if (new Date(iEvents[i].date).getMonth() === index) {
-            //       tGraphTotal += parseInt(iEvents[i].event.eventValue)
-            //     }
-            //   }
-            //   for (let i = 0 ; i < eEvents.length ; i ++) {
-            //     if (new Date(eEvents[i].date).getMonth() === index) {
-            //       tGraphTotal -= parseInt(eEvents[i].event.eventValue)
-            //     }
-            //   }
-            //   return tGraphTotal;
-            // })
-            aDataSetfinal(),
+            data: aDataSetfinal(),
             borderColor: 'rgb(53, 162, 235)',
             backgroundColor: 'rgba(53, 162, 235, 0.5)',
           },

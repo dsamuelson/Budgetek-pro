@@ -100,11 +100,18 @@ code {
   border-radius: 15px;
   border: 1px blue solid;
   padding: 20px;
-  width: 50%;
+  width: 25%;
+  height: fit-content;
   left: 0;
   right: 0;
   margin: 0 auto;
   text-align: center;
+}
+
+.buDonut {
+  margin: 0 auto;
+  width: 100%;
+  
 }
 
 .calContCont {
@@ -489,7 +496,24 @@ th {
   padding: 5px;
   color: white;
   font-weight: bold;
-  border-radius: 15px;
+  border-radius: 5px;
+  border: 1px blue solid;
+  margin: 5px;
+  margin-top: 0px;
+}
+
+.lotButtons {
+  display: flex;
+  justify-content: space-around;
+  border-bottom: 1px solid lightblue;
+}
+
+.lotButtons button{
+  background-color: blue;
+  padding: 5px;
+  color: white;
+  font-weight: bold;
+  border-radius: 5px;
   border: 1px blue solid;
   margin: 5px;
   margin-top: 0px;

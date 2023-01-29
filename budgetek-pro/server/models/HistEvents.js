@@ -8,7 +8,7 @@ const HistEventsSchema = new Schema ({
         index: {
             unique: true,
             partialFilterExpression: {histID: {$type: "string"}}
-          }
+        }
     },
     eventID: {
         type: String,

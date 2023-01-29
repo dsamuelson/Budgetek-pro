@@ -15,8 +15,6 @@ function ExpensesList() {
     const expensesListStore = useSelector((state) => state.internalEvents);
     const expensesList = expensesListStore.expenses
     const [showItemizedList, setShowItemizedList] = useState([{id: "", open: false}])
-    const [showTotalExpenseCategories, setShowTotalExpenseCategories ] = useState({})
-    const [showMonthlyExpenseCategories, setShowMonthlyExpenseCategories ] = useState({})
     const loggedIn = Auth.loggedIn();
 
     const [removeExpense] = useMutation(REMOVE_BUDGET_EVENT)
@@ -27,8 +25,6 @@ function ExpensesList() {
                 type: 'ADD_EXPENSES',
                 expenses: expenseData.me.budgetEvents.filter(budgetEvent => {return budgetEvent.eventType === 'expense'})
               })
-            setShowTotalExpenseCategories(expenseData.me.debtTotalperCatagory)
-            setShowMonthlyExpenseCategories(expenseData.me.monthlyCatagoryDebt)
         }
     },[expenseLoading, expenseData, iandEMValue, expenseDataRefetch, dispatch])
 
@@ -95,7 +91,7 @@ function ExpensesList() {
                                         <td onClick={() => setShowItemizedList([{id: expense._id, open: !showItemizedList[0].open}])}>{expense.iouInfo.length > 0 && expense.iouInfo.length}</td>
                                         <td>{expense.eventCategory}</td>
                                         <td>{`${PDDDformat(expense.eventDate)}`}</td>
-                                        <td><button onClick={(e) => removeExpenseHandler(e, expense._id)} className="itemDelete">X</button><button onClick={(e) => editExpenseHandler(e, expense)} className="itemEdit">E</button></td>
+                                        <td><button onClick={(e) => removeExpenseHandler(e, expense._id)} className="itemDelete">X</button></td>
                                     </tr>
                                     {showItemizedList[0].id === expense._id && showItemizedList[0].open && expense.iouInfo.length > 0 && (
                                         <tr>
@@ -132,8 +128,6 @@ function ExpensesList() {
                 </div>
             )}
             <button onClick={EModalToggle} className='modalButton'>Add Expense</button>
-            <div><p>{JSON.stringify(showTotalExpenseCategories)}</p></div>
-            <div><p>{JSON.stringify(showMonthlyExpenseCategories)}</p></div>
         </div>
 
     )
